@@ -1,1 +1,453 @@
-"use strict";function _interopRequireDefault(e){return e&&e.__esModule?e:{default:e}}function _classCallCheck(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function _possibleConstructorReturn(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function _inherits(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}Object.defineProperty(exports,"__esModule",{value:!0});var _extends=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var r=arguments[t];for(var n in r)Object.prototype.hasOwnProperty.call(r,n)&&(e[n]=r[n])}return e},_createClass=function(){function e(e,t){for(var r=0;r<t.length;r++){var n=t[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}return function(t,r,n){return r&&e(t.prototype,r),n&&e(t,n),t}}(),_react=require("react"),_react2=_interopRequireDefault(_react),_classnames=require("classnames"),_classnames2=_interopRequireDefault(_classnames),_isEqual=require("lodash/isEqual"),_isEqual2=_interopRequireDefault(_isEqual),_isFunction=require("lodash/isFunction"),_isFunction2=_interopRequireDefault(_isFunction),_reactClickOutside=require("react-click-outside"),_reactClickOutside2=_interopRequireDefault(_reactClickOutside),_SelectionArrow=require("./SelectionArrow"),_SelectionArrow2=_interopRequireDefault(_SelectionArrow),_SelectDropdown=require("./SelectDropdown"),_SelectDropdown2=_interopRequireDefault(_SelectDropdown),_SelectSelection=require("./SelectSelection"),_SelectSelection2=_interopRequireDefault(_SelectSelection),Select=function(e){function t(e,r){_classCallCheck(this,t);var n=_possibleConstructorReturn(this,(t.__proto__||Object.getPrototypeOf(t)).call(this,e,r));_initialiseProps.call(n);var o=e.value,i=e.data,a=e.disabled;if(!Array.isArray(i))throw new Error("Provided data prop is invalid. Expected an array of option items");if(o&&"number"==typeof o&&"string"==typeof o)throw new Error("Provided value prop is invalid. Expected option id or option text");return n._initialData=i,n._initialState={value:o,data:n.getOptionsData(i),disabled:a,highlighted:null,dropdownOpened:!1,searchShow:!1},n.state=Object.assign({},n._initialState),n}return _inherits(t,e),_createClass(t,[{key:"componentWillReceiveProps",value:function(e){var t=e.data,r=e.disabled,n=e.value,o=Object.assign({},this._initialState,{value:this.state.value}),i=!1;r!==this.state.disabled&&(o.disabled=r,i=!0),t!==this._initialData&&(this._initialData=t,o.data=this.getOptionsData(t),i=!0),!n&&null!==n||n===this.state.value||(o.value=n,i=!0),i&&this.setState(o)}},{key:"render",value:function(){var e=this.props,t=e.error,r=e.options,n=e.dropdownPosition,o=this.state,i=o.data,a=o.disabled,l=o.dropdownOpened,s=o.highlighted,c=o.value,p=(0,_classnames2.default)("select react-select-container react-select-container--default",{"react-select-container--open":l,"react-select-container--disabled":a,"react-select-container--error":t,"react-select-container--above":"above"===n,"react-select-container--below":!n||"below"===n});return _react2.default.createElement("span",{className:p,style:{width:r.width||"245px"},disabled:a},_react2.default.createElement("span",{ref:"selectContainer",className:"react-select__selection react-select-selection--single",tabIndex:"1",disabled:a,onClick:this.onContainerClick,onKeyDown:this.onContainerKeyDown,role:"combobox"},_react2.default.createElement(_SelectSelection2.default,{data:i,value:c,placeholder:r.placeholder}),_react2.default.createElement(_SelectionArrow2.default,null)),l&&_react2.default.createElement(_SelectDropdown2.default,_extends({searchShow:i.length>=r.minimumResultsForSearch||r.ajax,onSelect:this.onSelectOption},{data:i,highlighted:s})))}}]),t}(_react.Component);Select.propTypes={data:_react.PropTypes.oneOfType([_react.PropTypes.arrayOf(_react.PropTypes.string),_react.PropTypes.arrayOf(_react.PropTypes.shape({id:_react.PropTypes.oneOfType([_react.PropTypes.number,_react.PropTypes.string]),text:_react.PropTypes.oneOfType([_react.PropTypes.number,_react.PropTypes.string])}))]),dropdownPosition:_react.PropTypes.oneOf(["above","below"]),ajax:_react.PropTypes.object,options:_react.PropTypes.shape({placeholder:_react.PropTypes.oneOfType([_react.PropTypes.string,_react.PropTypes.element]),width:_react.PropTypes.string,minimumResultsForSearch:_react.PropTypes.number}),error:_react.PropTypes.oneOfType([_react.PropTypes.bool,_react.PropTypes.string]),disabled:_react.PropTypes.bool,name:_react.PropTypes.string,onSelect:_react.PropTypes.func,value:_react.PropTypes.oneOfType([_react.PropTypes.string,_react.PropTypes.number])},Select.defaultProps={options:{}};var _initialiseProps=function(){var e=this;this.shouldComponentUpdate=function(t,r){var n=t.data,o=t.disabled,i=t.value;return n!==e._initialData||o!==e.state.disabled||i!==e.state.value||!(0,_isEqual2.default)(r,e.state)},this.getOptionsData=function(t){if(!t.length)return[];if(t.reduce(function(e,t){return e&&"undefined"!=typeof t.id&&"undefined"!=typeof t.text},!0))return t;if(t.reduce(function(e,t){return e&&("number"==typeof t||"string"==typeof t)},!0))return t.map(function(e){return{id:e,text:e}});throw e.exceptions.invalidDataProvided},this.getOptionByIndex=function(t){var r=e.state.data;if(t>r.length||t<0)throw new Error("Invalid index provided");return r[t]},this.focusContainer=function(){var t=window.scrollX,r=window.scrollY;e.refs.selectContainer.focus(),window.scrollTo(t,r)},this.onContainerClick=function(){return e.state.disabled?void e.setState({dropdownOpened:!1}):void e.setState({dropdownOpened:!e.state.dropdownOpened})},this.setHightlightedOption=function(t){var r=e.state,n=r.data,o=r.highlighted,i=r.dropdownOpened,a=n.length-1,l=o+t;return!i||null===o||l>a?void e.setState({highlighted:0,dropdownOpened:!0}):l<0?void e.setState({highlighted:a}):void e.setState({highlighted:l})},this.selectHighlighted=function(){var t=e.state,r=t.data,n=t.highlighted,o=t.dropdownOpened;return o&&null!==n?void e.onSelect(r[n]):void e.setState({dropdownOpened:!0,highlighted:0})},this.onContainerKeyDown=function(t){var r={ArrowUp:e.setHightlightedOption.bind(null,-1),ArrowDown:e.setHightlightedOption.bind(null,1),Enter:e.selectHighlighted," ":e.selectHighlighted,Escape:e.closeDropdown},n=t.key;r[n]&&(t.preventDefault(),r[n]())},this.handleClickOutside=function(){e.closeDropdown()},this.closeDropdown=function(){e.setState({dropdownOpened:!1,highlighted:null})},this.onSelect=function(t){var r=e.props,n=r.name,o=r.onSelect,i={type:"select",target:{name:n,value:t.id,valueText:t.text}};e.setState({value:t.id}),(0,_isFunction2.default)(o)&&o(i),e.closeDropdown(),e.focusContainer()},this.onSelectOption=function(t){var r=t.target.dataset.index,n=e.getOptionByIndex(r);e.onSelect(n)}};exports.default=(0,_reactClickOutside2.default)(Select);
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _isEqual = require('lodash/isEqual');
+
+var _isEqual2 = _interopRequireDefault(_isEqual);
+
+var _isFunction = require('lodash/isFunction');
+
+var _isFunction2 = _interopRequireDefault(_isFunction);
+
+var _reactClickOutside = require('react-click-outside');
+
+var _reactClickOutside2 = _interopRequireDefault(_reactClickOutside);
+
+var _SelectionArrow = require('./SelectionArrow');
+
+var _SelectionArrow2 = _interopRequireDefault(_SelectionArrow);
+
+var _SelectDropdown = require('./SelectDropdown');
+
+var _SelectDropdown2 = _interopRequireDefault(_SelectDropdown);
+
+var _SelectSelection = require('./SelectSelection');
+
+var _SelectSelection2 = _interopRequireDefault(_SelectSelection);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+// TODO: optgroups
+// TODO: options & optgroups as children
+var Select = function (_Component) {
+  _inherits(Select, _Component);
+
+  function Select(props, context) {
+    _classCallCheck(this, Select);
+
+    var _this = _possibleConstructorReturn(this, (Select.__proto__ || Object.getPrototypeOf(Select)).call(this, props, context)); // eslint-disable-line consistent-return
+
+
+    _initialiseProps.call(_this);
+
+    var value = props.value,
+        data = props.data,
+        disabled = props.disabled;
+
+    // Validate data object
+
+    if (!Array.isArray(data)) {
+      throw new Error('Provided data prop is invalid. Expected an array of option items');
+    }
+
+    // Validate value prop
+    if (!!value && !(typeof value !== 'number' || typeof value !== 'string')) {
+      throw new Error('Provided value prop is invalid. Expected option id or option text');
+    }
+
+    // Keep ref for incoming data array
+    _this._initialData = data;
+
+    // setup initial state object
+    _this._initialState = {
+      value: value,
+      data: _this.getOptionsData(data),
+      disabled: disabled,
+      highlighted: null,
+      dropdownOpened: false,
+      // TODO: make search happen
+      searchShow: false
+    };
+
+    /**
+     * @type {{
+     *   value: *,
+     *   data: object,
+     *   disabled: boolean,
+     *   dropdownOpened: boolean,
+     *   searchShow: boolean
+     * }}
+     */
+    _this.state = Object.assign({}, _this._initialState);
+
+    return _this;
+  }
+
+  _createClass(Select, [{
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(_ref) {
+      var data = _ref.data,
+          disabled = _ref.disabled,
+          value = _ref.value;
+
+      var state = Object.assign({}, this._initialState, { value: this.state.value });
+      var willUpdate = false;
+
+      // Set new disabled prop if updated
+      if (disabled !== this.state.disabled) {
+        state.disabled = disabled;
+
+        willUpdate = true;
+      }
+
+      // Set new data if update
+      if (data !== this._initialData) {
+        // Set new data as initial
+        this._initialData = data;
+        state.data = this.getOptionsData(data);
+
+        willUpdate = true;
+      }
+
+      // Set new value if updated
+      // null for reseting the value
+      if ((!!value || value === null) && value !== this.state.value) {
+        state.value = value;
+
+        willUpdate = true;
+      }
+
+      // Rerender if any updates occur
+      if (willUpdate) {
+        this.setState(state);
+      }
+    }
+
+    /**
+     * Process data which passed through props
+     * @param {array} data
+     * @return {*}
+     */
+
+
+    /**
+     * Set next highlighted option via 'ArrowUp' or 'ArrowDown' key
+     * @param {number} direction (can be -1 or 1)
+     */
+
+
+    /**
+     * Select current highlighted option via 'Space' or 'Enter' key
+     */
+
+
+    /**
+     * Handle keyboard controls
+     * @param {object} event
+     */
+
+
+    /**
+     * Close SelectDropdown on click outside using 'react-click-outside' library
+     */
+
+
+    /**
+     * Setting selected value
+     * @param {object} value - option object from data array
+     */
+
+
+    /**
+     * Handle option selection via user click
+     * @param {number} index - index of option item in the data array
+     */
+
+  }, {
+    key: 'render',
+    value: function render() {
+      var _props = this.props,
+          error = _props.error,
+          options = _props.options,
+          dropdownPosition = _props.dropdownPosition;
+      var _state = this.state,
+          data = _state.data,
+          disabled = _state.disabled,
+          dropdownOpened = _state.dropdownOpened,
+          highlighted = _state.highlighted,
+          value = _state.value;
+
+
+      var containerClassName = (0, _classnames2.default)('select react-select-container react-select-container--default', {
+        'react-select-container--open': dropdownOpened,
+        'react-select-container--disabled': disabled,
+        'react-select-container--error': error,
+        'react-select-container--above': dropdownPosition === 'above',
+        'react-select-container--below': !dropdownPosition || dropdownPosition === 'below'
+      });
+
+      return _react2.default.createElement(
+        'span',
+        { className: containerClassName,
+          style: { width: options.width || '245px' },
+          disabled: disabled },
+        _react2.default.createElement(
+          'span',
+          { ref: 'selectContainer',
+            className: 'react-select__selection react-select-selection--single',
+            tabIndex: '1',
+            disabled: disabled,
+            onClick: this.onContainerClick,
+            onKeyDown: this.onContainerKeyDown,
+            role: 'combobox' },
+          _react2.default.createElement(_SelectSelection2.default, { data: data, value: value, placeholder: options.placeholder }),
+          _react2.default.createElement(_SelectionArrow2.default, null)
+        ),
+        dropdownOpened && _react2.default.createElement(_SelectDropdown2.default, _extends({ searchShow: data.length >= options.minimumResultsForSearch || options.ajax,
+          onSelect: this.onSelectOption
+        }, { data: data, highlighted: highlighted }))
+      );
+    }
+  }]);
+
+  return Select;
+}(_react.Component);
+
+Select.propTypes = {
+  /**
+   * Array of option items
+   */
+  data: _react.PropTypes.oneOfType([_react.PropTypes.arrayOf(_react.PropTypes.string), _react.PropTypes.arrayOf(_react.PropTypes.shape({
+    id: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.string]),
+    text: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.string])
+  }))]),
+  /**
+   * Defines whether SelectDropdown should be opened above or below the container.
+   * default: 'below'
+   */
+  // TODO: define position automatically depends on SelectContainer position in the viewport
+  dropdownPosition: _react.PropTypes.oneOf(['above', 'below']),
+  // TODO: fetch options from server by term query
+  ajax: _react.PropTypes.object,
+  options: _react.PropTypes.shape({
+    placeholder: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.element]),
+    width: _react.PropTypes.string,
+    minimumResultsForSearch: _react.PropTypes.number
+  }),
+  /**
+   * You can provide error message to display or just boolean to highlight error
+   */
+  error: _react.PropTypes.oneOfType([_react.PropTypes.bool, _react.PropTypes.string]),
+  disabled: _react.PropTypes.bool,
+  name: _react.PropTypes.string,
+  onSelect: _react.PropTypes.func,
+  /**
+   * Value can be set by providing option id
+   */
+  value: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number])
+};
+Select.defaultProps = {
+  options: {}
+};
+
+var _initialiseProps = function _initialiseProps() {
+  var _this2 = this;
+
+  this.shouldComponentUpdate = function (_ref2, nextState) {
+    var data = _ref2.data,
+        disabled = _ref2.disabled,
+        value = _ref2.value;
+    return data !== _this2._initialData || disabled !== _this2.state.disabled || value !== _this2.state.value || !(0, _isEqual2.default)(nextState, _this2.state);
+  };
+
+  this.getOptionsData = function (data) {
+    if (!data.length) {
+      return [];
+    }
+
+    // If options are objects {id: <id>, text: <optionLabel>}
+    if (data.reduce(function (result, dataItem) {
+      return result && typeof dataItem.id !== 'undefined' && typeof dataItem.text !== 'undefined';
+    }, true)) {
+      return data;
+    }
+
+    // If options are simply text
+    if (data.reduce(function (result, dataItem) {
+      return result && (typeof dataItem === 'number' || typeof dataItem === 'string');
+    }, true)) {
+      return data.map(function (option) {
+        return {
+          id: option,
+          text: option
+        };
+      });
+    }
+
+    throw _this2.exceptions.invalidDataProvided;
+  };
+
+  this.getOptionByIndex = function (index) {
+    var data = _this2.state.data;
+
+
+    if (index > data.length || index < 0) {
+      throw new Error('Invalid index provided');
+    }
+
+    return data[index];
+  };
+
+  this.focusContainer = function () {
+    var x = window.scrollX;
+    var y = window.scrollY;
+
+    _this2.refs.selectContainer.focus();
+    window.scrollTo(x, y);
+  };
+
+  this.onContainerClick = function () {
+
+    if (_this2.state.disabled) {
+      _this2.setState({ dropdownOpened: false });
+      return;
+    }
+
+    _this2.setState({ dropdownOpened: !_this2.state.dropdownOpened });
+  };
+
+  this.setHightlightedOption = function (direction) {
+    var _state2 = _this2.state,
+        data = _state2.data,
+        highlighted = _state2.highlighted,
+        dropdownOpened = _state2.dropdownOpened;
+
+    var dataLength = data.length - 1;
+    var nextHighlighted = highlighted + direction;
+
+    // If dropdown not opened or there is no highlighted item yet
+    if (!dropdownOpened || highlighted === null
+    // highlight first option after click 'ArrowDown' on the last one
+    || nextHighlighted > dataLength) {
+      _this2.setState({ highlighted: 0, dropdownOpened: true });
+      return;
+    }
+
+    // Highlight last option after click 'ArrowUp' on the first one
+    if (nextHighlighted < 0) {
+      _this2.setState({ highlighted: dataLength });
+      return;
+    }
+
+    // Highlight next option
+    _this2.setState({ highlighted: nextHighlighted });
+  };
+
+  this.selectHighlighted = function () {
+    var _state3 = _this2.state,
+        data = _state3.data,
+        highlighted = _state3.highlighted,
+        dropdownOpened = _state3.dropdownOpened;
+
+    // If dropdown not opened or there is no highlighted item yet
+
+    if (!dropdownOpened || highlighted === null) {
+
+      // Open dropdown and hightlight first item
+      _this2.setState({ dropdownOpened: true, highlighted: 0 });
+      return;
+    }
+
+    // Select highlighted item
+    _this2.onSelect(data[highlighted]);
+  };
+
+  this.onContainerKeyDown = function (event) {
+    var KEYS = {
+      ArrowUp: _this2.setHightlightedOption.bind(null, -1),
+      ArrowDown: _this2.setHightlightedOption.bind(null, 1),
+      Enter: _this2.selectHighlighted,
+      // 'Space' key
+      ' ': _this2.selectHighlighted,
+      Escape: _this2.closeDropdown
+    };
+    // TODO: scroll SelectDropdown block to show highlighted item when overflows
+    var key = event.key;
+
+    // Do nothing if other key is being clicked
+    if (!KEYS[key]) return;
+
+    event.preventDefault();
+    // Handle key click
+    KEYS[key]();
+  };
+
+  this.handleClickOutside = function () {
+    _this2.closeDropdown();
+  };
+
+  this.closeDropdown = function () {
+    _this2.setState({
+      dropdownOpened: false,
+      highlighted: null
+    });
+  };
+
+  this.onSelect = function (value) {
+    var _props2 = _this2.props,
+        name = _props2.name,
+        onSelect = _props2.onSelect;
+
+    // Setup structure of selection event
+
+    var selectionEvent = {
+      type: 'select',
+      target: {
+        name: name,
+        value: value.id,
+        valueText: value.text
+      }
+    };
+
+    _this2.setState({ value: value.id });
+
+    if ((0, _isFunction2.default)(onSelect)) {
+      onSelect(selectionEvent);
+    }
+
+    _this2.closeDropdown();
+    _this2.focusContainer();
+  };
+
+  this.onSelectOption = function (_ref3) {
+    var index = _ref3.target.dataset.index;
+
+
+    // Get selected option and pass it into onSelect method for further processing
+    var selectedOption = _this2.getOptionByIndex(index);
+    _this2.onSelect(selectedOption);
+  };
+};
+
+exports.default = (0, _reactClickOutside2.default)(Select);

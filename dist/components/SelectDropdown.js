@@ -1,1 +1,75 @@
-"use strict";function _interopRequireDefault(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(exports,"__esModule",{value:!0});var _react=require("react"),_react2=_interopRequireDefault(_react),_classnames=require("classnames"),_classnames2=_interopRequireDefault(_classnames),_SelectSearchInput=require("./SelectSearchInput"),_SelectSearchInput2=_interopRequireDefault(_SelectSearchInput),SelectDropdown=function(e){var t=e.data,a=e.value,r=e.highlighted,c=e.searchShow,l=e.onSelect,s=t.map(function(e,t){var c=e.id,s=e.text;return _react2.default.createElement("li",{key:t,className:(0,_classnames2.default)("react-select-results__option",{"react-select-results--selected":!!a&&a.id===c,"react-select-results__option--highlighted":t===r}),"data-id":c,"data-index":t,onClick:l},s)});return _react2.default.createElement("span",{className:"dropdown-wrapper"},_react2.default.createElement("span",{className:"react-select-dropdown"},c&&_react2.default.createElement(_SelectSearchInput2.default,null),_react2.default.createElement("span",{className:"react-select-results"},_react2.default.createElement("ul",{className:"react-select-results__options"},s))))};SelectDropdown.propTypes={data:_react.PropTypes.array,value:_react.PropTypes.object,highlighted:_react.PropTypes.number,searchShow:_react.PropTypes.bool,onSelect:_react.PropTypes.func},exports.default=SelectDropdown;
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _SelectSearchInput = require('./SelectSearchInput');
+
+var _SelectSearchInput2 = _interopRequireDefault(_SelectSearchInput);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var SelectDropdown = function SelectDropdown(props) {
+  var data = props.data,
+      value = props.value,
+      highlighted = props.highlighted,
+      searchShow = props.searchShow,
+      onSelect = props.onSelect;
+
+  // @fixme: provide templating
+
+  var optionsList = data.map(function (_ref, i) {
+    var id = _ref.id,
+        text = _ref.text;
+    return _react2.default.createElement(
+      'li',
+      { key: i,
+        className: (0, _classnames2.default)('react-select-results__option', {
+          'react-select-results--selected': !!value && value.id === id,
+          'react-select-results__option--highlighted': i === highlighted
+        }),
+        'data-id': id,
+        'data-index': i,
+        onClick: onSelect },
+      text
+    );
+  });
+
+  return _react2.default.createElement(
+    'span',
+    { className: 'dropdown-wrapper' },
+    _react2.default.createElement(
+      'span',
+      { className: 'react-select-dropdown' },
+      searchShow && _react2.default.createElement(_SelectSearchInput2.default, null),
+      _react2.default.createElement(
+        'span',
+        { className: 'react-select-results' },
+        _react2.default.createElement(
+          'ul',
+          { className: 'react-select-results__options' },
+          optionsList
+        )
+      )
+    )
+  );
+};
+
+SelectDropdown.propTypes = {
+  data: _react.PropTypes.array,
+  value: _react.PropTypes.object,
+  highlighted: _react.PropTypes.number,
+  searchShow: _react.PropTypes.bool,
+  onSelect: _react.PropTypes.func
+};
+
+exports.default = SelectDropdown;

@@ -1,1 +1,21 @@
-"use strict";function _interopRequireDefault(e){return e&&e.__esModule?e:{default:e}}Object.defineProperty(exports,"__esModule",{value:!0});var _react=require("react"),_react2=_interopRequireDefault(_react),SelectionArrow=function(){return _react2.default.createElement("span",{className:"react-select-selection__arrow",role:"presentation"},_react2.default.createElement("b",null))};exports.default=SelectionArrow;
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var SelectionArrow = function SelectionArrow() {
+  return _react2.default.createElement(
+    "span",
+    { className: "react-select-selection__arrow", role: "presentation" },
+    _react2.default.createElement("b", null)
+  );
+};
+
+exports.default = SelectionArrow;
