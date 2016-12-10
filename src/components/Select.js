@@ -32,10 +32,13 @@ const valuePropType = PropTypes.oneOfType([
     })
 ])
 
+
+// ROADMAP
 // @fixme TODO: uncontrollable value
 // TODO: optgroups
 // TODO: options & optgroups as children
-// TODO: dissmissable
+// TODO: pluggable lang provider
+// TODO: docs
 class Select extends Component {
 
     static propTypes = {
