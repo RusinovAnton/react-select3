@@ -3,13 +3,13 @@ const eslint = require('gulp-eslint');
 const gulp = require('gulp');
 const react = require('gulp-react');
 const uglify = require('gulp-uglify');
-var docs = require('gulp-react-docs');
+const jsdoc = require('gulp-jsdoc3');
 
-gulp.task('docs', function() {
-  return gulp.src('./dist/components/**/*.js')
-    .pipe(docs({ path: './docs' }))
-    .pipe(gulp.dest('./docs'));
-});
+
+gulp.task('docs', (cb) => {
+    return gulp.src(['README.md', './dist/**/*.js'], {read: false})
+        .pipe(jsdoc(cb))
+})
 
 gulp.task('transform', () => {
   return gulp.src('./src/**/*.js')
@@ -25,6 +25,6 @@ gulp.task('lint', () => {
     .pipe(eslint.failAfterError());
 });
 
-gulp.task('dist', ['transform', 'lint']);
+gulp.task('dist', ['transform', 'lint', 'docs']);
 
 gulp.task('default', ['transform']);
