@@ -1,6 +1,6 @@
 {
   "name": "pure-react-select2",
-  "version": "0.0.2",
+  "version": "1.0.0-beta",
   "description": "select2 replica react component",
   "main": "dist/index.js",
   "dependencies": {
