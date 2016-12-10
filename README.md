@@ -9,3 +9,8 @@ Copyright (C) 2016 Rusinov Anton <rusinovantondev@gmail.com>
 ##Changelog
 
 [Changelog](https://github.com/RusinovAnton/react-select2/blob/master/CHANGELOG.md)
+
+### Credits
+
+Thanks for help to: 
+- Artem Berdyshev 
