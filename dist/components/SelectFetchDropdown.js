@@ -14,7 +14,7 @@ var _throttle = require('lodash/throttle');
 
 var _throttle2 = _interopRequireDefault(_throttle);
 
-var _fetch = require('utils/fetch');
+var _fetch = require('../utils/fetch');
 
 var _fetch2 = _interopRequireDefault(_fetch);
 
@@ -161,6 +161,7 @@ var _initialiseProps = function _initialiseProps() {
             _props3$request = _props3.request,
             endpoint = _props3$request.endpoint,
             responseDataFormatter = _props3$request.responseDataFormatter,
+            headers = _props3$request.headers,
             onGettingData = _props3.onGettingData;
         var lang = _this2.context.lang;
 
@@ -170,7 +171,7 @@ var _initialiseProps = function _initialiseProps() {
         }
 
         _this2.setState({ status: lang.pending });
-        (0, _fetch2.default)(endpoint, 'GET', null, { params: params }).then(responseDataFormatter).then(function () {
+        (0, _fetch2.default)(endpoint, params, headers).then(responseDataFormatter).then(function () {
             var optionsData = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
             var state = _this2.getInitState();

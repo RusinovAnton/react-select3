@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 
 import throttle from 'lodash/throttle'
-import fetchJson from 'utils/fetch'
+import fetchJson from '../utils/fetch'
 import isFunction from 'lodash/isFunction'
 import isEqual from 'lodash/isEqual'
 
@@ -63,7 +63,7 @@ class SelectFetchDropdown extends Component {
     }
 
     fetchOptionsData = (params, cache) => {
-        const { request: { endpoint, responseDataFormatter }, onGettingData } = this.props
+        const { request: { endpoint, responseDataFormatter, headers }, onGettingData } = this.props
         const { lang } = this.context
 
         if (!isFunction(responseDataFormatter)) {
@@ -71,7 +71,7 @@ class SelectFetchDropdown extends Component {
         }
 
         this.setState({ status: lang.pending })
-        fetchJson(endpoint, 'GET', null, { params })
+        fetchJson(endpoint, params, headers)
             .then(responseDataFormatter)
             .then((optionsData = []) => {
                 const state = this.getInitState()
