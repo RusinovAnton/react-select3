@@ -334,6 +334,7 @@ class Select extends Component {
      * Close SelectDropdown on click outside using 'react-click-outside' library
      */
     handleClickOutside = () => {
+        if (!this.state.dropdownOpened) return
         this.closeDropdown()
     }
 
