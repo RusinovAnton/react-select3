@@ -1,4 +1,4 @@
-#REACT-SELECT2
+#PURE-REACT-SELECT2
 This react component is wannabe replica of jquery-select2
 
 ##License
