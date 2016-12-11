@@ -416,17 +416,18 @@ class Select extends Component {
             <span className={ containerClassName }
                   style={{ width: options.width || '245px' }}
                   disabled={ disabled }>
-        <span ref='selectContainer'
-              className='react-select__selection react-select-selection--single'
-              tabIndex='1'
-              disabled={ disabled }
-              onClick={ !disabled && this.onContainerClick }
-              onKeyDown={ !disabled && this.onContainerKeyDown }
-              role='combobox'>
-          <SelectSelection {...{ value, data, placeholder: options.placeholder, formatter: selectionFormatter }}/>
-            { clearIconVisible && <SelectionClear onClearSelection={ this.onClearSelection }/> }
-            <SelectionArrow/>
-        </span>
+                <span ref='selectContainer'
+                      className='react-select__selection react-select-selection--single'
+                      tabIndex='1'
+                      disabled={ disabled }
+                      onClick={ !disabled && this.onContainerClick }
+                      onKeyDown={ !disabled && this.onContainerKeyDown }
+                      role='combobox'>
+                    <SelectSelection {...{ value, data, placeholder: options.placeholder,
+                                     formatter: selectionFormatter }}/>
+                    { clearIconVisible && <SelectionClear onClearSelection={ this.onClearSelection }/> }
+                    <SelectionArrow/>
+                </span>
                 { request && request.endpoint ?
                     (<SelectFetchDropdown onGettingData={this.onGettingData}
                                           onSelect={ this.onSelectOption }
@@ -449,7 +450,7 @@ class Select extends Component {
                                        }}/>)
                 }
                 { typeof error === 'string' && <span className='help-block'>{ error }</span> }
-      </span>
+          </span>
         )
     }
 
