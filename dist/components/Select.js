@@ -72,10 +72,12 @@ var valuePropType = _react.PropTypes.oneOfType([_react.PropTypes.string, _react.
     text: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.string])
 })]);
 
+// ROADMAP
 // @fixme TODO: uncontrollable value
 // TODO: optgroups
 // TODO: options & optgroups as children
-// TODO: dissmissable
+// TODO: pluggable lang provider
+// TODO: docs
 
 var Select = function (_Component) {
     _inherits(Select, _Component);
@@ -309,6 +311,10 @@ Select.propTypes = {
         endpoint: _react.PropTypes.string,
         once: _react.PropTypes.bool,
         params: _react.PropTypes.object,
+        /**
+         * Set headers for json fetching
+         */
+        headers: _react.PropTypes.object,
         responseDataFormatter: _react.PropTypes.func,
         termQuery: _react.PropTypes.string
     }),

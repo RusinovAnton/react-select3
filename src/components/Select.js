@@ -67,6 +67,10 @@ class Select extends Component {
             endpoint: PropTypes.string,
             once: PropTypes.bool,
             params: PropTypes.object,
+            /**
+             * Set headers for json fetching
+             */
+            headers: PropTypes.object,
             responseDataFormatter: PropTypes.func,
             termQuery: PropTypes.string,
         }),
