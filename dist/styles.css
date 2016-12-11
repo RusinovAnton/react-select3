@@ -1,0 +1,99 @@
+.react-select-container {
+  display: inline-block;
+  position: relative;
+  background: #fff;
+  z-index: 0;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
+  .react-select-container > * {
+    box-sizing: border-box; }
+  .react-select-container .dropdown-wrapper {
+    display: block;
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    z-index: 1; }
+  .react-select-container.react-select-container--below .dropdown-wrapper {
+    top: 100%; }
+  .react-select-container.react-select-container--above .dropdown-wrapper {
+    bottom: 100%; }
+
+.react-select__selection {
+  white-space: nowrap;
+  overflow: hidden;
+  border-radius: 3px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 1px 1px 1px 0 #f0f0f0;
+  display: block;
+  box-sizing: border-box;
+  height: 31px;
+  padding: 0 20px 0 10px;
+  line-height: 31px; }
+  .react-select-container--clearable .react-select__selection {
+    padding-right: 30px; }
+
+.react-select__selection--placeholder {
+  opacity: 0.5; }
+
+.react-select-selection__arrow {
+  display: block;
+  position: absolute;
+  right: 10px;
+  top: 13px;
+  height: 5px;
+  width: 5px; }
+  .react-select-selection__arrow i {
+    display: block;
+    border-color: currentColor rgba(255, 255, 255, 0) rgba(255, 255, 255, 0) rgba(255, 255, 255, 0);
+    border-style: solid;
+    border-width: 5px 4px 0 4px;
+    height: 0;
+    width: 0; }
+
+.react-select-selection__clear {
+  display: block;
+  position: absolute;
+  right: 20px;
+  top: 13.5px;
+  line-height: 0;
+  width: 10px;
+  height: 10px; }
+
+.react-select-results__options {
+  display: block; }
+
+.react-select-dropdown {
+  display: block;
+  border-radius: 3px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 1px 1px 1px 0 #f0f0f0; }
+
+.react-select-results__options {
+  display: block;
+  list-style: none;
+  padding: 0;
+  margin: 0; }
+  .react-select-results__options li {
+    line-height: 31px;
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 0 10px; }
+
+.react-select-results__option--highlighted {
+  background-color: #efefef; }
+
+.react-select-results--selected {
+  background: #00a7ff;
+  color: #fff; }
+
+.react-select-search__field {
+  display: block;
+  height: 31px;
+  padding: 0 10px;
+  width: calc(100% - 20px);
+  border: 0;
+  border-bottom: 1px solid #ccc;
+  margin: 0 auto; }

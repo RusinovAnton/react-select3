@@ -212,6 +212,8 @@ var Select = function (_Component) {
     }, {
         key: 'render',
         value: function render() {
+            var _this2 = this;
+
             var _props = this.props,
                 allowClear = _props.allowClear,
                 error = _props.error,
@@ -233,12 +235,17 @@ var Select = function (_Component) {
             var containerClassName = (0, _classnames2.default)('select react-select-container react-select-container--default', {
                 'react-select-container--open': dropdownOpened,
                 'react-select-container--disabled': disabled,
+                'react-select-container--clearable': allowClear,
                 'react-select-container--error': error,
                 'react-select-container--right': dropdownHorizontalPosition === 'right',
                 'has-error': error,
                 'react-select-container--above': dropdownVerticalPosition === 'above',
                 'react-select-container--below': !dropdownVerticalPosition || dropdownVerticalPosition === 'below'
             });
+
+            var containerRef = function containerRef(node) {
+                _this2.selectContainer = node;
+            };
 
             return _react2.default.createElement(
                 'span',
@@ -247,14 +254,19 @@ var Select = function (_Component) {
                     disabled: disabled },
                 _react2.default.createElement(
                     'span',
-                    { ref: 'selectContainer',
+                    { ref: containerRef,
                         className: 'react-select__selection react-select-selection--single',
                         tabIndex: '1',
                         disabled: disabled,
                         onClick: !disabled && this.onContainerClick,
                         onKeyDown: !disabled && this.onContainerKeyDown,
                         role: 'combobox' },
-                    _react2.default.createElement(_SelectSelection2.default, { value: value, data: data, placeholder: options.placeholder, formatter: selectionFormatter }),
+                    _react2.default.createElement(_SelectSelection2.default, {
+                        value: value,
+                        data: data,
+                        placeholder: options.placeholder,
+                        formatter: selectionFormatter
+                    }),
                     clearIconVisible && _react2.default.createElement(_SelectionClear2.default, { onClearSelection: this.onClearSelection }),
                     _react2.default.createElement(_SelectionArrow2.default, null)
                 ),
@@ -357,7 +369,7 @@ Select.childContextTypes = {
 };
 
 var _initialiseProps = function _initialiseProps() {
-    var _this2 = this;
+    var _this3 = this;
 
     this.getChildContext = function () {
         return { lang: lang };
@@ -368,11 +380,11 @@ var _initialiseProps = function _initialiseProps() {
             disabled = _ref2.disabled,
             value = _ref2.value,
             error = _ref2.error;
-        return data !== _this2._initialData || error !== _this2.props.error || disabled !== _this2.state.disabled || value !== _this2.state.value || !(0, _isEqual2.default)(nextState, _this2.state);
+        return data !== _this3._initialData || error !== _this3.props.error || disabled !== _this3.state.disabled || value !== _this3.state.value || !(0, _isEqual2.default)(nextState, _this3.state);
     };
 
     this.getOptionsData = function (data) {
-        var formatter = _this2.props.dataFormatter;
+        var formatter = _this3.props.dataFormatter;
 
 
         if (!data.length) {
@@ -399,7 +411,7 @@ var _initialiseProps = function _initialiseProps() {
     };
 
     this.getOptionByIndex = function (dataIndex) {
-        var data = _this2.state.data;
+        var data = _this3.state.data;
 
         var index = parseInt(dataIndex, 10);
 
@@ -414,22 +426,22 @@ var _initialiseProps = function _initialiseProps() {
         var x = window.scrollX;
         var y = window.scrollY;
 
-        _this2.refs.selectContainer.focus();
+        _this3.selectContainer.focus();
         window.scrollTo(x, y);
     };
 
     this.onContainerClick = function () {
 
-        if (_this2.state.disabled) {
-            _this2.setState({ dropdownOpened: false });
+        if (_this3.state.disabled) {
+            _this3.setState({ dropdownOpened: false });
             return;
         }
 
-        _this2.setState({ dropdownOpened: !_this2.state.dropdownOpened });
+        _this3.setState({ dropdownOpened: !_this3.state.dropdownOpened });
     };
 
     this.setHightlightedOption = function (direction) {
-        var _state2 = _this2.state,
+        var _state2 = _this3.state,
             data = _state2.data,
             highlighted = _state2.highlighted,
             dropdownOpened = _state2.dropdownOpened;
@@ -442,22 +454,22 @@ var _initialiseProps = function _initialiseProps() {
         if (!dropdownOpened || highlighted === null
         // highlight first option after click 'ArrowDown' on the last one
         || nextHighlighted > dataLength) {
-            _this2.setState({ highlighted: 0, dropdownOpened: true });
+            _this3.setState({ highlighted: 0, dropdownOpened: true });
             return;
         }
 
         // Highlight last option after click 'ArrowUp' on the first one
         if (nextHighlighted < 0) {
-            _this2.setState({ highlighted: dataLength });
+            _this3.setState({ highlighted: dataLength });
             return;
         }
 
         // Highlight next option
-        _this2.setState({ highlighted: nextHighlighted });
+        _this3.setState({ highlighted: nextHighlighted });
     };
 
     this.selectHighlighted = function () {
-        var _state3 = _this2.state,
+        var _state3 = _this3.state,
             data = _state3.data,
             highlighted = _state3.highlighted,
             dropdownOpened = _state3.dropdownOpened;
@@ -467,22 +479,22 @@ var _initialiseProps = function _initialiseProps() {
         if (!dropdownOpened || highlighted === null) {
 
             // Open dropdown and hightlight first item
-            _this2.setState({ dropdownOpened: true, highlighted: 0 });
+            _this3.setState({ dropdownOpened: true, highlighted: 0 });
             return;
         }
 
         // Select highlighted item
-        _this2.onSelect(data[highlighted]);
+        _this3.onSelect(data[highlighted]);
     };
 
     this.onContainerKeyDown = function (event) {
         var KEYS = {
-            ArrowUp: _this2.setHightlightedOption.bind(null, -1),
-            ArrowDown: _this2.setHightlightedOption.bind(null, 1),
-            Enter: _this2.selectHighlighted,
+            ArrowUp: _this3.setHightlightedOption.bind(null, -1),
+            ArrowDown: _this3.setHightlightedOption.bind(null, 1),
+            Enter: _this3.selectHighlighted,
             // 'Space' key
-            ' ': _this2.selectHighlighted,
-            Escape: _this2.closeDropdown
+            ' ': _this3.selectHighlighted,
+            Escape: _this3.closeDropdown
         };
         // TODO: scroll SelectDropdown block to show highlighted item when overflows
         var key = event.key;
@@ -496,18 +508,19 @@ var _initialiseProps = function _initialiseProps() {
     };
 
     this.handleClickOutside = function () {
-        _this2.closeDropdown();
+        if (!_this3.state.dropdownOpened) return;
+        _this3.closeDropdown();
     };
 
     this.closeDropdown = function () {
-        _this2.setState({
+        _this3.setState({
             dropdownOpened: false,
             highlighted: null
         });
     };
 
     this.onSelect = function (value) {
-        var _props2 = _this2.props,
+        var _props2 = _this3.props,
             name = _props2.name,
             onSelect = _props2.onSelect;
 
@@ -523,14 +536,14 @@ var _initialiseProps = function _initialiseProps() {
             }
         };
 
-        _this2.setState({ value: value ? Object.assign({}, value) : null });
+        _this3.setState({ value: value ? Object.assign({}, value) : null });
 
         if ((0, _isFunction2.default)(onSelect)) {
             onSelect(selectionEvent);
         }
 
-        _this2.closeDropdown();
-        _this2.focusContainer();
+        _this3.closeDropdown();
+        _this3.focusContainer();
     };
 
     this.onSelectOption = function (_ref3) {
@@ -538,17 +551,17 @@ var _initialiseProps = function _initialiseProps() {
 
 
         // Get selected option and pass it into onSelect method for further processing
-        var selectedOption = _this2.getOptionByIndex(index);
-        _this2.onSelect(selectedOption);
+        var selectedOption = _this3.getOptionByIndex(index);
+        _this3.onSelect(selectedOption);
     };
 
     this.onClearSelection = function (e) {
         e.stopPropagation();
-        _this2.onSelect(null);
+        _this3.onSelect(null);
     };
 
     this.onGettingData = function (data) {
-        _this2.setState({ data: _this2.getOptionsData(data) });
+        _this3.setState({ data: _this3.getOptionsData(data) });
     };
 };
 

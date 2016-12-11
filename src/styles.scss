@@ -1,0 +1,139 @@
+$height: 31px;
+$padding-horizontal: 10px;
+$color-highlighted: #efefef;
+$color-selected: #00a7ff;
+
+@mixin selected {
+    background: $color-selected;
+    color: #fff;
+}
+
+@mixin box {
+    border-radius: 3px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 1px 1px 1px 0 #f0f0f0;
+}
+
+@mixin nowrap {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.react-select-container {
+    display: inline-block;
+    position: relative;
+    background: #fff;
+    z-index: 0;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    > * {
+        box-sizing: border-box;
+    }
+
+    .dropdown-wrapper {
+        display: block;
+        position: absolute;
+        top: 100%;
+        width: 100%;
+        z-index: 1;
+    }
+
+    &.react-select-container--below {
+        .dropdown-wrapper {
+            top: 100%;
+        }
+    }
+
+    &.react-select-container--above {
+        .dropdown-wrapper {
+            bottom: 100%;
+        }
+    }
+
+}
+
+.react-select__selection {
+    @include nowrap;
+    @include box;
+    display: block;
+    box-sizing: border-box;
+    height: $height;
+    padding: 0 20px 0 $padding-horizontal;
+    line-height: $height;
+    .react-select-container--clearable & {
+        padding-right: 30px;
+    }
+}
+
+.react-select__selection--placeholder {
+    opacity: 0.5;
+}
+
+.react-select-selection__arrow {
+    display: block;
+    position: absolute;
+    right: 10px;
+    top: $height/2 - 2.5;
+    height: 5px;
+    width: 5px;
+    i {
+        display: block;
+        border-color: currentColor rgba(255, 255, 255, 0) rgba(255, 255, 255, 0) rgba(255, 255, 255, 0);
+        border-style: solid;
+        border-width: 5px 4px 0 4px;
+        height: 0;
+        width: 0;
+    }
+}
+
+.react-select-selection__clear {
+    display: block;
+    position: absolute;
+    right: 20px;
+    top: $height/2 - 2;
+    line-height: 0;
+    width: 10px;
+    height: 10px;
+}
+
+.react-select-results__options {
+    display: block
+}
+
+.react-select-dropdown {
+    display: block;
+    @include box;
+}
+
+.react-select-results__options {
+    display: block;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    li {
+        line-height: $height;
+        @include nowrap;
+        padding: 0 $padding-horizontal;
+    }
+}
+
+.react-select-results__option--highlighted {
+    background-color: $color-highlighted;
+}
+
+.react-select-results--selected {
+    @include selected;
+}
+
+.react-select-search__field {
+    display: block;
+    height: 31px;
+    padding: 0 $padding-horizontal;
+    width: calc(100% - #{$padding-horizontal * 2});
+    border: 0;
+    border-bottom: 1px solid #ccc;
+    margin: 0 auto;
+}

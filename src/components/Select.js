@@ -244,7 +244,7 @@ class Select extends Component {
         const x = window.scrollX
         const y = window.scrollY
 
-        this.refs.selectContainer.focus()
+        this.selectContainer.focus()
         window.scrollTo(x, y)
     }
 
@@ -334,6 +334,7 @@ class Select extends Component {
      * Close SelectDropdown on click outside using 'react-click-outside' library
      */
     handleClickOutside = () => {
+        if (!this.state.dropdownOpened) return
         this.closeDropdown()
     }
 
@@ -409,6 +410,7 @@ class Select extends Component {
         const containerClassName = classNames('select react-select-container react-select-container--default', {
             'react-select-container--open': dropdownOpened,
             'react-select-container--disabled': disabled,
+            'react-select-container--clearable': allowClear,
             'react-select-container--error': error,
             'react-select-container--right': dropdownHorizontalPosition === 'right',
             'has-error': error,
@@ -416,19 +418,25 @@ class Select extends Component {
             'react-select-container--below': !dropdownVerticalPosition || dropdownVerticalPosition === 'below'
         })
 
+        const containerRef = node => { this.selectContainer = node }
+
         return (
             <span className={ containerClassName }
                   style={{ width: options.width || '245px' }}
                   disabled={ disabled }>
-                <span ref='selectContainer'
+                <span ref={ containerRef }
                       className='react-select__selection react-select-selection--single'
                       tabIndex='1'
                       disabled={ disabled }
                       onClick={ !disabled && this.onContainerClick }
-                      onKeyDown={ !disabled && this.onContainerKeyDown }
+                      onKeyDown={   !disabled && this.onContainerKeyDown }
                       role='combobox'>
-                    <SelectSelection {...{ value, data, placeholder: options.placeholder,
-                                     formatter: selectionFormatter }}/>
+                  <SelectSelection {...{
+                      value,
+                      data,
+                      placeholder: options.placeholder,
+                      formatter: selectionFormatter
+                  }}/>
                     { clearIconVisible && <SelectionClear onClearSelection={ this.onClearSelection }/> }
                     <SelectionArrow/>
                 </span>

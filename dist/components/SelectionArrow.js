@@ -14,7 +14,7 @@ var SelectionArrow = function SelectionArrow() {
   return _react2.default.createElement(
     "span",
     { className: "react-select-selection__arrow", role: "presentation" },
-    _react2.default.createElement("b", null)
+    _react2.default.createElement("i", null)
   );
 };
 
