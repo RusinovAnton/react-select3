@@ -244,7 +244,7 @@ class Select extends Component {
         const x = window.scrollX
         const y = window.scrollY
 
-        this.refs.selectContainer.focus()
+        this.selectContainer.focus()
         window.scrollTo(x, y)
     }
 
@@ -410,6 +410,7 @@ class Select extends Component {
         const containerClassName = classNames('select react-select-container react-select-container--default', {
             'react-select-container--open': dropdownOpened,
             'react-select-container--disabled': disabled,
+            'react-select-container--clearable': allowClear,
             'react-select-container--error': error,
             'react-select-container--right': dropdownHorizontalPosition === 'right',
             'has-error': error,
@@ -417,21 +418,28 @@ class Select extends Component {
             'react-select-container--below': !dropdownVerticalPosition || dropdownVerticalPosition === 'below'
         })
 
+        const containerRef = node => { this.selectContainer = node }
+
         return (
             <span className={ containerClassName }
                   style={{ width: options.width || '245px' }}
                   disabled={ disabled }>
-        <span ref='selectContainer'
-              className='react-select__selection react-select-selection--single'
-              tabIndex='1'
-              disabled={ disabled }
-              onClick={ !disabled && this.onContainerClick }
-              onKeyDown={ !disabled && this.onContainerKeyDown }
-              role='combobox'>
-          <SelectSelection {...{ value, data, placeholder: options.placeholder, formatter: selectionFormatter }}/>
-            { clearIconVisible && <SelectionClear onClearSelection={ this.onClearSelection }/> }
-            <SelectionArrow/>
-        </span>
+                <span ref={ containerRef }
+                      className='react-select__selection react-select-selection--single'
+                      tabIndex='1'
+                      disabled={ disabled }
+                      onClick={ !disabled && this.onContainerClick }
+                      onKeyDown={   !disabled && this.onContainerKeyDown }
+                      role='combobox'>
+                  <SelectSelection {...{
+                      value,
+                      data,
+                      placeholder: options.placeholder,
+                      formatter: selectionFormatter
+                  }}/>
+                    { clearIconVisible && <SelectionClear onClearSelection={ this.onClearSelection }/> }
+                    <SelectionArrow/>
+                </span>
                 { request && request.endpoint ?
                     (<SelectFetchDropdown onGettingData={this.onGettingData}
                                           onSelect={ this.onSelectOption }

@@ -12,9 +12,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var SelectionClear = function SelectionClear(_ref) {
     var onClearSelection = _ref.onClearSelection;
-    return _react2.default.createElement("span", { className: "react-select-selection__clear",
-        role: "presentation",
-        onClick: undefined.onClearSelection });
+    return _react2.default.createElement(
+        "span",
+        { className: "react-select-selection__clear",
+            role: "presentation",
+            onClick: onClearSelection },
+        "\xD7"
+    );
 };
 
 SelectionClear.propTypes = {
