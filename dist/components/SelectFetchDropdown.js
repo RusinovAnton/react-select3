@@ -86,8 +86,7 @@ var SelectFetchDropdown = function (_Component) {
                 highlighted = _props.highlighted,
                 onSelect = _props.onSelect,
                 once = _props.request.once,
-                value = _props.value,
-                onContainerKeyDown = _props.onContainerKeyDown;
+                value = _props.value;
             var status = this.state.status;
 
 
@@ -97,7 +96,7 @@ var SelectFetchDropdown = function (_Component) {
                 _react2.default.createElement(
                     'span',
                     { className: 'react-select-dropdown' },
-                    !once && _react2.default.createElement(_SelectSearchInput2.default, { onKeyDown: onContainerKeyDown, onTermChange: this.onFetchTermChange }),
+                    !once && _react2.default.createElement(_SelectSearchInput2.default, { onTermChange: this.onFetchTermChange }),
                     _react2.default.createElement(
                         'span',
                         { className: 'react-select-results' },
@@ -115,6 +114,11 @@ var SelectFetchDropdown = function (_Component) {
     return SelectFetchDropdown;
 }(_react.Component);
 
+SelectFetchDropdown.defaultProps = {
+    request: {
+        delay: 2500
+    }
+};
 SelectFetchDropdown.propTypes = {
     data: _react.PropTypes.array,
     dropdownOpened: _react.PropTypes.bool,
@@ -133,10 +137,14 @@ var _initialiseProps = function _initialiseProps() {
     var _this2 = this;
 
     this.getInitState = function () {
-        return { status: _this2.context.lang.minLength };
+        var once = _this2.props.request.once;
+
+        // TODO: use isPending flag
+
+        return once ? { isPending: false, status: _this2.context.lang.empty } : { isPending: false, status: _this2.context.lang.minLength };
     };
 
-    this.componentDidMount = function () {
+    this.componentWillMount = function () {
         var _props2 = _this2.props,
             _props2$request = _props2.request,
             endpoint = _props2$request.endpoint,
@@ -150,6 +158,7 @@ var _initialiseProps = function _initialiseProps() {
         var cachedData = cachedResponseData[endpoint];
 
         if (cachedData && (0, _isEqual2.default)(cachedData.params, params)) {
+            _this2.setState({ isPending: false, status: _this2.context.lang.empty });
             onGettingData(cachedData.data);
         } else {
             _this2.fetchOptionsData(params, true);
@@ -161,24 +170,25 @@ var _initialiseProps = function _initialiseProps() {
             _props3$request = _props3.request,
             endpoint = _props3$request.endpoint,
             responseDataFormatter = _props3$request.responseDataFormatter,
-            headers = _props3$request.headers,
             onGettingData = _props3.onGettingData;
         var lang = _this2.context.lang;
 
 
         if (!(0, _isFunction2.default)(responseDataFormatter)) {
-            throw new Error('You must provide a responseDataFormatter function to format incoming options data');
+            throw new Error('You must provide a responseDataFormatter function in order to format incoming options data');
         }
 
-        _this2.setState({ status: lang.pending });
-        (0, _fetch2.default)(endpoint, params, headers).then(responseDataFormatter).then(function () {
+        _this2.setState({ isPending: true, status: lang.pending });
+
+        (0, _fetch2.default)(endpoint, 'GET', null, { params: params }).then(responseDataFormatter).then(function () {
             var optionsData = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
-            var state = _this2.getInitState();
+            var state = Object.assign(_this2.getInitState(), { isPending: false });
 
             if (!optionsData.length) {
                 state.status = lang.empty;
             }
+
             if (cache) {
                 cachedResponseData[endpoint] = {
                     data: optionsData,

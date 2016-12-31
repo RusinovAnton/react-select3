@@ -37,6 +37,7 @@
     "react-addons-test-utils": "^15.4.1",
     "react-click-outside": "^2.2.0",
     "react-dom": "^15.4.0",
+    "react-stub-context": "^0.7.0",
     "react-test-renderer": "^15.4.1"
   },
   "repository": "https://github.com/RusinovAnton/react-select2.git",

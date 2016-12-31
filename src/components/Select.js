@@ -13,7 +13,7 @@ import SelectSelection from './SelectSelection'
 
 
 // @fixme: hardcoded lang provider
-const lang = {
+export const lang = {
     pending: 'Поиск...',
     // @fixme: hardcoded minlength
     minLength: 'Введите минимум 3 буквы',

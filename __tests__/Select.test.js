@@ -1,37 +1,25 @@
 import React from 'react'
-
+import Select from '../src/components/Select'
 import renderer from 'react-test-renderer'
 
-import Select from '../src/components/Select'
 
 
 const dummyData = [
-    {id: 3, text: 'three'},
-    {id: 4, text: 'four'},
-    {id: 5, text: 'five'},
+    { id: 3, text: 'three' },
+    { id: 4, text: 'four' },
+    { id: 5, text: 'five' },
 ]
 
+it('should render a Select container', () => {
+    const component = shallow(<Select/>);
+    expect(component).toMatchSnapshot();
+});
+
 test('Open dropdown on container click', () => {
-    const component = renderer.create(
-        <Select/>
-    )
+    const component = shallow(<Select/>)
+    expect(component).toMatchSnapshot()
 
-    let tree = component.toJSON()
+    component.find('[class="react-select__selection"]').simulate('click');
 
-    expect(tree).toMatchSnapshot()
-
-    // manually trigger the callback
-    tree.refs.selectContainer.onClick()
-
-    // re-rendering
-    tree = component.toJSON()
-
-    expect(tree).toMatchSnapshot()
-
-    // manually trigger the callback
-    tree.refs.selectContainer.onClick()
-
-    // re-rendering
-    tree = component.toJSON()
-    expect(tree).toMatchSnapshot()
+    expect(component).toMatchSnapshot();
 })

@@ -56,28 +56,16 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-// @fixme: hardcoded lang provider
-var lang = {
-    pending: 'Поиск...',
-    // @fixme: hardcoded minlength
-    minLength: 'Введите минимум 3 буквы',
-    loading: 'Загрузка...',
-    error: 'Не удалось получить данные!',
-    empty: 'Ничего не найдено',
-    emptyValue: '-'
+var SelectPropTypes = {
+    optionId: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.string]),
+    selection: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.element])
 };
 
-var valuePropType = _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number, _react.PropTypes.shape({
-    id: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.string]),
-    text: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.string])
-})]);
-
-// ROADMAP
 // @fixme TODO: uncontrollable value
 // TODO: optgroups
 // TODO: options & optgroups as children
-// TODO: pluggable lang provider
-// TODO: docs
+// TODO: dissmissable
+// TODO: lang module
 
 var Select = function (_Component) {
     _inherits(Select, _Component);
@@ -112,19 +100,19 @@ var Select = function (_Component) {
         // setup initial state object
         _this._initialState = {
             value: value || defaultValue,
-            data: data && _this.getOptionsData(data),
+            data: data && _this._getOptionsData(data),
             highlighted: null,
             dropdownOpened: false
         };
 
         /**
          * @type {{
-        *   value: *,
-        *   data: object,
-        *   disabled: boolean,
-        *   dropdownOpened: boolean,
-        *   searchShow: boolean
-        * }}
+         *   value: *,
+         *   data: object,
+         *   disabled: boolean,
+         *   dropdownOpened: boolean,
+         *   searchShow: boolean
+         * }}
          */
         _this.state = Object.assign({}, _this._initialState);
         return _this;
@@ -134,7 +122,8 @@ var Select = function (_Component) {
         key: 'componentWillReceiveProps',
         value: function componentWillReceiveProps(_ref) {
             var data = _ref.data,
-                value = _ref.value;
+                value = _ref.value,
+                filter = _ref.filter;
             var request = this.props.request;
 
             var state = Object.assign({}, this._initialState, { value: this.state.value, data: this.state.data });
@@ -144,9 +133,13 @@ var Select = function (_Component) {
             if (data && data !== this._initialData) {
                 // Set new data as initial
                 this._initialData = data;
-                state.data = this.getOptionsData(data);
+                state.data = this._getOptionsData(data);
 
                 willUpdate = true;
+            }
+
+            if (filter !== this.props.filter && (0, _isFunction2.default)(filter)) {
+                state.data = state.data.filter(filter);
             }
 
             // Set new value if updated
@@ -212,16 +205,16 @@ var Select = function (_Component) {
     }, {
         key: 'render',
         value: function render() {
-            var _this2 = this;
-
             var _props = this.props,
                 allowClear = _props.allowClear,
                 error = _props.error,
                 disabled = _props.disabled,
-                options = _props.options,
-                _props$options = _props.options,
-                dropdownHorizontalPosition = _props$options.dropdownHorizontalPosition,
-                dropdownVerticalPosition = _props$options.dropdownVerticalPosition,
+                placeholder = _props.placeholder,
+                search = _props.search,
+                _props$layout = _props.layout,
+                width = _props$layout.width,
+                dropdownHorizontalPosition = _props$layout.dropdownHorizontalPosition,
+                dropdownVerticalPosition = _props$layout.dropdownVerticalPosition,
                 request = _props.request,
                 selectionFormatter = _props.selectionFormatter;
             var _state = this.state,
@@ -235,7 +228,6 @@ var Select = function (_Component) {
             var containerClassName = (0, _classnames2.default)('select react-select-container react-select-container--default', {
                 'react-select-container--open': dropdownOpened,
                 'react-select-container--disabled': disabled,
-                'react-select-container--clearable': allowClear,
                 'react-select-container--error': error,
                 'react-select-container--right': dropdownHorizontalPosition === 'right',
                 'has-error': error,
@@ -243,56 +235,52 @@ var Select = function (_Component) {
                 'react-select-container--below': !dropdownVerticalPosition || dropdownVerticalPosition === 'below'
             });
 
-            var containerRef = function containerRef(node) {
-                _this2.selectContainer = node;
-            };
-
             return _react2.default.createElement(
                 'span',
                 { className: containerClassName,
-                    style: { width: options.width || '245px' },
+                    style: { width: width || '245px' },
                     disabled: disabled },
                 _react2.default.createElement(
                     'span',
-                    { ref: containerRef,
+                    { ref: 'selectContainer',
                         className: 'react-select__selection react-select-selection--single',
                         tabIndex: '1',
                         disabled: disabled,
-                        onClick: !disabled && this.onContainerClick,
+                        onClick: !disabled && this._onContainerClick,
                         onKeyDown: !disabled && this.onContainerKeyDown,
                         role: 'combobox' },
-                    _react2.default.createElement(_SelectSelection2.default, {
-                        value: value,
-                        data: data,
-                        placeholder: options.placeholder,
-                        formatter: selectionFormatter
-                    }),
-                    clearIconVisible && _react2.default.createElement(_SelectionClear2.default, { onClearSelection: this.onClearSelection }),
+                    _react2.default.createElement(_SelectSelection2.default, { value: value, data: data, placeholder: placeholder, formatter: selectionFormatter }),
+                    ' ',
+                    clearIconVisible && this.renderSelectionClear(),
+                    ' ',
                     _react2.default.createElement(_SelectionArrow2.default, null)
                 ),
+                ' ',
                 request && request.endpoint ? _react2.default.createElement(_SelectFetchDropdown2.default, _extends({ onGettingData: this.onGettingData,
-                    onSelect: this.onSelectOption
-                }, {
+                    onSelect: this.onSelectOption }, {
                     data: data,
                     highlighted: highlighted,
                     request: request,
                     value: value,
                     dropdownOpened: dropdownOpened,
                     onContainerKeyDown: this.onContainerKeyDown
-                })) : _react2.default.createElement(_SelectDropdown2.default, _extends({ searchShow: data && data.length >= options.minimumResultsForSearch,
-                    onSelect: this.onSelectOption
-                }, {
+                })) : _react2.default.createElement(_SelectDropdown2.default, _extends({ searchShow: data && data.length >= search.minimumResultsForSearch,
+                    onSelect: this.onSelectOption }, {
                     data: data,
                     highlighted: highlighted,
                     value: value,
                     dropdownOpened: dropdownOpened,
                     onContainerKeyDown: this.onContainerKeyDown
                 })),
-                typeof error === 'string' && _react2.default.createElement(
+                ' ',
+                !dropdownOpened && typeof error === 'string' && _react2.default.createElement(
                     'span',
                     { className: 'help-block' },
-                    error
-                )
+                    ' ',
+                    error,
+                    ' '
+                ),
+                ' '
             );
         }
     }]);
@@ -305,35 +293,14 @@ Select.propTypes = {
      * Whether allow user to clear select or not
      */
     allowClear: _react.PropTypes.bool,
+    defaultValue: SelectPropTypes.optionId,
+    disabled: _react.PropTypes.bool,
     /**
-     * Array of option items
+     * You can provide error message to display or just boolean to highlight select container with error styles
      */
-    data: _react.PropTypes.oneOfType([_react.PropTypes.arrayOf(_react.PropTypes.string), _react.PropTypes.arrayOf(_react.PropTypes.object)]),
-    /**
-     * formats incoming data to get needed format { id: <Number>, text: <String> }
-     * @param data item
-     */
-    dataFormatter: _react.PropTypes.func,
-    /**
-     * Provide needed options to fetch data from server by term query
-     */
-    // TODO: validate request object
-    request: _react.PropTypes.shape({
-        delay: _react.PropTypes.number,
-        endpoint: _react.PropTypes.string,
-        once: _react.PropTypes.bool,
-        params: _react.PropTypes.object,
-        /**
-         * Set headers for json fetching
-         */
-        headers: _react.PropTypes.object,
-        responseDataFormatter: _react.PropTypes.func,
-        termQuery: _react.PropTypes.string
-    }),
-    options: _react.PropTypes.shape({
-        placeholder: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.element]),
+    error: _react.PropTypes.oneOfType([_react.PropTypes.bool, _react.PropTypes.string]),
+    layout: _react.PropTypes.shape({
         width: _react.PropTypes.string,
-        minimumResultsForSearch: _react.PropTypes.number,
         /**
          * Defines whether SelectDropdown should be opened above or below the container.
          * default: 'below'
@@ -342,13 +309,32 @@ Select.propTypes = {
         dropdownVerticalPosition: _react.PropTypes.oneOf(['above', 'below']),
         dropdownHorizontalPosition: _react.PropTypes.oneOf(['left', 'right'])
     }),
-    /**
-     * You can provide error message to display or just boolean to highlight error
-     */
-    error: _react.PropTypes.oneOfType([_react.PropTypes.bool, _react.PropTypes.string]),
-    disabled: _react.PropTypes.bool,
     name: _react.PropTypes.string,
+    /**
+     * Provide needed options to fetch data from server by term query
+     */
+    /**
+     * Array of option items
+     */
+    options: _react.PropTypes.arrayOf(_react.PropTypes.shape({
+        id: SelectPropTypes.optionId.isRequired,
+        text: SelectPropTypes.selection.isRequired
+    })),
+    // TODO: validate request object
+    request: _react.PropTypes.shape({
+        delay: _react.PropTypes.number, // default 3000
+        endpoint: _react.PropTypes.string,
+        once: _react.PropTypes.bool,
+        params: _react.PropTypes.object,
+        // function that creates standart shaped object { id: number|string, text: string|element } from response data
+        responseDataFormatter: _react.PropTypes.func,
+        termQuery: _react.PropTypes.string
+    }),
     onSelect: _react.PropTypes.func,
+    placeholder: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.element]),
+    search: _react.PropTypes.shape({
+        minimumResults: _react.PropTypes.number
+    }),
     /**
      * Formats selected value to display
      * @param {object} value
@@ -357,61 +343,53 @@ Select.propTypes = {
     /**
      * Value can be set by providing option id
      */
-    value: valuePropType,
-    defaultValue: valuePropType
+    value: SelectPropTypes.optionId
 };
 Select.defaultProps = {
     allowClear: false,
     options: {}
 };
-Select.childContextTypes = {
-    lang: _react.PropTypes.object
-};
 
 var _initialiseProps = function _initialiseProps() {
-    var _this3 = this;
-
-    this.getChildContext = function () {
-        return { lang: lang };
-    };
+    var _this2 = this;
 
     this.shouldComponentUpdate = function (_ref2, nextState) {
         var data = _ref2.data,
             disabled = _ref2.disabled,
             value = _ref2.value,
             error = _ref2.error;
-        return data !== _this3._initialData || error !== _this3.props.error || disabled !== _this3.state.disabled || value !== _this3.state.value || !(0, _isEqual2.default)(nextState, _this3.state);
+        return data !== _this2._initialData || error !== _this2.props.error || disabled !== _this2.state.disabled || value !== _this2.state.value || !(0, _isEqual2.default)(nextState, _this2.state);
     };
 
-    this.getOptionsData = function (data) {
-        var formatter = _this3.props.dataFormatter;
+    this._getOptionsData = function (data) {
+        var _props2 = _this2.props,
+            formatter = _props2.dataFormatter,
+            filter = _props2.filter;
 
+        var selectData = void 0;
 
         if (!data.length) {
             return [];
         }
 
         if ((0, _isFunction2.default)(formatter)) {
-            return data.map(formatter);
-        }
-
-        // If options are strings
-        if (data.reduce(function (result, dataItem) {
+            selectData = data.map(formatter);
+        } else if (data.reduce(function (result, dataItem) {
             return result && (typeof dataItem === 'number' || typeof dataItem === 'string');
         }, true)) {
-            return data.map(function (option) {
-                return {
-                    id: option,
-                    text: option
-                };
+            // If options are strings
+            selectData = data.map(function (option) {
+                return { id: option, text: option };
             });
+        } else if ((0, _isFunction2.default)(filter)) {
+            selectData = data.filter(filter);
         }
 
-        return data;
+        return selectData || data;
     };
 
-    this.getOptionByIndex = function (dataIndex) {
-        var data = _this3.state.data;
+    this._getOptionByIndex = function (dataIndex) {
+        var data = _this2.state.data;
 
         var index = parseInt(dataIndex, 10);
 
@@ -422,26 +400,26 @@ var _initialiseProps = function _initialiseProps() {
         return data[index];
     };
 
-    this.focusContainer = function () {
+    this._focusContainer = function () {
         var x = window.scrollX;
         var y = window.scrollY;
 
-        _this3.selectContainer.focus();
+        _this2.refs.selectContainer.focus();
         window.scrollTo(x, y);
     };
 
-    this.onContainerClick = function () {
+    this._onContainerClick = function () {
 
-        if (_this3.state.disabled) {
-            _this3.setState({ dropdownOpened: false });
+        if (_this2.state.disabled) {
+            _this2.setState({ dropdownOpened: false });
             return;
         }
 
-        _this3.setState({ dropdownOpened: !_this3.state.dropdownOpened });
+        _this2.setState({ dropdownOpened: !_this2.state.dropdownOpened });
     };
 
     this.setHightlightedOption = function (direction) {
-        var _state2 = _this3.state,
+        var _state2 = _this2.state,
             data = _state2.data,
             highlighted = _state2.highlighted,
             dropdownOpened = _state2.dropdownOpened;
@@ -454,22 +432,22 @@ var _initialiseProps = function _initialiseProps() {
         if (!dropdownOpened || highlighted === null
         // highlight first option after click 'ArrowDown' on the last one
         || nextHighlighted > dataLength) {
-            _this3.setState({ highlighted: 0, dropdownOpened: true });
+            _this2.setState({ highlighted: 0, dropdownOpened: true });
             return;
         }
 
         // Highlight last option after click 'ArrowUp' on the first one
         if (nextHighlighted < 0) {
-            _this3.setState({ highlighted: dataLength });
+            _this2.setState({ highlighted: dataLength });
             return;
         }
 
         // Highlight next option
-        _this3.setState({ highlighted: nextHighlighted });
+        _this2.setState({ highlighted: nextHighlighted });
     };
 
     this.selectHighlighted = function () {
-        var _state3 = _this3.state,
+        var _state3 = _this2.state,
             data = _state3.data,
             highlighted = _state3.highlighted,
             dropdownOpened = _state3.dropdownOpened;
@@ -479,22 +457,22 @@ var _initialiseProps = function _initialiseProps() {
         if (!dropdownOpened || highlighted === null) {
 
             // Open dropdown and hightlight first item
-            _this3.setState({ dropdownOpened: true, highlighted: 0 });
+            _this2.setState({ dropdownOpened: true, highlighted: 0 });
             return;
         }
 
         // Select highlighted item
-        _this3.onSelect(data[highlighted]);
+        _this2.onSelect(data[highlighted]);
     };
 
-    this.onContainerKeyDown = function (event) {
+    this._onContainerKeyDown = function (event) {
         var KEYS = {
-            ArrowUp: _this3.setHightlightedOption.bind(null, -1),
-            ArrowDown: _this3.setHightlightedOption.bind(null, 1),
-            Enter: _this3.selectHighlighted,
+            ArrowUp: _this2.setHightlightedOption.bind(null, -1),
+            ArrowDown: _this2.setHightlightedOption.bind(null, 1),
+            Enter: _this2.selectHighlighted,
             // 'Space' key
-            ' ': _this3.selectHighlighted,
-            Escape: _this3.closeDropdown
+            ' ': _this2.selectHighlighted,
+            Escape: _this2.closeDropdown
         };
         // TODO: scroll SelectDropdown block to show highlighted item when overflows
         var key = event.key;
@@ -508,21 +486,20 @@ var _initialiseProps = function _initialiseProps() {
     };
 
     this.handleClickOutside = function () {
-        if (!_this3.state.dropdownOpened) return;
-        _this3.closeDropdown();
+        _this2.closeDropdown();
     };
 
-    this.closeDropdown = function () {
-        _this3.setState({
+    this._closeDropdown = function () {
+        _this2.setState({
             dropdownOpened: false,
             highlighted: null
         });
     };
 
-    this.onSelect = function (value) {
-        var _props2 = _this3.props,
-            name = _props2.name,
-            onSelect = _props2.onSelect;
+    this._onSelect = function (value) {
+        var _props3 = _this2.props,
+            name = _props3.name,
+            onSelect = _props3.onSelect;
 
         // Setup structure of selection event
 
@@ -536,32 +513,39 @@ var _initialiseProps = function _initialiseProps() {
             }
         };
 
-        _this3.setState({ value: value ? Object.assign({}, value) : null });
+        _this2.setState({ value: value ? Object.assign({}, value) : null });
 
         if ((0, _isFunction2.default)(onSelect)) {
             onSelect(selectionEvent);
         }
 
-        _this3.closeDropdown();
-        _this3.focusContainer();
+        _this2.closeDropdown();
+        _this2._focusContainer();
     };
 
-    this.onSelectOption = function (_ref3) {
-        var index = _ref3.target.dataset.index;
+    this._onSelectOption = function (_ref3) {
+        var index = _ref3.currentTarget.dataset.index;
 
 
         // Get selected option and pass it into onSelect method for further processing
-        var selectedOption = _this3.getOptionByIndex(index);
-        _this3.onSelect(selectedOption);
+        var selectedOption = _this2._getOptionByIndex(index);
+        _this2.onSelect(selectedOption);
     };
 
-    this.onClearSelection = function (e) {
+    this._onClearSelection = function (e) {
         e.stopPropagation();
-        _this3.onSelect(null);
+        _this2.onSelect(null);
     };
 
-    this.onGettingData = function (data) {
-        _this3.setState({ data: _this3.getOptionsData(data) });
+    this._onGettingData = function (data) {
+        _this2.setState({ data: _this2._getOptionsData(data) });
+    };
+
+    this.renderSelectionClear = function () {
+        return _react2.default.createElement('span', { className: 'react-select-selection__clear',
+            role: 'presentation',
+            onClick: _this2._onClearSelection
+        });
     };
 };
 
