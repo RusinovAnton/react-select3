@@ -12,12 +12,7 @@ var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-var SelectSearchInput = function SelectSearchInput(_ref) {
-  var onTermChange = _ref.onTermChange,
-      inputProps = _objectWithoutProperties(_ref, ['onTermChange']);
-
+var SelectSearchInput = function SelectSearchInput(props) {
   return (
     // TODO: close dropdown on esc click when SearchInput focused
     _react2.default.createElement(
@@ -32,14 +27,9 @@ var SelectSearchInput = function SelectSearchInput(_ref) {
         autoCapitalize: 'off',
         spellCheck: 'false',
         role: 'textbox'
-      }, inputProps, {
-        onChange: onTermChange }))
+      }, props))
     )
   );
-};
-
-SelectSearchInput.propTypes = {
-  onTermChange: _react2.default.PropTypes.func
 };
 
 exports.default = SelectSearchInput;

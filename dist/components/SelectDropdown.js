@@ -1,12 +1,16 @@
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
+
+var _isFunction = require('lodash/isFunction');
+
+var _isFunction2 = _interopRequireDefault(_isFunction);
 
 var _SelectSearchInput = require('./SelectSearchInput');
 
@@ -24,110 +28,116 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var lang = {
-  pending: 'Поиск...',
-  // @fixme: hardcoded minlength
-  minLength: 'Введите минимум 3 буквы',
-  loading: 'Загрузка...',
-  error: 'Не удалось получить данные!',
-  empty: 'Ничего не найдено',
-  emptyValue: '-'
+var LANG_RU = {
+    pending: 'Поиск...',
+    // @fixme: hardcoded minlength
+    minLength: 'Введите минимум 3 буквы',
+    loading: 'Загрузка...',
+    error: 'Не удалось получить данные!',
+    empty: 'Ничего не найдено',
+    emptyValue: '-'
 };
 
 var SelectDropdown = function (_Component) {
-  _inherits(SelectDropdown, _Component);
+    _inherits(SelectDropdown, _Component);
 
-  function SelectDropdown() {
-    _classCallCheck(this, SelectDropdown);
+    function SelectDropdown(props) {
+        _classCallCheck(this, SelectDropdown);
 
-    var _this = _possibleConstructorReturn(this, (SelectDropdown.__proto__ || Object.getPrototypeOf(SelectDropdown)).apply(this, arguments));
+        var _this = _possibleConstructorReturn(this, (SelectDropdown.__proto__ || Object.getPrototypeOf(SelectDropdown)).call(this, props));
 
-    _this.onFilterTermChange = function (_ref) {
-      var filterTerm = _ref.target.value;
+        _initialiseProps.call(_this);
 
-      if (!filterTerm) {
-        filterTerm = null; // eslint-disable-line no-param-reassign
-      }
+        var options = props.options;
 
-      _this.setState({ filterTerm: filterTerm });
-    };
+        _this.state = Object.assign(SelectDropdown.initialState(), { options: options });
+        return _this;
+    }
 
-    _this.componentWillReceiveProps = function (_ref2) {
-      var data = _ref2.data;
-
-      _this.setState(Object.assign(SelectDropdown.getInitialState(), { optionsData: data }));
-    };
-
-    _this.componentWillUpdate = function (_ref3, _ref4) {
-      var data = _ref3.data;
-      var filterTerm = _ref4.filterTerm;
-
-      if (filterTerm === _this.state.filterTerm) return;
-      if (!filterTerm) {
-        _this.setState(Object.assign(SelectDropdown.getInitialState(), { optionsData: data }));
-        return;
-      }
-
-      var filterRegExp = new RegExp(filterTerm, 'gi');
-      var optionsData = data.filter(function (_ref5) {
-        var text = _ref5.text;
-        return filterRegExp.test(text);
-      });
-
-      _this.setState({ optionsData: optionsData });
-    };
-
-    _this.render = function () {
-      if (!_this.props.dropdownOpened) {
-        return null;
-      }
-
-      var optionsData = _this.state.optionsData;
-      var _this$props = _this.props,
-          highlighted = _this$props.highlighted,
-          onSelect = _this$props.onSelect,
-          searchShow = _this$props.searchShow,
-          value = _this$props.value,
-          onContainerKeyDown = _this$props.onContainerKeyDown;
-
-
-      return _react2.default.createElement(
-        'span',
-        { className: 'dropdown-wrapper' },
-        _react2.default.createElement(
-          'span',
-          { className: 'react-select-dropdown' },
-          searchShow && _react2.default.createElement(_SelectSearchInput2.default, { onTermChange: _this.onFilterTermChange, onKeyDown: onContainerKeyDown }),
-          _react2.default.createElement(_SelectOptionsList2.default, { data: optionsData, value: value, highlighted: highlighted, onSelect: onSelect })
-        )
-      );
-    };
-
-    _this.state = Object.assign(SelectDropdown.getInitialState(), { optionsData: _this.props.data });
-    return _this;
-  }
-
-  return SelectDropdown;
+    return SelectDropdown;
 }(_react.Component);
 
 SelectDropdown.propTypes = {
-  data: _react.PropTypes.array,
-  dropdownOpened: _react.PropTypes.bool,
-  highlighted: _react.PropTypes.number,
-  onContainerKeyDown: _react.PropTypes.func,
-  onSelect: _react.PropTypes.func,
-  searchShow: _react.PropTypes.bool,
-  value: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number, _react.PropTypes.shape({
-    id: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.string]),
-    text: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.string])
-  })])
+    highlighted: _react.PropTypes.bool,
+    lang: _react.PropTypes.object,
+    isPending: _react.PropTypes.bool,
+    onSearch: _react.PropTypes.func,
+    onSelect: _react.PropTypes.func.isRequired,
+    options: _react.PropTypes.array.isRequired,
+    search: _react.PropTypes.object.isRequired,
+    selectedOption: _react.PropTypes.object.isRequired
 };
 
-SelectDropdown.getInitialState = function () {
-  return {
-    filterTerm: null,
-    optionsData: null
-  };
+SelectDropdown.initialState = function () {
+    return {
+        filterTerm: null,
+        options: []
+    };
+};
+
+var _initialiseProps = function _initialiseProps() {
+    var _this2 = this;
+
+    this._onFilterTermChange = function (_ref) {
+        var term = _ref.target.value;
+        var onSearch = _this2.props.onSearch;
+
+        var filterTerm = term || null;
+
+        if ((0, _isFunction2.default)(onSearch)) {
+            onSearch(filterTerm);
+        } else {
+            _this2.setState({ filterTerm: filterTerm });
+        }
+    };
+
+    this.componentWillUpdate = function (_ref2, _ref3) {
+        var propsOptions = _ref2.options;
+        var filterTerm = _ref3.filterTerm;
+
+        if (filterTerm === _this2.state.filterTerm) {
+            return;
+        } else if (!filterTerm) {
+            _this2.setState(Object.assign(SelectDropdown.initialState(), { options: options }));
+        } else {
+            (function () {
+                var filterRegExp = new RegExp(filterTerm, 'gi');
+                var options = propsOptions.filter(function (_ref4) {
+                    var text = _ref4.text;
+                    return filterRegExp.test(text);
+                });
+
+                _this2.setState({ options: options });
+            })();
+        }
+    };
+
+    this.render = function () {
+        // TODO: fetch dropdown
+        // TODO: language
+        var _props = _this2.props,
+            highlighted = _props.highlighted,
+            lang = _props.lang,
+            isPending = _props.isPending,
+            onSelect = _props.onSelect,
+            search = _props.search,
+            selectedOption = _props.selectedOption;
+        var options = _this2.state.options;
+
+        var language = Object.assign({}, LANG_RU, lang);
+        var showSearch = search.minimumResults <= _this2.props.options.length;
+
+        return _react2.default.createElement(
+            'span',
+            { className: 'dropdown-wrapper' },
+            _react2.default.createElement(
+                'span',
+                { className: 'react-select-dropdown' },
+                showSearch && _react2.default.createElement(_SelectSearchInput2.default, { onChange: _this2._onFilterTermChange }),
+                _react2.default.createElement(_SelectOptionsList2.default, { options: options, selectedOption: selectedOption, highlighted: highlighted, onSelect: onSelect })
+            )
+        );
+    };
 };
 
 exports.default = SelectDropdown;

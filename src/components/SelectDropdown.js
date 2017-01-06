@@ -1,83 +1,87 @@
 import React, { Component, PropTypes } from 'react'
 
+import isFunction from 'lodash/isFunction'
+
 import SelectSearchInput from './SelectSearchInput'
 import SelectOptionsList from './SelectOptionsList'
 
 
+const LANG_RU = {
+    pending: 'Поиск...',
+    // @fixme: hardcoded minlength
+    minLength: 'Введите минимум 3 буквы',
+    loading: 'Загрузка...',
+    error: 'Не удалось получить данные!',
+    empty: 'Ничего не найдено',
+    emptyValue: '-',
+}
+
 class SelectDropdown extends Component {
-
-  static propTypes = {
-    data: PropTypes.array,
-    dropdownOpened: PropTypes.bool,
-    highlighted: PropTypes.number,
-    onContainerKeyDown: PropTypes.func,
-    onSelect: PropTypes.func,
-    searchShow: PropTypes.bool,
-    value: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number,
-      PropTypes.shape({
-        id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-        text: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-      })
-    ]),
-  }
-
-  static getInitialState = () => ({
-    filterTerm: null,
-    optionsData: null,
-  })
-
-  constructor() {
-    super(...arguments)
-
-    this.state = Object.assign(SelectDropdown.getInitialState(), { optionsData: this.props.data })
-  }
-
-  onFilterTermChange = ({ target: { value: filterTerm } }) => {
-    if (!filterTerm) {
-      filterTerm = null // eslint-disable-line no-param-reassign
+    static propTypes = {
+        highlighted: PropTypes.bool,
+        lang: PropTypes.object,
+        isPending: PropTypes.bool,
+        onSearch: PropTypes.func,
+        onSelect: PropTypes.func.isRequired,
+        options: PropTypes.array.isRequired,
+        search: PropTypes.object.isRequired,
+        selectedOption: PropTypes.object.isRequired,
     }
 
-    this.setState({ filterTerm })
-  }
+    static initialState = () => ({
+        filterTerm: null,
+        options: [],
+    })
 
-  componentWillReceiveProps = ({ data }) => {
-    this.setState(Object.assign(SelectDropdown.getInitialState(), { optionsData: data }))
-  }
+    constructor(props) {
+        super(props)
 
-  componentWillUpdate = ({ data }, { filterTerm }) => {
-    if (filterTerm === this.state.filterTerm) return
-    if (!filterTerm) {
-      this.setState(Object.assign(SelectDropdown.getInitialState(), { optionsData: data }))
-      return
+        const { options } = props
+        this.state = Object.assign(SelectDropdown.initialState(), { options })
     }
 
-    const filterRegExp = new RegExp(filterTerm, 'gi')
-    const optionsData = data.filter(({ text }) => filterRegExp.test(text))
+    _onFilterTermChange = ({ target: { value: term } }) => {
+        const { onSearch } = this.props
+        const filterTerm = term || null
 
-    this.setState({ optionsData })
-  }
-
-  render = () => {
-    if (!this.props.dropdownOpened) {
-      return null
+        if (isFunction(onSearch)) {
+            onSearch(filterTerm)
+        } else {
+            this.setState({ filterTerm })
+        }
     }
 
-    const { optionsData } = this.state
-    const { highlighted, onSelect, searchShow, value, onContainerKeyDown } = this.props
+    componentWillUpdate = ({ options: propsOptions }, { filterTerm }) => {
+        if (filterTerm === this.state.filterTerm) {
+            return
+        } else if (!filterTerm) {
+            this.setState(Object.assign(SelectDropdown.initialState(), { options }))
+        } else {
+            const filterRegExp = new RegExp(filterTerm, 'gi')
+            const options = propsOptions.filter(({ text }) => filterRegExp.test(text))
 
-    return (
-      <span className="dropdown-wrapper">
-        <span className="react-select-dropdown">
-          { searchShow &&
-          <SelectSearchInput onTermChange={ this.onFilterTermChange } onKeyDown={ onContainerKeyDown }/>
-          }
-          <SelectOptionsList {...{ data: optionsData, value, highlighted, onSelect }}/>
-        </span>
-      </span>
-    )
-  }
+            this.setState({ options })
+        }
+    }
+
+    render = () => {
+        // TODO: fetch dropdown
+        // TODO: language
+        const { highlighted, lang, isPending, onSelect, search, selectedOption } = this.props
+        const { options } = this.state
+        const language = Object.assign({}, LANG_RU, lang)
+        const showSearch = search.minimumResults <= this.props.options.length
+        
+
+        return ( 
+            <span className="dropdown-wrapper">
+                <span className="react-select-dropdown"> 
+                    { showSearch && <SelectSearchInput onChange={ this._onFilterTermChange } /> } 
+                    <SelectOptionsList {...{ options, selectedOption, highlighted, onSelect }} /> 
+                </span> 
+            </span>
+        )
+    }
 }
 
 export default SelectDropdown

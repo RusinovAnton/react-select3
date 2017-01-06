@@ -4,456 +4,377 @@ import classNames from 'classnames'
 import isEqual from 'lodash/isEqual'
 import isFunction from 'lodash/isFunction'
 import provideClickOutside from 'react-click-outside'
+import uniqueId from 'lodash/uniqueId'
 
 import SelectDropdown from './SelectDropdown'
-import SelectFetchDropdown from './SelectFetchDropdown'
-import SelectionArrow from './SelectionArrow'
-import SelectionClear from './SelectionClear'
+import SelectError from './SelectError'
 import SelectSelection from './SelectSelection'
 
 
-// @fixme: hardcoded lang provider
-export const lang = {
-    pending: 'Поиск...',
-    // @fixme: hardcoded minlength
-    minLength: 'Введите минимум 3 буквы',
-    loading: 'Загрузка...',
-    error: 'Не удалось получить данные!',
-    empty: 'Ничего не найдено',
-    emptyValue: '-',
+export const selectPropTypes = {
+    optionId: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string,
+    ]),
+    selection: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.element,
+    ]),
 }
-
-const valuePropType = PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-    PropTypes.shape({
-        id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-        text: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    })
-])
 
 // @fixme TODO: uncontrollable value
 // TODO: optgroups
 // TODO: options & optgroups as children
 // TODO: dissmissable
+// TODO: lang module
 class Select extends Component {
-
-  static propTypes = {
-    /**
-     * Whether allow user to clear select or not
-     */
-    allowClear: PropTypes.bool,
-    /**
-     * Array of option items
-     */
-    data: PropTypes.oneOfType([
-      PropTypes.arrayOf(PropTypes.string),
-      PropTypes.arrayOf(PropTypes.object),
-    ]),
-    /**
-     * formats incoming data to get needed format { id: <Number>, text: <String> }
-     * @param data item
-     */
-    dataFormatter: PropTypes.func,
-    filter: PropTypes.func,
-    /**
-     * Provide needed options to fetch data from server by term query
-     */
-    // TODO: validate request object
-    request: PropTypes.shape({
-      delay: PropTypes.number,
-      endpoint: PropTypes.string,
-      once: PropTypes.bool,
-      params: PropTypes.object,
-      responseDataFormatter: PropTypes.func,
-      termQuery: PropTypes.string,
-    }),
-    options: PropTypes.shape({
-      placeholder: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
-      width: PropTypes.string,
-      minimumResultsForSearch: PropTypes.number,
-      /**
-       * Defines whether SelectDropdown should be opened above or below the container.
-       * default: 'below'
-       */
-      // TODO: define position automatically depends on SelectContainer position in the viewport
-      dropdownVerticalPosition: PropTypes.oneOf(['above', 'below']),
-      dropdownHorizontalPosition: PropTypes.oneOf(['left', 'right'])
-    }),
-    /**
-     * You can provide error message to display or just boolean to highlight error
-     */
-    error: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
-    disabled: PropTypes.bool,
-    name: PropTypes.string,
-    onSelect: PropTypes.func,
-    /**
-     * Formats selected value to display
-     * @param {object} value
-     */
-    selectionFormatter: PropTypes.func,
-    /**
-     * Value can be set by providing option id
-     */
-    value: valuePropType,
-    defaultValue: valuePropType,
-  }
-
-  static defaultProps = {
-    allowClear: false,
-    options: {}
-  }
-
-  constructor(props, context) { // eslint-disable-line consistent-return
-    super(props, context)
-    const { value, defaultValue, data } = props
-
-    // Validate data object
-    if (typeof data !== 'undefined' && !Array.isArray(data)) {
-      throw new Error('Provided data prop is invalid. Expected an array of option items')
+    static propTypes = {
+        /**
+         * Whether allow user to clear select or not
+         */
+        allowClear: PropTypes.bool,
+        /**
+         * Whether to focus itself on mount
+         */
+        autoFocus: PropTypes.bool,
+        defaultValue: selectPropTypes.optionId,
+        disabled: PropTypes.bool,
+        /**
+         * You can provide error message to display or just boolean to highlight select container with error styles
+         */
+        error: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+        lang: PropTypes.object,
+        layout: PropTypes.shape({
+            width: PropTypes.string,
+            /**
+             * Defines whether SelectDropdown should be opened above or below the container.
+             * default: 'below'
+             */
+            // TODO: define position automatically depends on SelectContainer position in the viewport
+            dropdownVerticalPosition: PropTypes.oneOf(['above', 'below']),
+            dropdownHorizontalPosition: PropTypes.oneOf(['left', 'right'])
+        }),
+        name: PropTypes.string,
+        /**
+         * Provide needed options to fetch data from server by term query
+         */
+        /**
+         * Array of option items
+         */
+        options: PropTypes.arrayOf(PropTypes.shape({
+            id: selectPropTypes.optionId.isRequired,
+            text: selectPropTypes.selection.isRequired,
+        })),
+        // TODO: validate request object
+        request: PropTypes.shape({
+            delay: PropTypes.number, // default 3000
+            endpoint: PropTypes.string,
+            once: PropTypes.bool,
+            params: PropTypes.object,
+            // function that creates standart shaped object { id: number|string, text: string|element } from response data
+            responseDataFormatter: PropTypes.func,
+            termQuery: PropTypes.string,
+        }),
+        onSelect: PropTypes.func,
+        placeholder: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
+        search: PropTypes.shape({
+            minimumResults: PropTypes.number,
+        }),
+        /**
+         * Value can be set by providing option id
+         */
+        value: selectPropTypes.optionId,
     }
 
-    // Validate value prop
-    if (!!value && !(typeof value !== 'number' || typeof value !== 'string')) {
-      throw new Error('Provided value prop is invalid. Expected option id or option text')
+    static defaultProps = {
+        allowClear: false,
+        disabled: false,
+        lang: {},
+        layout: {
+            dropdownHorizontalPosition: 'left',
+            dropdownVerticalPosition: 'below',
+            width: '245px',
+        },
+        name: uniqueId('reactSelect_'),
+        options: [],
+        search: {
+            minimumResults: 20,
+        },
     }
 
-    // Keep ref for incoming data array
-    this._initialData = data
-
-    // @fixme
-    // setup initial state object
-    this._initialState = {
-      value: value || defaultValue,
-      data: data && this.getOptionsData(data),
-      highlighted: null,
-      dropdownOpened: false,
-    }
-
-    /**
-     * @type {{
-     *   value: *,
-     *   data: object,
-     *   disabled: boolean,
-     *   dropdownOpened: boolean,
-     *   searchShow: boolean
-     * }}
-     */
-    this.state = Object.assign({}, this._initialState)
-  }
-
-  static childContextTypes = {
-    lang: PropTypes.object,
-  }
-
-  getChildContext = () => ({ lang })
-
-  componentWillReceiveProps({ data, value, filter }) {
-    const { request } = this.props
-    const state = Object.assign({}, this._initialState, { value: this.state.value, data: this.state.data })
-    let willUpdate = false
-
-    // Set new data if update
-    if (data && data !== this._initialData) {
-      // Set new data as initial
-      this._initialData = data
-      state.data = this.getOptionsData(data)
-
-      willUpdate = true
-    }
-
-    if (filter !== this.props.filter && isFunction(filter)) {
-      state.data = state.data.filter(filter)
-    }
-
-    // Set new value if updated
-    if (!!value && value !== this.state.value) {
-      state.value = value
-
-      willUpdate = true
-    } else if (value === null) {
-      state.value = null
-      if (request && !request.once) {
-        state.data = null
-      }
-
-      willUpdate = true
-    }
-
-    // null for reseting the value
-    if (willUpdate) {
-      this.setState(state)
-    }
-  }
-
-  shouldComponentUpdate = ({ data, disabled, value, error }, nextState) => (
-  data !== this._initialData
-  || error !== this.props.error
-  || disabled !== this.state.disabled
-  || value !== this.state.value
-  || !isEqual(nextState, this.state))
-
-  /**
-   * Process data which passed through props
-   * @param {array} data
-   * @return {*}
-   */
-  getOptionsData = data => {
-    const { dataFormatter: formatter, filter } = this.props
-    let selectData
-
-    if (!data.length) {
-      return []
-    }
-
-    if (isFunction(formatter)) {
-      selectData = data.map(formatter)
-    } else if (data.reduce((result, dataItem) => result
-        && (typeof dataItem === 'number'
-        || typeof dataItem === 'string'),
-        true)) {
-      // If options are strings
-      selectData = data.map(option => ({ id: option, text: option }))
-    } else if (isFunction(filter)) {
-      selectData = data.filter(filter)
-    }
-
-    return selectData || data
-  }
-
-  getOptionByIndex = dataIndex => {
-    const { data } = this.state
-    const index = parseInt(dataIndex, 10)
-
-    if (index > data.length || index < 0) {
-      throw new Error('Invalid index provided')
-    }
-
-    return data[index]
-  }
-
-  focusContainer = () => {
-    const x = window.scrollX
-    const y = window.scrollY
-
-    this.refs.selectContainer.focus()
-    window.scrollTo(x, y)
-  }
-
-  onContainerClick = () => {
-
-    if (this.state.disabled) {
-      this.setState({ dropdownOpened: false })
-      return
-    }
-
-    this.setState({ dropdownOpened: !this.state.dropdownOpened })
-
-  }
-
-  /**
-   * Set next highlighted option via 'ArrowUp' or 'ArrowDown' key
-   * @param {number} direction (can be -1 or 1)
-   */
-  setHightlightedOption = direction => {
-    const { data, highlighted, dropdownOpened } = this.state
-    if (!data || !data.length) return
-    const dataLength = data.length - 1
-    const nextHighlighted = highlighted + direction
-
-    // If dropdown not opened or there is no highlighted item yet
-    if (!dropdownOpened
-      || highlighted === null
-      // highlight first option after click 'ArrowDown' on the last one
-      || nextHighlighted > dataLength) {
-      this.setState({ highlighted: 0, dropdownOpened: true })
-      return
-    }
-
-    // Highlight last option after click 'ArrowUp' on the first one
-    if (nextHighlighted < 0) {
-      this.setState({ highlighted: dataLength })
-      return
-    }
-
-    // Highlight next option
-    this.setState({ highlighted: nextHighlighted })
-  }
-
-  /**
-   * Select current highlighted option via 'Space' or 'Enter' key
-   */
-  selectHighlighted = () => {
-    const { data, highlighted, dropdownOpened } = this.state
-
-    // If dropdown not opened or there is no highlighted item yet
-    if (!dropdownOpened || highlighted === null) {
-
-      // Open dropdown and hightlight first item
-      this.setState({ dropdownOpened: true, highlighted: 0 })
-      return
-    }
-
-    // Select highlighted item
-    this.onSelect(data[highlighted])
-  }
-
-  /**
-   * Handle keyboard controls
-   * @param {object} event
-   */
-  onContainerKeyDown = event => {
-    const KEYS = {
-      ArrowUp: this.setHightlightedOption.bind(null, -1),
-      ArrowDown: this.setHightlightedOption.bind(null, 1),
-      Enter: this.selectHighlighted,
-      // 'Space' key
-      ' ': this.selectHighlighted,
-      Escape: this.closeDropdown
-    }
-    // TODO: scroll SelectDropdown block to show highlighted item when overflows
-    const key = event.key
-
-    // Do nothing if other key is being clicked
-    if (!KEYS[key]) return
-
-    event.preventDefault()
-    // Handle key click
-    KEYS[key]()
-  }
-
-  /**
-   * Close SelectDropdown on click outside using 'react-click-outside' library
-   */
-  handleClickOutside = () => {
-    this.closeDropdown()
-  }
-
-  closeDropdown = () => {
-    this.setState({
-      dropdownOpened: false,
-      highlighted: null
-    })
-  }
-
-  /**
-   * Setting selected value
-   * @param {object} value - option object from data array
-   */
-  onSelect = value => {
-    const { name, onSelect } = this.props
-
-    // Setup structure of selection event
-    const selectionEvent = {
-      type: 'select',
-      target: {
-        name,
-        value: value ? value.id : null,
-        valueText: value ? value.text : null,
-        valueObj: value
-      }
-    }
-
-    this.setState({ value: value ? Object.assign({}, value) : null })
-
-    if (isFunction(onSelect)) {
-      onSelect(selectionEvent)
-    }
-
-    this.closeDropdown()
-    this.focusContainer()
-  }
-
-  /**
-   * Handle option selection via user click
-   * @param {number} index - index of option item in the data array
-   */
-  onSelectOption = ({ currentTarget: { dataset: { index } } }) => {
-
-    // Get selected option and pass it into onSelect method for further processing
-    const selectedOption = this.getOptionByIndex(index)
-    this.onSelect(selectedOption)
-
-  }
-
-  onClearSelection = (e) => {
-    e.stopPropagation()
-    this.onSelect(null)
-  }
-
-  onGettingData = data => {
-    this.setState({ data: this.getOptionsData(data) })
-  }
-
-  render() {
-    const {
-      allowClear,
-      error,
-      disabled,
-      options,
-      options: { dropdownHorizontalPosition, dropdownVerticalPosition },
-      request,
-      selectionFormatter
-    } = this.props
-    const { data, dropdownOpened, highlighted, value } = this.state
-    const clearIconVisible = (allowClear && typeof value !== 'undefined' && value !== null)
-
-    const containerClassName = classNames('select react-select-container react-select-container--default', {
-      'react-select-container--open': dropdownOpened,
-      'react-select-container--disabled': disabled,
-      'react-select-container--error': error,
-      'react-select-container--right': dropdownHorizontalPosition === 'right',
-      'has-error': error,
-      'react-select-container--above': dropdownVerticalPosition === 'above',
-      'react-select-container--below': !dropdownVerticalPosition || dropdownVerticalPosition === 'below'
+    static initialState = () => ({
+        dropdownOpened: false,
+        highlighted: null,
+        isPending: false,
+        options: [],
+        searchShow: false,
+        selectedOption: null,
     })
 
-    return (
-      <span className={ containerClassName }
-            style={{ width: options.width || '245px' }}
-            disabled={ disabled }>
-        <span ref='selectContainer'
-              className='react-select__selection react-select-selection--single'
-              tabIndex='1'
-              disabled={ disabled }
-              onClick={ !disabled && this.onContainerClick }
-              onKeyDown={ !disabled && this.onContainerKeyDown }
-              role='combobox'>
-          <SelectSelection {...{ value, data, placeholder: options.placeholder, formatter: selectionFormatter }}/>
-          { clearIconVisible && this.renderSelectionClear() }
-          <SelectionArrow/>
-        </span>
-        { request && request.endpoint ?
-          (<SelectFetchDropdown onGettingData={this.onGettingData}
-                                onSelect={ this.onSelectOption }
-                                {...{
-                                  data,
-                                  highlighted,
-                                  request,
-                                  value,
-                                  dropdownOpened,
-                                  onContainerKeyDown: this.onContainerKeyDown
-                                }}/>)
-          : (<SelectDropdown searchShow={ data && data.length >= options.minimumResultsForSearch }
-                             onSelect={ this.onSelectOption }
-                             {...{
-                               data,
-                               highlighted,
-                               value,
-                               dropdownOpened,
-                               onContainerKeyDown: this.onContainerKeyDown
-                             }}/>)
+    constructor(props, context) { // eslint-disable-line consistent-return
+        super(props, context)
+
+        const { value, defaultValue, options } = props
+
+        // Error if no options and no fetching provided 
+        // if (!options.length) {
+        //     throw new Error('There was no options provided.')
+        // }
+
+        // Validate value prop if defined
+        if (typeof value !== 'undefined' && !this._isValidValue(value)) {
+            throw new Error('Provided value prop is invalid. Expected option\'s id')
         }
-        { !dropdownOpened && typeof error === 'string' && <span className='help-block'>{ error }</span> }
-      </span>
-    )
-  }
 
-  renderSelectionClear = () =>
-    <span className="react-select-selection__clear"
-          role="presentation"
-          onClick={ this.onClearSelection }
-    />
+        /**
+         * @type {{
+         *   dropdownOpened: boolean,
+         *   highlight: *,
+         *   isPending: boolean,
+         *   searchShow: boolean,
+         *   options: array,
+         *   value: *,
+         * }}
+         */
+        this.state = Object.assign(Select.initialState(), { selectedOption: this._getOptionById(value || defaultValue), options })
+    }
+
+    componentWillReceiveProps({ disabled, options, value }) {
+        if (disabled) {
+            this._closeDropdown()
+        }
+
+        this.setState({ disabled, options, value })
+    }
+
+    shouldComponentUpdate = ({ error, disabled, options, value }, nextState) =>
+        !isEqual(options, this.state.options) || error !== this.props.error || disabled !== this.state.disabled || value !== this.state.value || !isEqual(nextState, this.state)
+
+    componentDidMount = () => {
+        if (this.props.autoFocus) {
+            this._focusContainer()
+        }
+    }
+
+    /**
+     * Close SelectDropdown on click outside using 'react-click-outside' library
+     */
+    handleClickOutside = () => {
+        this._closeDropdown()
+    }
+
+    _closeDropdown = () => {
+        this.setState({
+            dropdownOpened: false,
+            highlighted: null
+        })
+    }
+
+    _focusContainer = () => {
+        const x = window.scrollX
+        const y = window.scrollY
+
+        this.refs.selectContainer.focus()
+        window.scrollTo(x, y)
+    }
+
+    // value must be one of option's id
+    _isValidValue = value => this.props.options.some(({ id }) => value === id)
+
+    _getOptionByIndex = optionIndex => {
+        const { options } = this.state
+        const index = parseInt(optionIndex, 10)
+
+        if (index > options.length || index < 0) {
+            throw new Error('Invalid index provided')
+        }
+
+        return options[index]
+    }
+
+    _getOptionById = value => {
+        return this.props.options.find(({ id }) => id === value) || null
+    }
+
+    _onContainerClick = () => {
+        this.setState(state => {
+            const { dropdownOpened, disabled } = state
+
+            return disabled ? state : ({ dropdownOpened: !dropdownOpened })
+        })
+    }
+
+    /**
+     * Handle keyboard controls
+     * @param {object} event
+     */
+    _onContainerKeyDown = event => {
+        if (this.props.disabled) return
+
+        const KEY_FUNTIONS = {
+            ArrowUp: this._setHightlightedOption.bind(null, -1),
+            ArrowDown: this._setHightlightedOption.bind(null, 1),
+            Enter: this._selectHighlighted,
+            // 'Space' key
+            ' ': this._selectHighlighted,
+            Escape: this._closeDropdown
+        }
+
+        const { key } = event
+
+        if (!KEY_FUNTIONS[key]) return
+
+        event.preventDefault()
+            // Handle key click 
+        KEY_FUNTIONS[key]()
+    }
+
+    _onClearSelection = (e) => {
+        e.stopPropagation()
+        this._onSelect(null)
+    }
+
+    _onSearchTermChange = term => {
+        // TODO: request options from server
+        // const { request } = this.props
+
+        console.log(term)
+    }
+
+    /**
+     * Setting selected value
+     * @param {object} value - option object from data array
+     */
+    _onSelect = option => {
+        const { name, onSelect } = this.props
+            // Setup structure of selection event
+        const value = option ? option.id : null
+        const selectionEvent = {
+            type: 'select',
+            target: {
+                name,
+                option,
+                value,
+            }
+        }
+
+        this.setState({ value })
+
+        if (isFunction(onSelect)) {
+            onSelect(selectionEvent)
+        }
+
+        this._closeDropdown()
+        this._focusContainer()
+    }
+
+    /**
+     * Handle option selection via user click
+     * @param {number} index - index of option item in the data array
+     */
+    _onSelectOption = index => {
+        // Get selected option and pass it into onSelect method for further processing
+        const selectedOption = this._getOptionByIndex(index)
+
+        this._onSelect(selectedOption)
+    }
+
+
+    /**
+     * Set next highlighted option via 'ArrowUp' or 'ArrowDown' key
+     * @param {number} direction (can be -1 or 1)
+     */
+    _setHightlightedOption = direction => {
+        const { options, disabled, highlighted, dropdownOpened } = this.state
+
+        // do nothing if disabled or there are no options
+        if (disabled || !options || !options.length) return
+
+        const optionsLength = options.length - 1
+        const nextHighlighted = highlighted ? highlighted + direction : 0
+
+        // TODO: scroll SelectDropdown block to show highlighted item when overflows
+        // If dropdown not opened or there is no highlighted item yet
+        if (!dropdownOpened || highlighted === null
+            // highlight first option after click 'ArrowDown' on the last one
+            || nextHighlighted > optionsLength) {
+            this.setState({ highlighted: 0, dropdownOpened: true })
+        } else if (nextHighlighted < 0) {
+            // Highlight last option after click 'ArrowUp' on the first one
+            this.setState({ highlighted: optionsLength })
+        } else {
+            // Highlight next option
+            this.setState({ highlighted: nextHighlighted })
+        }
+    }
+
+    /**
+     * Select current highlighted option
+     */
+    _selectHighlighted = () => {
+        const { options, highlighted, dropdownOpened } = this.state
+
+        // If dropdown not opened or there is no highlighted item yet
+        if (!dropdownOpened || highlighted === null) {
+
+            // Open dropdown and hightlight first item
+            this.setState({ dropdownOpened: true, highlighted: 0 })
+        } else {
+            // Select highlighted item
+            this._onSelect(options[highlighted])
+        }
+    }
+
+    render() {
+        const {
+            allowClear,
+            error,
+            disabled,
+            placeholder,
+            search,
+            lang,
+            layout: { width, dropdownHorizontalPosition, dropdownVerticalPosition },
+            request,
+        } = this.props
+        const { dropdownOpened, highlighted, isPending, options, selectedOption } = this.state
+        const clearable = (allowClear && typeof selectedValue !== 'undefined' && selectedValue !== null)
+        const selectContainerClassName = classNames('select react-select-container react-select-container--default', {
+            'react-select-container--above': dropdownVerticalPosition === 'above',
+            'react-select-container--below': !dropdownVerticalPosition || dropdownVerticalPosition === 'below',
+            'react-select-container--disabled': disabled,
+            'react-select-container--error has-error': error,
+            'react-select-container--open': dropdownOpened,
+            'react-select-container--right': dropdownHorizontalPosition === 'right',
+        })
+        const isSearchOnRequest = request && !request.once
+
+        return ( 
+            <span ref='selectContainer'
+                  className={ selectContainerClassName }
+                  style={{ width }}
+                  disabled={ disabled }
+                  tabIndex='1'
+                  role='combobox'
+                  onClick={ this._onContainerClick }
+                  onKeyDown={ this._onContainerKeyDown }>
+                <SelectSelection {... { clearable, selection: selectedOption.text, placeholder, onClearSelection: this._onClearSelection } } /> 
+                {
+                    dropdownOpened ?
+                        <SelectDropdown {... {
+                            highlighted,
+                            lang,
+                            isPending,
+                            onSearch: isSearchOnRequest ? this._onSearchTermChange : null,
+                            onSelect: this._onSelectOption,
+                            options,
+                            search,
+                            selectedOption,
+                        }} />
+                        : <SelectError error={ error } />
+                }
+             </span>
+        )
+    }
 }
 
 export default provideClickOutside(Select)

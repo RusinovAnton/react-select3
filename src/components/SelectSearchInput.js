@@ -1,6 +1,7 @@
 import React from 'react'
 
-const SelectSearchInput = ({ onTermChange, ...inputProps }) => (
+
+const SelectSearchInput = (props) => (
   // TODO: close dropdown on esc click when SearchInput focused
   <span className='react-select-search react-select-search--dropdown'>
       <input className='react-select-search__field'
@@ -12,13 +13,8 @@ const SelectSearchInput = ({ onTermChange, ...inputProps }) => (
              autoCapitalize='off'
              spellCheck='false'
              role='textbox'
-             {...inputProps}
-             onChange={ onTermChange }/>
+             {...props}/>
   </span>
 )
-
-SelectSearchInput.propTypes = {
-  onTermChange: React.PropTypes.func
-}
 
 export default SelectSearchInput
