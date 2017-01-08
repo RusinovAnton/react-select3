@@ -5,22 +5,12 @@ import isEqual from 'lodash/isEqual'
 import isFunction from 'lodash/isFunction'
 import provideClickOutside from 'react-click-outside'
 import uniqueId from 'lodash/uniqueId'
+import { selectPropTypes } from '../shared/selectPropTypes'
 
 import SelectDropdown from './SelectDropdown'
 import SelectError from './SelectError'
 import SelectSelection from './SelectSelection'
 
-
-export const selectPropTypes = {
-    optionId: PropTypes.oneOfType([
-        PropTypes.number,
-        PropTypes.string,
-    ]),
-    selection: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.element,
-    ]),
-}
 
 // @fixme TODO: uncontrollable value
 // TODO: optgroups
@@ -116,7 +106,7 @@ class Select extends Component {
 
         const { value, defaultValue, options } = props
 
-        // Error if no options and no fetching provided 
+        // Error if no options and no fetching provided
         // if (!options.length) {
         //     throw new Error('There was no options provided.')
         // }
@@ -136,7 +126,10 @@ class Select extends Component {
          *   value: *,
          * }}
          */
-        this.state = Object.assign(Select.initialState(), { selectedOption: this._getOptionById(value || defaultValue), options })
+        this.state = Object.assign(Select.initialState(), {
+            selectedOption: this._getOptionById(value || defaultValue),
+            options
+        })
     }
 
     componentWillReceiveProps({ disabled, options, value }) {
@@ -147,8 +140,14 @@ class Select extends Component {
         this.setState({ disabled, options, value })
     }
 
-    shouldComponentUpdate = ({ error, disabled, options, value }, nextState) =>
-        !isEqual(options, this.state.options) || error !== this.props.error || disabled !== this.state.disabled || value !== this.state.value || !isEqual(nextState, this.state)
+    shouldComponentUpdate = ({ error, disabled, options, value }, nextState) => (
+        !isEqual(options, this.state.options)
+        || error !== this.props.error
+        || disabled !== this.state.disabled
+        || value !== this.state.value
+        || !isEqual(nextState, this.state)
+    )
+
 
     componentDidMount = () => {
         if (this.props.autoFocus) {
@@ -174,16 +173,23 @@ class Select extends Component {
         const x = window.scrollX
         const y = window.scrollY
 
-        this.refs.selectContainer.focus()
         window.scrollTo(x, y)
+        if (this.refs.selectContainer) {
+            this.refs.selectContainer.focus()
+        }
     }
 
     // value must be one of option's id
     _isValidValue = value => this.props.options.some(({ id }) => value === id)
 
-    _getOptionByIndex = optionIndex => {
+    /**
+     * Returns option object from options array by given index
+     * @param {number} index
+     * @return {object} <option>
+     * @private
+     */
+    _getOptionByIndex = index => {
         const { options } = this.state
-        const index = parseInt(optionIndex, 10)
 
         if (index > options.length || index < 0) {
             throw new Error('Invalid index provided')
@@ -193,7 +199,7 @@ class Select extends Component {
     }
 
     _getOptionById = value => {
-        return this.props.options.find(({ id }) => id === value) || null
+        return this.props.options.find(({ id }) => id == value) || null
     }
 
     _onContainerClick = () => {
@@ -225,7 +231,7 @@ class Select extends Component {
         if (!KEY_FUNTIONS[key]) return
 
         event.preventDefault()
-            // Handle key click 
+        // Handle key click
         KEY_FUNTIONS[key]()
     }
 
@@ -247,7 +253,7 @@ class Select extends Component {
      */
     _onSelect = option => {
         const { name, onSelect } = this.props
-            // Setup structure of selection event
+        // Setup structure of selection event
         const value = option ? option.id : null
         const selectionEvent = {
             type: 'select',
@@ -258,7 +264,7 @@ class Select extends Component {
             }
         }
 
-        this.setState({ value })
+        this.setState({ selectedOption: option })
 
         if (isFunction(onSelect)) {
             onSelect(selectionEvent)
@@ -348,7 +354,7 @@ class Select extends Component {
         })
         const isSearchOnRequest = request && !request.once
 
-        return ( 
+        return (
             <span ref='selectContainer'
                   className={ selectContainerClassName }
                   style={{ width }}
@@ -357,7 +363,12 @@ class Select extends Component {
                   role='combobox'
                   onClick={ this._onContainerClick }
                   onKeyDown={ this._onContainerKeyDown }>
-                <SelectSelection {... { clearable, selection: selectedOption.text, placeholder, onClearSelection: this._onClearSelection } } /> 
+                <SelectSelection {... {
+                    clearable,
+                    selection: selectedOption && selectedOption.text,
+                    placeholder,
+                    onClearSelection: this._onClearSelection
+                } } />
                 {
                     dropdownOpened ?
                         <SelectDropdown {... {
@@ -370,7 +381,7 @@ class Select extends Component {
                             search,
                             selectedOption,
                         }} />
-                        : <SelectError error={ error } />
+                        : <SelectError error={ error }/>
                 }
              </span>
         )

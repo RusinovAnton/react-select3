@@ -27,7 +27,7 @@ var SelectOptionsList = function SelectOptionsList(_ref) {
             isHidden = _ref2.isHidden;
 
         if (isHidden) return null;
-        var isSelected = typeof selectedOption !== 'undefined' && selectedOption.id === id;
+        var isSelected = typeof selectedOption !== 'undefined' && selectedOption !== null && selectedOption.id === id;
         var optionClassName = (0, _classnames2.default)('react-select-results__option', {
             'react-select-results--selected': isSelected,
             'react-select-results__option--highlighted': i === highlighted

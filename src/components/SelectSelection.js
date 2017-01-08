@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
-import { selectPropTypes } from './Select'
+
+import { selectPropTypes } from '../shared/selectPropTypes'
 import classNames from 'classnames'
 
 
@@ -19,7 +20,7 @@ const SelectSelection = ({ clearable, selection = null, placeholder = null, onCl
       )}
       <span className="react-select-selection__arrow" role="presentation"><b/></span>
   </span>
-) 
+)
 
 SelectSelection.propTypes = {
     clearable: PropTypes.bool,

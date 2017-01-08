@@ -8,7 +8,7 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Select = require('./Select');
+var _selectPropTypes = require('../shared/selectPropTypes');
 
 var _classnames = require('classnames');
 
@@ -51,8 +51,8 @@ var SelectSelection = function SelectSelection(_ref) {
 SelectSelection.propTypes = {
   clearable: _react.PropTypes.bool,
   onClearSelection: _react.PropTypes.func,
-  placeholder: _Select.selectPropTypes.selection,
-  selection: _Select.selectPropTypes.selection
+  placeholder: _selectPropTypes.selectPropTypes.selection,
+  selection: _selectPropTypes.selectPropTypes.selection
 };
 
 exports.default = SelectSelection;

@@ -3,7 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.selectPropTypes = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -31,6 +30,8 @@ var _uniqueId = require('lodash/uniqueId');
 
 var _uniqueId2 = _interopRequireDefault(_uniqueId);
 
+var _selectPropTypes = require('../shared/selectPropTypes');
+
 var _SelectDropdown = require('./SelectDropdown');
 
 var _SelectDropdown2 = _interopRequireDefault(_SelectDropdown);
@@ -51,17 +52,11 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var selectPropTypes = exports.selectPropTypes = {
-    optionId: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.string]),
-    selection: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.element])
-};
-
 // @fixme TODO: uncontrollable value
 // TODO: optgroups
 // TODO: options & optgroups as children
 // TODO: dissmissable
 // TODO: lang module
-
 var Select = function (_Component) {
     _inherits(Select, _Component);
 
@@ -77,7 +72,7 @@ var Select = function (_Component) {
             defaultValue = props.defaultValue,
             options = props.options;
 
-        // Error if no options and no fetching provided 
+        // Error if no options and no fetching provided
         // if (!options.length) {
         //     throw new Error('There was no options provided.')
         // }
@@ -98,7 +93,10 @@ var Select = function (_Component) {
          *   value: *,
          * }}
          */
-        _this.state = Object.assign(Select.initialState(), { selectedOption: _this._getOptionById(value || defaultValue), options: options });
+        _this.state = Object.assign(Select.initialState(), {
+            selectedOption: _this._getOptionById(value || defaultValue),
+            options: options
+        });
         return _this;
     }
 
@@ -122,6 +120,14 @@ var Select = function (_Component) {
 
 
         // value must be one of option's id
+
+
+        /**
+         * Returns option object from options array by given index
+         * @param {number} index
+         * @return {object} <option>
+         * @private
+         */
 
 
         /**
@@ -195,7 +201,12 @@ var Select = function (_Component) {
                     role: 'combobox',
                     onClick: this._onContainerClick,
                     onKeyDown: this._onContainerKeyDown },
-                _react2.default.createElement(_SelectSelection2.default, { clearable: clearable, selection: selectedOption.text, placeholder: placeholder, onClearSelection: this._onClearSelection }),
+                _react2.default.createElement(_SelectSelection2.default, {
+                    clearable: clearable,
+                    selection: selectedOption && selectedOption.text,
+                    placeholder: placeholder,
+                    onClearSelection: this._onClearSelection
+                }),
                 dropdownOpened ? _react2.default.createElement(_SelectDropdown2.default, {
                     highlighted: highlighted,
                     lang: lang,
@@ -222,7 +233,7 @@ Select.propTypes = {
      * Whether to focus itself on mount
      */
     autoFocus: _react.PropTypes.bool,
-    defaultValue: selectPropTypes.optionId,
+    defaultValue: _selectPropTypes.selectPropTypes.optionId,
     disabled: _react.PropTypes.bool,
     /**
      * You can provide error message to display or just boolean to highlight select container with error styles
@@ -247,8 +258,8 @@ Select.propTypes = {
      * Array of option items
      */
     options: _react.PropTypes.arrayOf(_react.PropTypes.shape({
-        id: selectPropTypes.optionId.isRequired,
-        text: selectPropTypes.selection.isRequired
+        id: _selectPropTypes.selectPropTypes.optionId.isRequired,
+        text: _selectPropTypes.selectPropTypes.selection.isRequired
     })),
     // TODO: validate request object
     request: _react.PropTypes.shape({
@@ -268,7 +279,7 @@ Select.propTypes = {
     /**
      * Value can be set by providing option id
      */
-    value: selectPropTypes.optionId
+    value: _selectPropTypes.selectPropTypes.optionId
 };
 Select.defaultProps = {
     allowClear: false,
@@ -329,8 +340,10 @@ var _initialiseProps = function _initialiseProps() {
         var x = window.scrollX;
         var y = window.scrollY;
 
-        _this2.refs.selectContainer.focus();
         window.scrollTo(x, y);
+        if (_this2.refs.selectContainer) {
+            _this2.refs.selectContainer.focus();
+        }
     };
 
     this._isValidValue = function (value) {
@@ -340,10 +353,9 @@ var _initialiseProps = function _initialiseProps() {
         });
     };
 
-    this._getOptionByIndex = function (optionIndex) {
+    this._getOptionByIndex = function (index) {
         var options = _this2.state.options;
 
-        var index = parseInt(optionIndex, 10);
 
         if (index > options.length || index < 0) {
             throw new Error('Invalid index provided');
@@ -355,7 +367,7 @@ var _initialiseProps = function _initialiseProps() {
     this._getOptionById = function (value) {
         return _this2.props.options.find(function (_ref4) {
             var id = _ref4.id;
-            return id === value;
+            return id == value;
         }) || null;
     };
 
@@ -387,7 +399,7 @@ var _initialiseProps = function _initialiseProps() {
         if (!KEY_FUNTIONS[key]) return;
 
         event.preventDefault();
-        // Handle key click 
+        // Handle key click
         KEY_FUNTIONS[key]();
     };
 
@@ -419,7 +431,7 @@ var _initialiseProps = function _initialiseProps() {
             }
         };
 
-        _this2.setState({ value: value });
+        _this2.setState({ selectedOption: option });
 
         if ((0, _isFunction2.default)(onSelect)) {
             onSelect(selectionEvent);

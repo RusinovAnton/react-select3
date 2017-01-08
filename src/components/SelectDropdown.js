@@ -18,14 +18,14 @@ const LANG_RU = {
 
 class SelectDropdown extends Component {
     static propTypes = {
-        highlighted: PropTypes.bool,
+        highlighted: PropTypes.number,
         lang: PropTypes.object,
         isPending: PropTypes.bool,
         onSearch: PropTypes.func,
         onSelect: PropTypes.func.isRequired,
         options: PropTypes.array.isRequired,
         search: PropTypes.object.isRequired,
-        selectedOption: PropTypes.object.isRequired,
+        selectedOption: PropTypes.object,
     }
 
     static initialState = () => ({
@@ -51,6 +51,14 @@ class SelectDropdown extends Component {
         }
     }
 
+    _onOptionClick = (e) => {
+        const { onSelect } = this.props
+        const { target: { dataset: { index } } } = e
+
+        e.stopPropagation()
+        onSelect(parseInt(index, 10))
+    }
+
     componentWillUpdate = ({ options: propsOptions }, { filterTerm }) => {
         if (filterTerm === this.state.filterTerm) {
             return
@@ -71,14 +79,14 @@ class SelectDropdown extends Component {
         const { options } = this.state
         const language = Object.assign({}, LANG_RU, lang)
         const showSearch = search.minimumResults <= this.props.options.length
-        
 
-        return ( 
+
+        return (
             <span className="dropdown-wrapper">
-                <span className="react-select-dropdown"> 
-                    { showSearch && <SelectSearchInput onChange={ this._onFilterTermChange } /> } 
-                    <SelectOptionsList {...{ options, selectedOption, highlighted, onSelect }} /> 
-                </span> 
+                <span className="react-select-dropdown">
+                    { showSearch && <SelectSearchInput onChange={ this._onFilterTermChange }/> }
+                    <SelectOptionsList {...{ options, selectedOption, highlighted, onSelect: this._onOptionClick }} />
+                </span>
             </span>
         )
     }

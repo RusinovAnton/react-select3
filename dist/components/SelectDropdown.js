@@ -58,14 +58,14 @@ var SelectDropdown = function (_Component) {
 }(_react.Component);
 
 SelectDropdown.propTypes = {
-    highlighted: _react.PropTypes.bool,
+    highlighted: _react.PropTypes.number,
     lang: _react.PropTypes.object,
     isPending: _react.PropTypes.bool,
     onSearch: _react.PropTypes.func,
     onSelect: _react.PropTypes.func.isRequired,
     options: _react.PropTypes.array.isRequired,
     search: _react.PropTypes.object.isRequired,
-    selectedOption: _react.PropTypes.object.isRequired
+    selectedOption: _react.PropTypes.object
 };
 
 SelectDropdown.initialState = function () {
@@ -89,6 +89,15 @@ var _initialiseProps = function _initialiseProps() {
         } else {
             _this2.setState({ filterTerm: filterTerm });
         }
+    };
+
+    this._onOptionClick = function (e) {
+        var onSelect = _this2.props.onSelect;
+        var index = e.target.dataset.index;
+
+
+        e.stopPropagation();
+        onSelect(parseInt(index, 10));
     };
 
     this.componentWillUpdate = function (_ref2, _ref3) {
@@ -134,7 +143,7 @@ var _initialiseProps = function _initialiseProps() {
                 'span',
                 { className: 'react-select-dropdown' },
                 showSearch && _react2.default.createElement(_SelectSearchInput2.default, { onChange: _this2._onFilterTermChange }),
-                _react2.default.createElement(_SelectOptionsList2.default, { options: options, selectedOption: selectedOption, highlighted: highlighted, onSelect: onSelect })
+                _react2.default.createElement(_SelectOptionsList2.default, { options: options, selectedOption: selectedOption, highlighted: highlighted, onSelect: _this2._onOptionClick })
             )
         );
     };
