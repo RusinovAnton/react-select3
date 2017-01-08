@@ -60,6 +60,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Select = function (_Component) {
     _inherits(Select, _Component);
 
+    _createClass(Select, [{
+        key: 'selectNode',
+        get: function get() {
+            return this.refs.selectContainer;
+        }
+    }, {
+        key: 'value',
+        get: function get() {
+            var selectedOption = this.state.selectedOption;
+
+            return selectedOption ? selectedOption.id : null;
+        }
+    }]);
+
     function Select(props, context) {
         _classCallCheck(this, Select);
 
@@ -70,18 +84,8 @@ var Select = function (_Component) {
 
         var value = props.value,
             defaultValue = props.defaultValue,
+            children = props.children,
             options = props.options;
-
-        // Error if no options and no fetching provided
-        // if (!options.length) {
-        //     throw new Error('There was no options provided.')
-        // }
-
-        // Validate value prop if defined
-
-        if (typeof value !== 'undefined' && !_this._isValidValue(value)) {
-            throw new Error('Provided value prop is invalid. Expected option\'s id');
-        }
 
         /**
          * @type {{
@@ -93,25 +97,32 @@ var Select = function (_Component) {
          *   value: *,
          * }}
          */
+
         _this.state = Object.assign(Select.initialState(), {
-            selectedOption: _this._getOptionById(value || defaultValue),
-            options: options
+            options: _this._setOptions(children, options),
+            selectedOption: _this._setSelectedOption(value, defaultValue)
         });
         return _this;
     }
 
     _createClass(Select, [{
         key: 'componentWillReceiveProps',
-        value: function componentWillReceiveProps(_ref) {
-            var disabled = _ref.disabled,
-                options = _ref.options,
-                value = _ref.value;
+        value: function componentWillReceiveProps(newProps) {
+            var disabled = newProps.disabled,
+                options = newProps.options,
+                children = newProps.children,
+                value = newProps.value;
+
 
             if (disabled) {
                 this._closeDropdown();
             }
 
-            this.setState({ disabled: disabled, options: options, value: value });
+            this.setState({
+                disabled: disabled,
+                options: this._setOptions(children, options),
+                selectedOption: this._setSelectedOption(value)
+            });
         }
 
         /**
@@ -138,7 +149,7 @@ var Select = function (_Component) {
 
         /**
          * Setting selected value
-         * @param {object} value - option object from data array
+         * @param {object} option - option object from data array
          */
 
 
@@ -163,6 +174,7 @@ var Select = function (_Component) {
         value: function render() {
             var _props = this.props,
                 allowClear = _props.allowClear,
+                className = _props.className,
                 error = _props.error,
                 disabled = _props.disabled,
                 placeholder = _props.placeholder,
@@ -172,7 +184,8 @@ var Select = function (_Component) {
                 width = _props$layout.width,
                 dropdownHorizontalPosition = _props$layout.dropdownHorizontalPosition,
                 dropdownVerticalPosition = _props$layout.dropdownVerticalPosition,
-                request = _props.request;
+                request = _props.request,
+                children = _props.children;
             var _state = this.state,
                 dropdownOpened = _state.dropdownOpened,
                 highlighted = _state.highlighted,
@@ -180,14 +193,16 @@ var Select = function (_Component) {
                 options = _state.options,
                 selectedOption = _state.selectedOption;
 
-            var clearable = allowClear && typeof selectedValue !== 'undefined' && selectedValue !== null;
-            var selectContainerClassName = (0, _classnames2.default)('select react-select-container react-select-container--default', {
-                'react-select-container--above': dropdownVerticalPosition === 'above',
-                'react-select-container--below': !dropdownVerticalPosition || dropdownVerticalPosition === 'below',
-                'react-select-container--disabled': disabled,
-                'react-select-container--error has-error': error,
-                'react-select-container--open': dropdownOpened,
-                'react-select-container--right': dropdownHorizontalPosition === 'right'
+            var clearable = allowClear && typeof selectedOption !== 'undefined' && selectedOption !== null;
+            var selectContainerClassName = (0, _classnames2.default)('pure-react-select__container ' + (className || ''), {
+                'pure-react-select__container--above': dropdownVerticalPosition === 'above',
+                'pure-react-select__container--below': dropdownVerticalPosition !== 'above',
+                'pure-react-select__container--disabled': disabled,
+                'pure-react-select__container--error': error,
+                'pure-react-select__container--left': dropdownHorizontalPosition !== 'right',
+                'pure-react-select__container--open': dropdownOpened,
+                'pure-react-select__container--pending': isPending,
+                'pure-react-select__container--right': dropdownHorizontalPosition === 'right'
             });
             var isSearchOnRequest = request && !request.once;
 
@@ -311,12 +326,15 @@ Select.initialState = function () {
 var _initialiseProps = function _initialiseProps() {
     var _this2 = this;
 
-    this.shouldComponentUpdate = function (_ref2, nextState) {
-        var error = _ref2.error,
-            disabled = _ref2.disabled,
-            options = _ref2.options,
-            value = _ref2.value;
-        return !(0, _isEqual2.default)(options, _this2.state.options) || error !== _this2.props.error || disabled !== _this2.state.disabled || value !== _this2.state.value || !(0, _isEqual2.default)(nextState, _this2.state);
+    this.shouldComponentUpdate = function (_ref, nextState) {
+        var error = _ref.error,
+            disabled = _ref.disabled,
+            value = _ref.value,
+            children = _ref.children;
+
+        var currentValue = _this2.state.selectedOption && _this2.state.selectedOption.id;
+
+        return error !== _this2.props.error || disabled !== _this2.props.disabled || value !== currentValue || !(0, _isEqual2.default)(children, _this2.props.children) || !(0, _isEqual2.default)(nextState, _this2.state);
     };
 
     this.componentDidMount = function () {
@@ -347,9 +365,38 @@ var _initialiseProps = function _initialiseProps() {
     };
 
     this._isValidValue = function (value) {
-        return _this2.props.options.some(function (_ref3) {
-            var id = _ref3.id;
+        return _this2.props.options.some(function (_ref2) {
+            var id = _ref2.id;
             return value === id;
+        });
+    };
+
+    this._setSelectedOption = function (value, defaultValue) {
+        // Validate value prop if defined
+        if (typeof value !== 'undefined' && !_this2._isValidValue(value)) {
+            throw new Error('Provided value prop is invalid. Expected option\'s id');
+        }
+
+        return _this2._getOptionById(defaultValue || value);
+    };
+
+    this._setOptions = function (children, options) {
+        return _this2._getOptionsFromChildren(children) || options;
+    };
+
+    this._getOptionsFromChildren = function (children) {
+        if (!_react.Children.count(children)) {
+            return null;
+        }
+
+        return _react.Children.toArray(children).filter(function (_ref3) {
+            var type = _ref3.type;
+            return type === 'option';
+        }).map(function (_ref4) {
+            var _ref4$props = _ref4.props,
+                text = _ref4$props.children,
+                id = _ref4$props.value;
+            return { id: id, text: text };
         });
     };
 
@@ -365,8 +412,8 @@ var _initialiseProps = function _initialiseProps() {
     };
 
     this._getOptionById = function (value) {
-        return _this2.props.options.find(function (_ref4) {
-            var id = _ref4.id;
+        return _this2.props.options.find(function (_ref5) {
+            var id = _ref5.id;
             return id == value;
         }) || null;
     };
@@ -385,8 +432,8 @@ var _initialiseProps = function _initialiseProps() {
         if (_this2.props.disabled) return;
 
         var KEY_FUNTIONS = {
-            ArrowUp: _this2._setHightlightedOption.bind(null, -1),
-            ArrowDown: _this2._setHightlightedOption.bind(null, 1),
+            ArrowUp: _this2._setHighlightedOption.bind(null, -1),
+            ArrowDown: _this2._setHighlightedOption.bind(null, 1),
             Enter: _this2._selectHighlighted,
             // 'Space' key
             ' ': _this2._selectHighlighted,
@@ -431,11 +478,11 @@ var _initialiseProps = function _initialiseProps() {
             }
         };
 
-        _this2.setState({ selectedOption: option });
-
-        if ((0, _isFunction2.default)(onSelect)) {
-            onSelect(selectionEvent);
-        }
+        _this2.setState({ selectedOption: option }, function () {
+            if ((0, _isFunction2.default)(onSelect)) {
+                onSelect(selectionEvent);
+            }
+        });
 
         _this2._closeDropdown();
         _this2._focusContainer();
@@ -448,7 +495,7 @@ var _initialiseProps = function _initialiseProps() {
         _this2._onSelect(selectedOption);
     };
 
-    this._setHightlightedOption = function (direction) {
+    this._setHighlightedOption = function (direction) {
         var _state2 = _this2.state,
             options = _state2.options,
             disabled = _state2.disabled,
@@ -460,7 +507,7 @@ var _initialiseProps = function _initialiseProps() {
         if (disabled || !options || !options.length) return;
 
         var optionsLength = options.length - 1;
-        var nextHighlighted = highlighted ? highlighted + direction : 0;
+        var nextHighlighted = highlighted !== null ? highlighted + direction : 0;
 
         // TODO: scroll SelectDropdown block to show highlighted item when overflows
         // If dropdown not opened or there is no highlighted item yet

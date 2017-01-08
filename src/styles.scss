@@ -19,7 +19,7 @@ $color-selected: #00a7ff;
     overflow: hidden;
 }
 
-.react-select-container {
+.pure-react-select__container {
     display: inline-block;
     position: relative;
     background: #fff;
@@ -29,8 +29,10 @@ $color-selected: #00a7ff;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    outline: none;
     > * {
         box-sizing: border-box;
+        outline: none;
     }
 
     .dropdown-wrapper {
@@ -41,13 +43,13 @@ $color-selected: #00a7ff;
         z-index: 1;
     }
 
-    &.react-select-container--below {
+    &.pure-react-select-container--below {
         .dropdown-wrapper {
             top: 100%;
         }
     }
 
-    &.react-select-container--above {
+    &.pure-react-select-container--above {
         .dropdown-wrapper {
             bottom: 100%;
         }
@@ -55,7 +57,7 @@ $color-selected: #00a7ff;
 
 }
 
-.react-select__selection {
+.pure-react-select__selection {
     @include nowrap;
     @include box;
     display: block;
@@ -63,16 +65,16 @@ $color-selected: #00a7ff;
     height: $height;
     padding: 0 20px 0 $padding-horizontal;
     line-height: $height;
-    .react-select-container--clearable & {
+    .pure-react-select-container--clearable & {
         padding-right: 30px;
     }
 }
 
-.react-select__selection--placeholder {
+.pure-react-select__selection--placeholder {
     opacity: 0.5;
 }
 
-.react-select-selection__arrow {
+.pure-react-select__selection-arrow {
     display: block;
     position: absolute;
     right: 10px;
@@ -89,7 +91,7 @@ $color-selected: #00a7ff;
     }
 }
 
-.react-select-selection__clear {
+.pure-react-select__selection-clear {
     display: block;
     position: absolute;
     right: 20px;
@@ -99,16 +101,12 @@ $color-selected: #00a7ff;
     height: 10px;
 }
 
-.react-select-results__options {
-    display: block
-}
-
-.react-select-dropdown {
+.pure-react-select__dropdown {
     display: block;
     @include box;
 }
 
-.react-select-results__options {
+.pure-react-select__results-options {
     display: block;
     list-style: none;
     padding: 0;
@@ -120,15 +118,15 @@ $color-selected: #00a7ff;
     }
 }
 
-.react-select-results__option--highlighted {
+.pure-react-select-results__option--highlighted {
     background-color: $color-highlighted;
 }
 
-.react-select-results--selected {
+.pure-react-select-results--selected {
     @include selected;
 }
 
-.react-select-search__field {
+.pure-react-select__search-field {
     display: block;
     height: 31px;
     padding: 0 $padding-horizontal;
@@ -136,4 +134,5 @@ $color-selected: #00a7ff;
     border: 0;
     border-bottom: 1px solid #ccc;
     margin: 0 auto;
+    outline: none;
 }

@@ -6,9 +6,9 @@ const SelectOptionsList = ({ highlighted, selectedOption, options = [], onSelect
     const optionsList = options.map(({ id, text, isHidden }, i) => {
         if (isHidden) return null
         const isSelected = typeof selectedOption !== 'undefined' && selectedOption !== null && selectedOption.id === id
-        const optionClassName = classNames('react-select-results__option', {
-            'react-select-results--selected': isSelected,
-            'react-select-results__option--highlighted': i === highlighted
+        const optionClassName = classNames('pure-react-select-results__option', {
+            'pure-react-select-results--selected': isSelected,
+            'pure-react-select-results__option--highlighted': i === highlighted
         })
 
         return (
@@ -23,9 +23,9 @@ const SelectOptionsList = ({ highlighted, selectedOption, options = [], onSelect
     })
 
     return (
-        <span className="react-select-results">
-            <ul className="react-select-results__options">{ optionsList }</ul>
-        </span>
+        <ul className="pure-react-select__results-options">
+            { optionsList }
+        </ul>
     )
 }
 

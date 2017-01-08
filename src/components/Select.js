@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Children, Component, PropTypes } from 'react'
 
 import classNames from 'classnames'
 import isEqual from 'lodash/isEqual'
@@ -101,20 +101,19 @@ class Select extends Component {
         selectedOption: null,
     })
 
+    get selectNode() {
+        return this.refs.selectContainer
+    }
+
+    get value() {
+        const { selectedOption } = this.state
+        return selectedOption ? selectedOption.id : null
+    }
+
     constructor(props, context) { // eslint-disable-line consistent-return
         super(props, context)
 
-        const { value, defaultValue, options } = props
-
-        // Error if no options and no fetching provided
-        // if (!options.length) {
-        //     throw new Error('There was no options provided.')
-        // }
-
-        // Validate value prop if defined
-        if (typeof value !== 'undefined' && !this._isValidValue(value)) {
-            throw new Error('Provided value prop is invalid. Expected option\'s id')
-        }
+        const { value, defaultValue, children, options } = props
 
         /**
          * @type {{
@@ -127,27 +126,36 @@ class Select extends Component {
          * }}
          */
         this.state = Object.assign(Select.initialState(), {
-            selectedOption: this._getOptionById(value || defaultValue),
-            options
+            options: this._setOptions(children, options),
+            selectedOption: this._setSelectedOption(value, defaultValue),
         })
     }
 
-    componentWillReceiveProps({ disabled, options, value }) {
+    componentWillReceiveProps(newProps) {
+        const { disabled, options, children, value } = newProps
+
         if (disabled) {
             this._closeDropdown()
         }
 
-        this.setState({ disabled, options, value })
+        this.setState({
+            disabled,
+            options: this._setOptions(children, options),
+            selectedOption: this._setSelectedOption(value),
+        })
     }
 
-    shouldComponentUpdate = ({ error, disabled, options, value }, nextState) => (
-        !isEqual(options, this.state.options)
-        || error !== this.props.error
-        || disabled !== this.state.disabled
-        || value !== this.state.value
-        || !isEqual(nextState, this.state)
-    )
+    shouldComponentUpdate = ({ error, disabled, value, children }, nextState) => {
+        const currentValue = this.state.selectedOption && this.state.selectedOption.id
 
+        return (
+            error !== this.props.error
+            || disabled !== this.props.disabled
+            || value !== currentValue
+            || !isEqual(children, this.props.children)
+            || !isEqual(nextState, this.state)
+        )
+    }
 
     componentDidMount = () => {
         if (this.props.autoFocus) {
@@ -181,6 +189,28 @@ class Select extends Component {
 
     // value must be one of option's id
     _isValidValue = value => this.props.options.some(({ id }) => value === id)
+
+    _setSelectedOption = (value, defaultValue) => {
+        // Validate value prop if defined
+        if (typeof value !== 'undefined' && !this._isValidValue(value)) {
+            throw new Error('Provided value prop is invalid. Expected option\'s id')
+        }
+
+        return this._getOptionById(defaultValue || value)
+    }
+
+    _setOptions = (children, options) => this._getOptionsFromChildren(children) || options
+
+    _getOptionsFromChildren = children => {
+        if (!Children.count(children)) {
+            return null
+        }
+
+        return Children
+            .toArray(children)
+            .filter(({ type }) => type === 'option')
+            .map(({ props: { children: text, value: id } }) => ({ id, text }))
+    }
 
     /**
      * Returns option object from options array by given index
@@ -218,8 +248,8 @@ class Select extends Component {
         if (this.props.disabled) return
 
         const KEY_FUNTIONS = {
-            ArrowUp: this._setHightlightedOption.bind(null, -1),
-            ArrowDown: this._setHightlightedOption.bind(null, 1),
+            ArrowUp: this._setHighlightedOption.bind(null, -1),
+            ArrowDown: this._setHighlightedOption.bind(null, 1),
             Enter: this._selectHighlighted,
             // 'Space' key
             ' ': this._selectHighlighted,
@@ -249,7 +279,7 @@ class Select extends Component {
 
     /**
      * Setting selected value
-     * @param {object} value - option object from data array
+     * @param {object} option - option object from data array
      */
     _onSelect = option => {
         const { name, onSelect } = this.props
@@ -264,11 +294,11 @@ class Select extends Component {
             }
         }
 
-        this.setState({ selectedOption: option })
-
-        if (isFunction(onSelect)) {
-            onSelect(selectionEvent)
-        }
+        this.setState({ selectedOption: option }, () => {
+            if (isFunction(onSelect)) {
+                onSelect(selectionEvent)
+            }
+        })
 
         this._closeDropdown()
         this._focusContainer()
@@ -290,14 +320,16 @@ class Select extends Component {
      * Set next highlighted option via 'ArrowUp' or 'ArrowDown' key
      * @param {number} direction (can be -1 or 1)
      */
-    _setHightlightedOption = direction => {
+    _setHighlightedOption = direction => {
         const { options, disabled, highlighted, dropdownOpened } = this.state
 
         // do nothing if disabled or there are no options
         if (disabled || !options || !options.length) return
 
         const optionsLength = options.length - 1
-        const nextHighlighted = highlighted ? highlighted + direction : 0
+        const nextHighlighted = (highlighted !== null) ?
+            highlighted + direction
+            : 0
 
         // TODO: scroll SelectDropdown block to show highlighted item when overflows
         // If dropdown not opened or there is no highlighted item yet
@@ -334,6 +366,7 @@ class Select extends Component {
     render() {
         const {
             allowClear,
+            className,
             error,
             disabled,
             placeholder,
@@ -341,16 +374,19 @@ class Select extends Component {
             lang,
             layout: { width, dropdownHorizontalPosition, dropdownVerticalPosition },
             request,
+            children,
         } = this.props
         const { dropdownOpened, highlighted, isPending, options, selectedOption } = this.state
-        const clearable = (allowClear && typeof selectedValue !== 'undefined' && selectedValue !== null)
-        const selectContainerClassName = classNames('select react-select-container react-select-container--default', {
-            'react-select-container--above': dropdownVerticalPosition === 'above',
-            'react-select-container--below': !dropdownVerticalPosition || dropdownVerticalPosition === 'below',
-            'react-select-container--disabled': disabled,
-            'react-select-container--error has-error': error,
-            'react-select-container--open': dropdownOpened,
-            'react-select-container--right': dropdownHorizontalPosition === 'right',
+        const clearable = (allowClear && typeof selectedOption !== 'undefined' && selectedOption !== null)
+        const selectContainerClassName = classNames('pure-react-select__container ' + (className || ''), {
+            'pure-react-select__container--above': dropdownVerticalPosition === 'above',
+            'pure-react-select__container--below': dropdownVerticalPosition !== 'above',
+            'pure-react-select__container--disabled': disabled,
+            'pure-react-select__container--error': error,
+            'pure-react-select__container--left': dropdownHorizontalPosition !== 'right',
+            'pure-react-select__container--open': dropdownOpened,
+            'pure-react-select__container--pending': isPending,
+            'pure-react-select__container--right': dropdownHorizontalPosition === 'right',
         })
         const isSearchOnRequest = request && !request.once
 
@@ -363,12 +399,12 @@ class Select extends Component {
                   role='combobox'
                   onClick={ this._onContainerClick }
                   onKeyDown={ this._onContainerKeyDown }>
-                <SelectSelection {... {
+                <SelectSelection {...{
                     clearable,
                     selection: selectedOption && selectedOption.text,
                     placeholder,
                     onClearSelection: this._onClearSelection
-                } } />
+                }} />
                 {
                     dropdownOpened ?
                         <SelectDropdown {... {

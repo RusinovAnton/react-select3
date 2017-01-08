@@ -1,4 +1,4 @@
-.react-select-container {
+.pure-react-select__container {
   display: inline-block;
   position: relative;
   background: #fff;
@@ -7,21 +7,23 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-  user-select: none; }
-  .react-select-container > * {
-    box-sizing: border-box; }
-  .react-select-container .dropdown-wrapper {
+  user-select: none;
+  outline: none; }
+  .pure-react-select__container > * {
+    box-sizing: border-box;
+    outline: none; }
+  .pure-react-select__container .dropdown-wrapper {
     display: block;
     position: absolute;
     top: 100%;
     width: 100%;
     z-index: 1; }
-  .react-select-container.react-select-container--below .dropdown-wrapper {
+  .pure-react-select__container.pure-react-select-container--below .dropdown-wrapper {
     top: 100%; }
-  .react-select-container.react-select-container--above .dropdown-wrapper {
+  .pure-react-select__container.pure-react-select-container--above .dropdown-wrapper {
     bottom: 100%; }
 
-.react-select__selection {
+.pure-react-select__selection {
   white-space: nowrap;
   overflow: hidden;
   border-radius: 3px;
@@ -32,20 +34,20 @@
   height: 31px;
   padding: 0 20px 0 10px;
   line-height: 31px; }
-  .react-select-container--clearable .react-select__selection {
+  .pure-react-select-container--clearable .pure-react-select__selection {
     padding-right: 30px; }
 
-.react-select__selection--placeholder {
+.pure-react-select__selection--placeholder {
   opacity: 0.5; }
 
-.react-select-selection__arrow {
+.pure-react-select__selection-arrow {
   display: block;
   position: absolute;
   right: 10px;
   top: 13px;
   height: 5px;
   width: 5px; }
-  .react-select-selection__arrow i {
+  .pure-react-select__selection-arrow i {
     display: block;
     border-color: currentColor rgba(255, 255, 255, 0) rgba(255, 255, 255, 0) rgba(255, 255, 255, 0);
     border-style: solid;
@@ -53,7 +55,7 @@
     height: 0;
     width: 0; }
 
-.react-select-selection__clear {
+.pure-react-select__selection-clear {
   display: block;
   position: absolute;
   right: 20px;
@@ -62,38 +64,36 @@
   width: 10px;
   height: 10px; }
 
-.react-select-results__options {
-  display: block; }
-
-.react-select-dropdown {
+.pure-react-select__dropdown {
   display: block;
   border-radius: 3px;
   border: 1px solid #e0e0e0;
   box-shadow: 1px 1px 1px 0 #f0f0f0; }
 
-.react-select-results__options {
+.pure-react-select__results-options {
   display: block;
   list-style: none;
   padding: 0;
   margin: 0; }
-  .react-select-results__options li {
+  .pure-react-select__results-options li {
     line-height: 31px;
     white-space: nowrap;
     overflow: hidden;
     padding: 0 10px; }
 
-.react-select-results__option--highlighted {
+.pure-react-select-results__option--highlighted {
   background-color: #efefef; }
 
-.react-select-results--selected {
+.pure-react-select-results--selected {
   background: #00a7ff;
   color: #fff; }
 
-.react-select-search__field {
+.pure-react-select__search-field {
   display: block;
   height: 31px;
   padding: 0 10px;
   width: calc(100% - 20px);
   border: 0;
   border-bottom: 1px solid #ccc;
-  margin: 0 auto; }
+  margin: 0 auto;
+  outline: none; }

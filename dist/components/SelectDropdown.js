@@ -38,6 +38,12 @@ var LANG_RU = {
     emptyValue: '-'
 };
 
+var getChildrenText = function getChildrenText(element) {
+    if (typeof element === 'string') return element;
+
+    return getChildrenText(_react.Children.toArray(element)[0].props.children);
+};
+
 var SelectDropdown = function (_Component) {
     _inherits(SelectDropdown, _Component);
 
@@ -59,8 +65,8 @@ var SelectDropdown = function (_Component) {
 
 SelectDropdown.propTypes = {
     highlighted: _react.PropTypes.number,
-    lang: _react.PropTypes.object,
     isPending: _react.PropTypes.bool,
+    lang: _react.PropTypes.object,
     onSearch: _react.PropTypes.func,
     onSelect: _react.PropTypes.func.isRequired,
     options: _react.PropTypes.array.isRequired,
@@ -107,13 +113,17 @@ var _initialiseProps = function _initialiseProps() {
         if (filterTerm === _this2.state.filterTerm) {
             return;
         } else if (!filterTerm) {
-            _this2.setState(Object.assign(SelectDropdown.initialState(), { options: options }));
+            _this2.setState(Object.assign(SelectDropdown.initialState(), { options: propsOptions }));
         } else {
             (function () {
                 var filterRegExp = new RegExp(filterTerm, 'gi');
                 var options = propsOptions.filter(function (_ref4) {
-                    var text = _ref4.text;
-                    return filterRegExp.test(text);
+                    var element = _ref4.text;
+
+                    // @fixme: getChildrenText is not perfect tbh
+                    var elementText = getChildrenText(element);
+
+                    return filterRegExp.test(elementText);
                 });
 
                 _this2.setState({ options: options });
@@ -128,7 +138,6 @@ var _initialiseProps = function _initialiseProps() {
             highlighted = _props.highlighted,
             lang = _props.lang,
             isPending = _props.isPending,
-            onSelect = _props.onSelect,
             search = _props.search,
             selectedOption = _props.selectedOption;
         var options = _this2.state.options;
@@ -138,13 +147,9 @@ var _initialiseProps = function _initialiseProps() {
 
         return _react2.default.createElement(
             'span',
-            { className: 'dropdown-wrapper' },
-            _react2.default.createElement(
-                'span',
-                { className: 'react-select-dropdown' },
-                showSearch && _react2.default.createElement(_SelectSearchInput2.default, { onChange: _this2._onFilterTermChange }),
-                _react2.default.createElement(_SelectOptionsList2.default, { options: options, selectedOption: selectedOption, highlighted: highlighted, onSelect: _this2._onOptionClick })
-            )
+            { className: 'pure-react-select__dropdown' },
+            showSearch && _react2.default.createElement(_SelectSearchInput2.default, { onChange: _this2._onFilterTermChange }),
+            _react2.default.createElement(_SelectOptionsList2.default, { options: options, selectedOption: selectedOption, highlighted: highlighted, onSelect: _this2._onOptionClick })
         );
     };
 };

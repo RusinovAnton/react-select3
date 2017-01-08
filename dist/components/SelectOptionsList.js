@@ -28,9 +28,9 @@ var SelectOptionsList = function SelectOptionsList(_ref) {
 
         if (isHidden) return null;
         var isSelected = typeof selectedOption !== 'undefined' && selectedOption !== null && selectedOption.id === id;
-        var optionClassName = (0, _classnames2.default)('react-select-results__option', {
-            'react-select-results--selected': isSelected,
-            'react-select-results__option--highlighted': i === highlighted
+        var optionClassName = (0, _classnames2.default)('pure-react-select-results__option', {
+            'pure-react-select-results--selected': isSelected,
+            'pure-react-select-results__option--highlighted': i === highlighted
         });
 
         return _react2.default.createElement(
@@ -45,13 +45,9 @@ var SelectOptionsList = function SelectOptionsList(_ref) {
     });
 
     return _react2.default.createElement(
-        'span',
-        { className: 'react-select-results' },
-        _react2.default.createElement(
-            'ul',
-            { className: 'react-select-results__options' },
-            optionsList
-        )
+        'ul',
+        { className: 'pure-react-select__results-options' },
+        optionsList
     );
 };
 

@@ -5,20 +5,22 @@ import classNames from 'classnames'
 
 
 const SelectSelection = ({ clearable, selection = null, placeholder = null, onClearSelection }) => (
-  <span className='react-select__selection react-select-selection--single'>
-      <span className={ classNames('react-select__selection-node', {
-          'react-select__selection--placeholder': !selection
+  <span className='pure-react-select__selection pure-react-select__selection--single'>
+      <span className={ classNames('pure-react-select__selection-node', {
+          'pure-react-select__selection--placeholder': !selection
         })}>
         { selection || placeholder }
       </span>
       { clearable && (
-        <span className="react-select-selection__clear"
+        <span className="pure-react-select__selection-clear"
               role="presentation"
               onClick={ onClearSelection }>
             &times;
         </span>
       )}
-      <span className="react-select-selection__arrow" role="presentation"><b/></span>
+      <span className="pure-react-select__selection-arrow" role="presentation">
+          <i/>
+      </span>
   </span>
 )
 

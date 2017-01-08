@@ -1,10 +1,10 @@
 import React from 'react'
 
 
-const SelectSearchInput = (props) => (
-  // TODO: close dropdown on esc click when SearchInput focused
-  <span className='react-select-search react-select-search--dropdown'>
-      <input className='react-select-search__field'
+const SelectSearchInput = props => (
+    // TODO: close dropdown on esc click when SearchInput focused
+    <span className='pure-react-select__search'>
+      <input className='pure-react-select__search-field'
              type='search'
              tabIndex='0'
              autoFocus

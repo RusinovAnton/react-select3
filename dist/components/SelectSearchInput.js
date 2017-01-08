@@ -17,8 +17,8 @@ var SelectSearchInput = function SelectSearchInput(props) {
     // TODO: close dropdown on esc click when SearchInput focused
     _react2.default.createElement(
       'span',
-      { className: 'react-select-search react-select-search--dropdown' },
-      _react2.default.createElement('input', _extends({ className: 'react-select-search__field',
+      { className: 'pure-react-select__search' },
+      _react2.default.createElement('input', _extends({ className: 'pure-react-select__search-field',
         type: 'search',
         tabIndex: '0',
         autoFocus: true,
