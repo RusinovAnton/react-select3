@@ -31,7 +31,7 @@ class SelectDropdown extends Component {
         onSelect: PropTypes.func.isRequired,
         options: PropTypes.array.isRequired,
         search: PropTypes.object.isRequired,
-        selectedOption: PropTypes.object,
+        value: PropTypes.string,
     }
 
     static initialState = () => ({
@@ -48,6 +48,7 @@ class SelectDropdown extends Component {
 
     _onFilterTermChange = ({ target: { value: term } }) => {
         const { onSearch } = this.props
+        // reset filterTerm if term === ''
         const filterTerm = term || null
 
         if (isFunction(onSearch)) {
@@ -55,14 +56,6 @@ class SelectDropdown extends Component {
         } else {
             this.setState({ filterTerm })
         }
-    }
-
-    _onOptionClick = (e) => {
-        const { onSelect } = this.props
-        const { target: { dataset: { index } } } = e
-
-        e.stopPropagation()
-        onSelect(parseInt(index, 10))
     }
 
     componentWillUpdate = ({ options: propsOptions }, { filterTerm }) => {
@@ -86,15 +79,15 @@ class SelectDropdown extends Component {
     render = () => {
         // TODO: fetch dropdown
         // TODO: language
-        const { highlighted, lang, isPending, search, selectedOption } = this.props
+        const { highlighted, lang, isPending, search, value, onSelect } = this.props
         const { options } = this.state
         const language = Object.assign({}, LANG_RU, lang)
-        const showSearch = search.minimumResults <= this.props.options.length
+        const showSearch = search.minimumResults <= options.length
 
         return (
             <span className="pure-react-select__dropdown">
                 { showSearch && <SelectSearchInput onChange={ this._onFilterTermChange }/> }
-                <SelectOptionsList {...{ options, selectedOption, highlighted, onSelect: this._onOptionClick }} />
+                <SelectOptionsList {...{ options, value, highlighted, onSelect }} />
             </span>
         )
     }

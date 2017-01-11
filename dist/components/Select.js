@@ -53,6 +53,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 // @fixme TODO: uncontrollable value
+// TODO: multiselect
 // TODO: optgroups
 // TODO: options & optgroups as children
 // TODO: dissmissable
@@ -61,6 +62,11 @@ var Select = function (_Component) {
     _inherits(Select, _Component);
 
     _createClass(Select, [{
+        key: 'clear',
+        value: function clear() {
+            this._onClearSelection();
+        }
+    }, {
         key: 'selectNode',
         get: function get() {
             return this.refs.selectContainer;
@@ -72,6 +78,11 @@ var Select = function (_Component) {
 
 
             return selectedOption ? selectedOption.id : null;
+        }
+    }, {
+        key: 'options',
+        get: function get() {
+            return this.state.options;
         }
     }]);
 
@@ -93,8 +104,8 @@ var Select = function (_Component) {
          *   dropdownOpened: boolean,
          *   highlight: *,
          *   isPending: boolean,
-         *   searchShow: boolean,
          *   options: array,
+         *   searchShow: boolean,
          *   value: *,
          * }}
          */
@@ -109,29 +120,35 @@ var Select = function (_Component) {
     _createClass(Select, [{
         key: 'componentWillReceiveProps',
         value: function componentWillReceiveProps(newProps) {
+            var _this2 = this;
+
             var disabled = newProps.disabled,
                 options = newProps.options,
                 children = newProps.children,
                 value = newProps.value;
 
+            var isValueDefined = typeof value !== 'undefined';
+
+            if (isValueDefined && typeof newProps.onSelect === 'undefined' && typeof this.props.onSelect === 'undefined') {
+                console.error('Warning: You\'re setting value for Select component throught props\n                but not passing onSelect callback which can lead to unforeseen consequences(bugs).\n                Please consider using onSelect callback or defaultValue instead of value');
+            }
 
             if (disabled) {
                 this._closeDropdown();
             }
 
-            this.setState({
-                disabled: disabled,
-                options: this._setOptions(children, options),
-                value: value
+            this.setState(function (state) {
+                return {
+                    disabled: disabled,
+                    options: _this2._setOptions(children, options),
+                    value: isValueDefined ? String(value) : state.value
+                };
             });
         }
 
         /**
          * Close SelectDropdown on click outside using 'react-click-outside' library
          */
-
-
-        // value must be one of option's id
 
 
         /**
@@ -156,7 +173,7 @@ var Select = function (_Component) {
 
         /**
          * Handle option selection via user click
-         * @param {number} index - index of option item in the data array
+         * @param {number} id - options id
          */
 
 
@@ -215,7 +232,7 @@ var Select = function (_Component) {
                     onSelect: this._onSelectOption,
                     options: options,
                     search: search,
-                    selectedOption: selectedOption
+                    value: value
                 }) : _react2.default.createElement(_SelectError2.default, { error: error })
             );
         }
@@ -274,7 +291,8 @@ Select.propTypes = {
     onSelect: _react.PropTypes.func,
     placeholder: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.element]),
     search: _react.PropTypes.shape({
-        minimumResults: _react.PropTypes.number
+        minimumResults: _react.PropTypes.number,
+        onSearchTermChange: _react.PropTypes.func
     }),
     /**
      * Value can be set by providing option id
@@ -304,36 +322,33 @@ Select.initialState = function () {
         isPending: false,
         options: [],
         searchShow: false,
-        value: undefined
+        value: null
     };
 };
 
 var _initialiseProps = function _initialiseProps() {
-    var _this2 = this;
+    var _this3 = this;
 
     this.shouldComponentUpdate = function (_ref, nextState) {
         var error = _ref.error,
             disabled = _ref.disabled,
             value = _ref.value,
             children = _ref.children;
-
-        var currentValue = _this2.state.selectedOption && _this2.state.selectedOption.id;
-
-        return error !== _this2.props.error || disabled !== _this2.props.disabled || value !== currentValue || !(0, _isEqual2.default)(children, _this2.props.children) || !(0, _isEqual2.default)(nextState, _this2.state);
+        return error !== _this3.props.error || disabled !== _this3.props.disabled || value !== _this3.state.value || !(0, _isEqual2.default)(children, _this3.props.children) || !(0, _isEqual2.default)(nextState, _this3.state);
     };
 
     this.componentDidMount = function () {
-        if (_this2.props.autoFocus) {
-            _this2._focusContainer();
+        if (_this3.props.autoFocus) {
+            _this3._focusContainer();
         }
     };
 
     this.handleClickOutside = function () {
-        _this2._closeDropdown();
+        _this3._closeDropdown();
     };
 
     this._closeDropdown = function () {
-        _this2.setState({
+        _this3.setState({
             dropdownOpened: false,
             highlighted: null
         });
@@ -344,49 +359,45 @@ var _initialiseProps = function _initialiseProps() {
         var y = window.scrollY;
 
         window.scrollTo(x, y);
-        if (_this2.refs.selectContainer) {
-            _this2.refs.selectContainer.focus();
+        if (_this3.refs.selectContainer) {
+            _this3.refs.selectContainer.focus();
         }
-    };
-
-    this._isValidValue = function (value) {
-        return _this2.state.options.some(function (_ref2) {
-            var id = _ref2.id;
-            return value === id;
-        });
-    };
-
-    this._setSelectedOption = function (value, defaultValue) {
-        // Validate value prop if defined
-        if (typeof value !== 'undefined' && value !== null && !_this2._isValidValue(value)) {
-            // throw new Error('Provided value prop is invalid. Expected option\'s id')
-        }
-
-        return _this2._getOptionById(defaultValue || value);
     };
 
     this._setOptions = function (children, options) {
-        return options || _this2._getOptionsFromChildren(children) || [];
-    };
+        var stateOptions = [];
 
-    this._getOptionsFromChildren = function (children) {
-        if (!_react.Children.count(children)) {
-            return null;
+        if (Array.isArray(options) && options.length) {
+            stateOptions = options.map(function (_ref2) {
+                var id = _ref2.id,
+                    text = _ref2.text;
+
+                if (typeof id === 'undefined' || typeof text === 'undefined') {
+                    throw new Error('options array is not formatted properly, option object must have "id" and "text"');
+                }
+
+                return {
+                    id: String(id),
+                    text: text
+                };
+            });
+        } else if (_react.Children.count(children)) {
+            stateOptions = _react.Children.toArray(children).filter(function (_ref3) {
+                var type = _ref3.type;
+                return type === 'option';
+            }).map(function (_ref4) {
+                var _ref4$props = _ref4.props,
+                    text = _ref4$props.children,
+                    id = _ref4$props.value;
+                return { id: String(id), text: text };
+            });
         }
 
-        return _react.Children.toArray(children).filter(function (_ref3) {
-            var type = _ref3.type;
-            return type === 'option';
-        }).map(function (_ref4) {
-            var _ref4$props = _ref4.props,
-                text = _ref4$props.children,
-                id = _ref4$props.value;
-            return { id: id, text: text };
-        });
+        return stateOptions;
     };
 
     this._getOptionByIndex = function (index) {
-        var options = _this2.state.options;
+        var options = _this3.state.options;
 
 
         if (index > options.length || index < 0) {
@@ -397,13 +408,13 @@ var _initialiseProps = function _initialiseProps() {
     };
 
     this._getOptionById = function (value) {
-        var options = _this2.state.options;
+        var options = _this3.state.options;
 
 
         if (options && options.length) {
             return options.find(function (_ref5) {
                 var id = _ref5.id;
-                return id == value;
+                return id === value;
             }); // eslint-disable-line eqeqeq
         }
 
@@ -411,7 +422,7 @@ var _initialiseProps = function _initialiseProps() {
     };
 
     this._onContainerClick = function () {
-        _this2.setState(function (state) {
+        _this3.setState(function (state) {
             var dropdownOpened = state.dropdownOpened,
                 disabled = state.disabled;
 
@@ -421,14 +432,14 @@ var _initialiseProps = function _initialiseProps() {
     };
 
     this._onContainerKeyDown = function (event) {
-        if (_this2.props.disabled) return;
+        if (_this3.props.disabled) return;
 
         var KEY_FUNTIONS = {
-            ArrowUp: _this2._setHighlightedOption.bind(null, -1),
-            ArrowDown: _this2._setHighlightedOption.bind(null, 1),
-            Enter: _this2._selectHighlighted,
-            ' ': _this2._selectHighlighted, // 'Space' key
-            Escape: _this2._closeDropdown
+            ArrowUp: _this3._setHighlightedOption.bind(null, -1),
+            ArrowDown: _this3._setHighlightedOption.bind(null, 1),
+            Enter: _this3._selectHighlighted,
+            ' ': _this3._selectHighlighted, // 'Space' key
+            Escape: _this3._closeDropdown
         };
 
         var key = event.key;
@@ -442,19 +453,22 @@ var _initialiseProps = function _initialiseProps() {
     };
 
     this._onClearSelection = function (e) {
-        e.stopPropagation();
-        _this2._onSelect(null);
+        if (e) {
+            e.stopPropagation();
+        }
+
+        if (!_this3.state.disabled) {
+            _this3._onSelect(null);
+        }
     };
 
-    this._onSearchTermChange = function (term) {
-        // TODO: request options from server
-        // const { request } = this.props
-
-        console.log(term); // eslint-disable-line no-console
-    };
+    this._onSearchTermChange = function (term) {}
+    // TODO: request options from server
+    // const { request } = this.props
+    ;
 
     this._onSelect = function (option) {
-        var _props2 = _this2.props,
+        var _props2 = _this3.props,
             name = _props2.name,
             onSelect = _props2.onSelect;
         // Setup structure of selection event
@@ -469,25 +483,25 @@ var _initialiseProps = function _initialiseProps() {
             }
         };
 
-        _this2.setState({ value: value }, function () {
+        _this3.setState({ value: value }, function () {
             if ((0, _isFunction2.default)(onSelect)) {
                 onSelect(selectionEvent);
             }
         });
 
-        _this2._closeDropdown();
-        _this2._focusContainer();
+        _this3._closeDropdown();
+        _this3._focusContainer();
     };
 
-    this._onSelectOption = function (index) {
+    this._onSelectOption = function (id) {
         // Get selected option and pass it into onSelect method for further processing
-        var selectedOption = _this2._getOptionByIndex(index);
+        var selectedOption = _this3._getOptionById(id);
 
-        _this2._onSelect(selectedOption);
+        _this3._onSelect(selectedOption);
     };
 
     this._setHighlightedOption = function (direction) {
-        var _state2 = _this2.state,
+        var _state2 = _this3.state,
             options = _state2.options,
             disabled = _state2.disabled,
             highlighted = _state2.highlighted,
@@ -505,18 +519,18 @@ var _initialiseProps = function _initialiseProps() {
         if (!dropdownOpened || highlighted === null
         // highlight first option after click 'ArrowDown' on the last one
         || nextHighlighted > optionsLength) {
-            _this2.setState({ highlighted: 0, dropdownOpened: true });
+            _this3.setState({ highlighted: 0, dropdownOpened: true });
         } else if (nextHighlighted < 0) {
             // Highlight last option after click 'ArrowUp' on the first one
-            _this2.setState({ highlighted: optionsLength });
+            _this3.setState({ highlighted: optionsLength });
         } else {
             // Highlight next option
-            _this2.setState({ highlighted: nextHighlighted });
+            _this3.setState({ highlighted: nextHighlighted });
         }
     };
 
     this._selectHighlighted = function () {
-        var _state3 = _this2.state,
+        var _state3 = _this3.state,
             options = _state3.options,
             highlighted = _state3.highlighted,
             dropdownOpened = _state3.dropdownOpened;
@@ -525,24 +539,24 @@ var _initialiseProps = function _initialiseProps() {
 
         if (!dropdownOpened || highlighted === null) {
             // Open dropdown and hightlight first item
-            _this2.setState({
+            _this3.setState({
                 dropdownOpened: true,
                 highlighted: 0
             });
         } else {
             // Select highlighted item
-            _this2._onSelect(options[highlighted]);
+            _this3._onSelect(options[highlighted]);
         }
     };
 
     this._getSelectContainerClassName = function () {
-        var _props3 = _this2.props,
+        var _props3 = _this3.props,
             className = _props3.className,
             disabled = _props3.disabled,
             dropdownHorizontalPosition = _props3.dropdownHorizontalPosition,
             dropdownVerticalPosition = _props3.dropdownVerticalPosition,
             error = _props3.error;
-        var _state4 = _this2.state,
+        var _state4 = _this3.state,
             dropdownOpened = _state4.dropdownOpened,
             isPending = _state4.isPending;
 
@@ -560,8 +574,8 @@ var _initialiseProps = function _initialiseProps() {
     };
 
     this._isClearable = function () {
-        var allowClear = _this2.props.allowClear;
-        var value = _this2.state.value;
+        var allowClear = _this3.props.allowClear;
+        var value = _this3.state.value;
 
 
         return allowClear && typeof value !== 'undefined' && value !== null;

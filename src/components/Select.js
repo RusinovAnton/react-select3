@@ -13,6 +13,7 @@ import SelectSelection from './SelectSelection'
 
 
 // @fixme TODO: uncontrollable value
+// TODO: multiselect
 // TODO: optgroups
 // TODO: options & optgroups as children
 // TODO: dissmissable
@@ -69,6 +70,7 @@ class Select extends Component {
         placeholder: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
         search: PropTypes.shape({
             minimumResults: PropTypes.number,
+            onSearchTermChange: PropTypes.func,
         }),
         /**
          * Value can be set by providing option id
@@ -98,7 +100,7 @@ class Select extends Component {
         isPending: false,
         options: [],
         searchShow: false,
-        value: undefined,
+        value: null,
     })
 
     get selectNode() {
@@ -111,6 +113,14 @@ class Select extends Component {
         return selectedOption ? selectedOption.id : null
     }
 
+    get options() {
+        return this.state.options
+    }
+
+    clear() {
+        this._onClearSelection()
+    }
+
     constructor(props, context) { // eslint-disable-line consistent-return
         super(props, context)
 
@@ -121,8 +131,8 @@ class Select extends Component {
          *   dropdownOpened: boolean,
          *   highlight: *,
          *   isPending: boolean,
-         *   searchShow: boolean,
          *   options: array,
+         *   searchShow: boolean,
          *   value: *,
          * }}
          */
@@ -134,29 +144,32 @@ class Select extends Component {
 
     componentWillReceiveProps(newProps) {
         const { disabled, options, children, value } = newProps
+        const isValueDefined = typeof value !== 'undefined'
+
+        if (isValueDefined && typeof newProps.onSelect === 'undefined' && typeof this.props.onSelect === 'undefined') {
+            console.error(`Warning: You\'re setting value for Select component throught props
+                but not passing onSelect callback which can lead to unforeseen consequences(bugs).
+                Please consider using onSelect callback or defaultValue instead of value`)
+        }
 
         if (disabled) {
             this._closeDropdown()
         }
 
-        this.setState({
+        this.setState((state) => ({
             disabled,
             options: this._setOptions(children, options),
-            value,
-        })
+            value: isValueDefined ? String(value) : state.value,
+        }))
     }
 
-    shouldComponentUpdate = ({ error, disabled, value, children }, nextState) => {
-        const currentValue = this.state.selectedOption && this.state.selectedOption.id
-
-        return (
-            error !== this.props.error
-            || disabled !== this.props.disabled
-            || value !== currentValue
-            || !isEqual(children, this.props.children)
-            || !isEqual(nextState, this.state)
-        )
-    }
+    shouldComponentUpdate = ({ error, disabled, value, children }, nextState) => (
+        error !== this.props.error
+        || disabled !== this.props.disabled
+        || value !== this.state.value
+        || !isEqual(children, this.props.children)
+        || !isEqual(nextState, this.state)
+    )
 
     componentDidMount = () => {
         if (this.props.autoFocus) {
@@ -188,30 +201,27 @@ class Select extends Component {
         }
     }
 
-    // value must be one of option's id
-    _isValidValue = value => this.state
-        .options
-        .some(({ id }) => value === id)
+    _setOptions = (children, options) => {
+        let stateOptions = []
 
-    _setSelectedOption = (value, defaultValue) => {
-        // Validate value prop if defined
-        if (typeof value !== 'undefined' && value !== null && !this._isValidValue(value)) {
-            // throw new Error('Provided value prop is invalid. Expected option\'s id')
+        if (Array.isArray(options) && options.length) {
+            stateOptions = options.map(({ id, text }) => {
+                if (typeof id === 'undefined' || typeof text === 'undefined') {
+                    throw new Error('options array is not formatted properly, option object must have "id" and "text"');
+                }
+
+                return {
+                    id: String(id),
+                    text
+                }
+            })
+        } else if (Children.count(children)) {
+            stateOptions = Children.toArray(children)
+                .filter(({ type }) => type === 'option')
+                .map(({ props: { children: text, value: id } }) => ({ id: String(id), text }))
         }
 
-        return this._getOptionById(defaultValue || value)
-    }
-
-    _setOptions = (children, options) => options || this._getOptionsFromChildren(children) || []
-
-    _getOptionsFromChildren = children => {
-        if (!Children.count(children)) {
-            return null
-        }
-
-        return Children.toArray(children)
-            .filter(({ type }) => type === 'option')
-            .map(({ props: { children: text, value: id } }) => ({ id, text }))
+        return stateOptions
     }
 
     /**
@@ -234,7 +244,7 @@ class Select extends Component {
         const { options } = this.state
 
         if (options && options.length) {
-            return options.find(({ id }) => id == value) // eslint-disable-line eqeqeq
+            return options.find(({ id }) => id === value) // eslint-disable-line eqeqeq
         }
 
         return null
@@ -272,16 +282,19 @@ class Select extends Component {
         KEY_FUNTIONS[key]()
     }
 
-    _onClearSelection = (e) => {
-        e.stopPropagation()
-        this._onSelect(null)
+    _onClearSelection = e => {
+        if (e) {
+            e.stopPropagation()
+        }
+
+        if (!this.state.disabled) {
+            this._onSelect(null)
+        }
     }
 
     _onSearchTermChange = term => {
         // TODO: request options from server
         // const { request } = this.props
-
-        console.log(term) // eslint-disable-line no-console
     }
 
     /**
@@ -313,11 +326,11 @@ class Select extends Component {
 
     /**
      * Handle option selection via user click
-     * @param {number} index - index of option item in the data array
+     * @param {number} id - options id
      */
-    _onSelectOption = index => {
+    _onSelectOption = id => {
         // Get selected option and pass it into onSelect method for further processing
-        const selectedOption = this._getOptionByIndex(index)
+        const selectedOption = this._getOptionById(id)
 
         this._onSelect(selectedOption)
     }
@@ -443,7 +456,7 @@ class Select extends Component {
                             onSelect: this._onSelectOption,
                             options,
                             search,
-                            selectedOption,
+                            value,
                         }}/>
                         : <SelectError error={ error }/>
                 }

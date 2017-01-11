@@ -71,7 +71,7 @@ SelectDropdown.propTypes = {
     onSelect: _react.PropTypes.func.isRequired,
     options: _react.PropTypes.array.isRequired,
     search: _react.PropTypes.object.isRequired,
-    selectedOption: _react.PropTypes.object
+    value: _react.PropTypes.string
 };
 
 SelectDropdown.initialState = function () {
@@ -87,6 +87,7 @@ var _initialiseProps = function _initialiseProps() {
     this._onFilterTermChange = function (_ref) {
         var term = _ref.target.value;
         var onSearch = _this2.props.onSearch;
+        // reset filterTerm if term === ''
 
         var filterTerm = term || null;
 
@@ -95,15 +96,6 @@ var _initialiseProps = function _initialiseProps() {
         } else {
             _this2.setState({ filterTerm: filterTerm });
         }
-    };
-
-    this._onOptionClick = function (e) {
-        var onSelect = _this2.props.onSelect;
-        var index = e.target.dataset.index;
-
-
-        e.stopPropagation();
-        onSelect(parseInt(index, 10));
     };
 
     this.componentWillUpdate = function (_ref2, _ref3) {
@@ -139,17 +131,18 @@ var _initialiseProps = function _initialiseProps() {
             lang = _props.lang,
             isPending = _props.isPending,
             search = _props.search,
-            selectedOption = _props.selectedOption;
+            value = _props.value,
+            onSelect = _props.onSelect;
         var options = _this2.state.options;
 
         var language = Object.assign({}, LANG_RU, lang);
-        var showSearch = search.minimumResults <= _this2.props.options.length;
+        var showSearch = search.minimumResults <= options.length;
 
         return _react2.default.createElement(
             'span',
             { className: 'pure-react-select__dropdown' },
             showSearch && _react2.default.createElement(_SelectSearchInput2.default, { onChange: _this2._onFilterTermChange }),
-            _react2.default.createElement(_SelectOptionsList2.default, { options: options, selectedOption: selectedOption, highlighted: highlighted, onSelect: _this2._onOptionClick })
+            _react2.default.createElement(_SelectOptionsList2.default, { options: options, value: value, highlighted: highlighted, onSelect: onSelect })
         );
     };
 };
