@@ -1,3 +1,9 @@
+__tests__/
 src/
 docs/
 gulpfile.js
+.babelrc
+.editorconfig
+.eslintrc
+.jsdoc
+.jestrc.js

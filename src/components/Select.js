@@ -6,17 +6,17 @@ import isFunction from 'lodash/isFunction'
 import provideClickOutside from 'react-click-outside'
 import uniqueId from 'lodash/uniqueId'
 import { selectPropTypes } from '../shared/selectPropTypes'
+import hasValue from '../shared/hasValue'
+import { stopPropagation } from '../shared/events'
 
 import SelectDropdown from './SelectDropdown'
 import SelectError from './SelectError'
 import SelectSelection from './SelectSelection'
 
 
-// @fixme TODO: uncontrollable value
 // TODO: multiselect
+// TODO: label
 // TODO: optgroups
-// TODO: options & optgroups as children
-// TODO: dissmissable
 // TODO: lang module
 class Select extends Component {
     static propTypes = {
@@ -282,12 +282,9 @@ class Select extends Component {
         KEY_FUNTIONS[key]()
     }
 
-    _onClearSelection = e => {
-        if (e) {
-            e.stopPropagation()
-        }
-
-        if (!this.state.disabled) {
+    _onClearSelection = () => {
+        // Dont clear when disabled, dont fire extra event when value is already cleared
+        if (!this.state.disabled && this.state.value !== null) {
             this._onSelect(null)
         }
     }
@@ -396,6 +393,7 @@ class Select extends Component {
         const {
             dropdownOpened,
             isPending,
+            value,
         } = this.state
 
         return classNames('pure-react-select__container ' + (className || ''), {
@@ -407,6 +405,7 @@ class Select extends Component {
             'pure-react-select__container--open': dropdownOpened,
             'pure-react-select__container--pending': isPending,
             'pure-react-select__container--right': dropdownHorizontalPosition === 'right',
+            'pure-react-select__container--selected': hasValue(value),
         })
     }
 
@@ -414,7 +413,7 @@ class Select extends Component {
         const { allowClear } = this.props
         const { value } = this.state
 
-        return (allowClear && typeof value !== 'undefined' && value !== null)
+        return (allowClear && hasValue(value))
     }
 
     render() {
@@ -442,7 +441,7 @@ class Select extends Component {
                   onKeyDown={ this._onContainerKeyDown }>
                 <SelectSelection {...{
                     clearable: this._isClearable(),
-                    onClearSelection: this._onClearSelection,
+                    onClearSelection: stopPropagation(this._onClearSelection),
                     placeholder,
                     selection: selectedOption && selectedOption.text,
                 }}/>

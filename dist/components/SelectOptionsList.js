@@ -12,14 +12,13 @@ var _classnames = require('classnames');
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _hasValue = require('../shared/hasValue');
 
-var stopPropagation = function stopPropagation(f) {
-    return function (e) {
-        e.stopPropagation();
-        f();
-    };
-};
+var _hasValue2 = _interopRequireDefault(_hasValue);
+
+var _events = require('../shared/events');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var SelectOptionsList = function SelectOptionsList(_ref) {
     var highlighted = _ref.highlighted,
@@ -35,7 +34,7 @@ var SelectOptionsList = function SelectOptionsList(_ref) {
 
         if (isHidden) return null;
 
-        var isSelected = typeof value !== 'undefined' && value !== null && value === id;
+        var isSelected = (0, _hasValue2.default)(value) && value === id;
         var optionClassName = (0, _classnames2.default)('pure-react-select-results__option', {
             'pure-react-select-results--selected': isSelected,
             'pure-react-select-results__option--highlighted': i === highlighted
@@ -47,7 +46,7 @@ var SelectOptionsList = function SelectOptionsList(_ref) {
             'li',
             { key: i,
                 className: optionClassName,
-                onClick: stopPropagation(onOptionSelect) },
+                onClick: (0, _events.stopPropagation)(onOptionSelect) },
             text
         );
     });

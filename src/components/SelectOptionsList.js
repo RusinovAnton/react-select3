@@ -1,16 +1,15 @@
 import React, { PropTypes } from 'react'
-import classNames from 'classnames'
 
-const stopPropagation = f => e => {
-    e.stopPropagation()
-    f()
-}
+import classNames from 'classnames'
+import hasValue from '../shared/hasValue'
+import { stopPropagation } from '../shared/events'
+
 
 const SelectOptionsList = ({ highlighted, value, options = [], onSelect }) => {
     const optionsList = options.map(({ id, text, isHidden }, i) => {
         if (isHidden) return null
 
-        const isSelected = typeof value !== 'undefined' && value !== null && value === id
+        const isSelected = hasValue(value) && value === id
         const optionClassName = classNames('pure-react-select-results__option', {
             'pure-react-select-results--selected': isSelected,
             'pure-react-select-results__option--highlighted': i === highlighted

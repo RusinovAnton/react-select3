@@ -32,6 +32,12 @@ var _uniqueId2 = _interopRequireDefault(_uniqueId);
 
 var _selectPropTypes = require('../shared/selectPropTypes');
 
+var _hasValue = require('../shared/hasValue');
+
+var _hasValue2 = _interopRequireDefault(_hasValue);
+
+var _events = require('../shared/events');
+
 var _SelectDropdown = require('./SelectDropdown');
 
 var _SelectDropdown2 = _interopRequireDefault(_SelectDropdown);
@@ -52,11 +58,9 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-// @fixme TODO: uncontrollable value
 // TODO: multiselect
+// TODO: label
 // TODO: optgroups
-// TODO: options & optgroups as children
-// TODO: dissmissable
 // TODO: lang module
 var Select = function (_Component) {
     _inherits(Select, _Component);
@@ -220,7 +224,7 @@ var Select = function (_Component) {
                     onKeyDown: this._onContainerKeyDown },
                 _react2.default.createElement(_SelectSelection2.default, {
                     clearable: this._isClearable(),
-                    onClearSelection: this._onClearSelection,
+                    onClearSelection: (0, _events.stopPropagation)(this._onClearSelection),
                     placeholder: placeholder,
                     selection: selectedOption && selectedOption.text
                 }),
@@ -452,12 +456,9 @@ var _initialiseProps = function _initialiseProps() {
         KEY_FUNTIONS[key]();
     };
 
-    this._onClearSelection = function (e) {
-        if (e) {
-            e.stopPropagation();
-        }
-
-        if (!_this3.state.disabled) {
+    this._onClearSelection = function () {
+        // Dont clear when disabled, dont fire extra event when value is already cleared
+        if (!_this3.state.disabled && _this3.state.value !== null) {
             _this3._onSelect(null);
         }
     };
@@ -558,7 +559,8 @@ var _initialiseProps = function _initialiseProps() {
             error = _props3.error;
         var _state4 = _this3.state,
             dropdownOpened = _state4.dropdownOpened,
-            isPending = _state4.isPending;
+            isPending = _state4.isPending,
+            value = _state4.value;
 
 
         return (0, _classnames2.default)('pure-react-select__container ' + (className || ''), {
@@ -569,7 +571,8 @@ var _initialiseProps = function _initialiseProps() {
             'pure-react-select__container--left': dropdownHorizontalPosition !== 'right',
             'pure-react-select__container--open': dropdownOpened,
             'pure-react-select__container--pending': isPending,
-            'pure-react-select__container--right': dropdownHorizontalPosition === 'right'
+            'pure-react-select__container--right': dropdownHorizontalPosition === 'right',
+            'pure-react-select__container--selected': (0, _hasValue2.default)(value)
         });
     };
 
@@ -578,7 +581,7 @@ var _initialiseProps = function _initialiseProps() {
         var value = _this3.state.value;
 
 
-        return allowClear && typeof value !== 'undefined' && value !== null;
+        return allowClear && (0, _hasValue2.default)(value);
     };
 };
 
