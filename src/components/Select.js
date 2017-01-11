@@ -86,7 +86,7 @@ class Select extends Component {
             width: '245px',
         },
         name: uniqueId('reactSelect_'),
-        options: [],
+        options: null,
         search: {
             minimumResults: 20,
         },
@@ -98,7 +98,7 @@ class Select extends Component {
         isPending: false,
         options: [],
         searchShow: false,
-        selectedOption: null,
+        value: undefined,
     })
 
     get selectNode() {
@@ -107,6 +107,7 @@ class Select extends Component {
 
     get value() {
         const { selectedOption } = this.state
+
         return selectedOption ? selectedOption.id : null
     }
 
@@ -127,7 +128,7 @@ class Select extends Component {
          */
         this.state = Object.assign(Select.initialState(), {
             options: this._setOptions(children, options),
-            selectedOption: this._setSelectedOption(value, defaultValue),
+            value: value || defaultValue,
         })
     }
 
@@ -141,7 +142,7 @@ class Select extends Component {
         this.setState({
             disabled,
             options: this._setOptions(children, options),
-            selectedOption: this._setSelectedOption(value),
+            value,
         })
     }
 
@@ -188,26 +189,27 @@ class Select extends Component {
     }
 
     // value must be one of option's id
-    _isValidValue = value => this.props.options.some(({ id }) => value === id)
+    _isValidValue = value => this.state
+        .options
+        .some(({ id }) => value === id)
 
     _setSelectedOption = (value, defaultValue) => {
         // Validate value prop if defined
-        if (typeof value !== 'undefined' && !this._isValidValue(value)) {
-            throw new Error('Provided value prop is invalid. Expected option\'s id')
+        if (typeof value !== 'undefined' && value !== null && !this._isValidValue(value)) {
+            // throw new Error('Provided value prop is invalid. Expected option\'s id')
         }
 
         return this._getOptionById(defaultValue || value)
     }
 
-    _setOptions = (children, options) => this._getOptionsFromChildren(children) || options
+    _setOptions = (children, options) => options || this._getOptionsFromChildren(children) || []
 
     _getOptionsFromChildren = children => {
         if (!Children.count(children)) {
             return null
         }
 
-        return Children
-            .toArray(children)
+        return Children.toArray(children)
             .filter(({ type }) => type === 'option')
             .map(({ props: { children: text, value: id } }) => ({ id, text }))
     }
@@ -229,7 +231,13 @@ class Select extends Component {
     }
 
     _getOptionById = value => {
-        return this.props.options.find(({ id }) => id == value) || null
+        const { options } = this.state
+
+        if (options && options.length) {
+            return options.find(({ id }) => id == value) // eslint-disable-line eqeqeq
+        }
+
+        return null
     }
 
     _onContainerClick = () => {
@@ -251,8 +259,7 @@ class Select extends Component {
             ArrowUp: this._setHighlightedOption.bind(null, -1),
             ArrowDown: this._setHighlightedOption.bind(null, 1),
             Enter: this._selectHighlighted,
-            // 'Space' key
-            ' ': this._selectHighlighted,
+            ' ': this._selectHighlighted, // 'Space' key
             Escape: this._closeDropdown
         }
 
@@ -274,7 +281,7 @@ class Select extends Component {
         // TODO: request options from server
         // const { request } = this.props
 
-        console.log(term)
+        console.log(term) // eslint-disable-line no-console
     }
 
     /**
@@ -294,7 +301,7 @@ class Select extends Component {
             }
         }
 
-        this.setState({ selectedOption: option }, () => {
+        this.setState({ value }, () => {
             if (isFunction(onSelect)) {
                 onSelect(selectionEvent)
             }
@@ -328,7 +335,7 @@ class Select extends Component {
 
         const optionsLength = options.length - 1
         const nextHighlighted = (highlighted !== null) ?
-            highlighted + direction
+        highlighted + direction
             : 0
 
         // TODO: scroll SelectDropdown block to show highlighted item when overflows
@@ -354,31 +361,31 @@ class Select extends Component {
 
         // If dropdown not opened or there is no highlighted item yet
         if (!dropdownOpened || highlighted === null) {
-
             // Open dropdown and hightlight first item
-            this.setState({ dropdownOpened: true, highlighted: 0 })
+            this.setState({
+                dropdownOpened: true,
+                highlighted: 0,
+            })
         } else {
             // Select highlighted item
             this._onSelect(options[highlighted])
         }
     }
 
-    render() {
+    _getSelectContainerClassName = () => {
         const {
-            allowClear,
             className,
-            error,
             disabled,
-            placeholder,
-            search,
-            lang,
-            layout: { width, dropdownHorizontalPosition, dropdownVerticalPosition },
-            request,
-            children,
+            dropdownHorizontalPosition,
+            dropdownVerticalPosition,
+            error,
         } = this.props
-        const { dropdownOpened, highlighted, isPending, options, selectedOption } = this.state
-        const clearable = (allowClear && typeof selectedOption !== 'undefined' && selectedOption !== null)
-        const selectContainerClassName = classNames('pure-react-select__container ' + (className || ''), {
+        const {
+            dropdownOpened,
+            isPending,
+        } = this.state
+
+        return classNames('pure-react-select__container ' + (className || ''), {
             'pure-react-select__container--above': dropdownVerticalPosition === 'above',
             'pure-react-select__container--below': dropdownVerticalPosition !== 'above',
             'pure-react-select__container--disabled': disabled,
@@ -388,11 +395,32 @@ class Select extends Component {
             'pure-react-select__container--pending': isPending,
             'pure-react-select__container--right': dropdownHorizontalPosition === 'right',
         })
+    }
+
+    _isClearable = () => {
+        const { allowClear } = this.props
+        const { value } = this.state
+
+        return (allowClear && typeof value !== 'undefined' && value !== null)
+    }
+
+    render() {
+        const {
+            disabled,
+            error,
+            lang,
+            layout: { width },
+            placeholder,
+            request,
+            search,
+        } = this.props
+        const { dropdownOpened, highlighted, isPending, options, value } = this.state
+        const selectedOption = this._getOptionById(value)
         const isSearchOnRequest = request && !request.once
 
         return (
             <span ref='selectContainer'
-                  className={ selectContainerClassName }
+                  className={ this._getSelectContainerClassName() }
                   style={{ width }}
                   disabled={ disabled }
                   tabIndex='1'
@@ -400,14 +428,14 @@ class Select extends Component {
                   onClick={ this._onContainerClick }
                   onKeyDown={ this._onContainerKeyDown }>
                 <SelectSelection {...{
-                    clearable,
-                    selection: selectedOption && selectedOption.text,
+                    clearable: this._isClearable(),
+                    onClearSelection: this._onClearSelection,
                     placeholder,
-                    onClearSelection: this._onClearSelection
-                }} />
+                    selection: selectedOption && selectedOption.text,
+                }}/>
                 {
                     dropdownOpened ?
-                        <SelectDropdown {... {
+                        <SelectDropdown {...{
                             highlighted,
                             lang,
                             isPending,
@@ -416,7 +444,7 @@ class Select extends Component {
                             options,
                             search,
                             selectedOption,
-                        }} />
+                        }}/>
                         : <SelectError error={ error }/>
                 }
              </span>

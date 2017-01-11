@@ -70,6 +70,7 @@ var Select = function (_Component) {
         get: function get() {
             var selectedOption = this.state.selectedOption;
 
+
             return selectedOption ? selectedOption.id : null;
         }
     }]);
@@ -100,7 +101,7 @@ var Select = function (_Component) {
 
         _this.state = Object.assign(Select.initialState(), {
             options: _this._setOptions(children, options),
-            selectedOption: _this._setSelectedOption(value, defaultValue)
+            value: value || defaultValue
         });
         return _this;
     }
@@ -121,7 +122,7 @@ var Select = function (_Component) {
             this.setState({
                 disabled: disabled,
                 options: this._setOptions(children, options),
-                selectedOption: this._setSelectedOption(value)
+                value: value
             });
         }
 
@@ -173,43 +174,27 @@ var Select = function (_Component) {
         key: 'render',
         value: function render() {
             var _props = this.props,
-                allowClear = _props.allowClear,
-                className = _props.className,
-                error = _props.error,
                 disabled = _props.disabled,
-                placeholder = _props.placeholder,
-                search = _props.search,
+                error = _props.error,
                 lang = _props.lang,
-                _props$layout = _props.layout,
-                width = _props$layout.width,
-                dropdownHorizontalPosition = _props$layout.dropdownHorizontalPosition,
-                dropdownVerticalPosition = _props$layout.dropdownVerticalPosition,
+                width = _props.layout.width,
+                placeholder = _props.placeholder,
                 request = _props.request,
-                children = _props.children;
+                search = _props.search;
             var _state = this.state,
                 dropdownOpened = _state.dropdownOpened,
                 highlighted = _state.highlighted,
                 isPending = _state.isPending,
                 options = _state.options,
-                selectedOption = _state.selectedOption;
+                value = _state.value;
 
-            var clearable = allowClear && typeof selectedOption !== 'undefined' && selectedOption !== null;
-            var selectContainerClassName = (0, _classnames2.default)('pure-react-select__container ' + (className || ''), {
-                'pure-react-select__container--above': dropdownVerticalPosition === 'above',
-                'pure-react-select__container--below': dropdownVerticalPosition !== 'above',
-                'pure-react-select__container--disabled': disabled,
-                'pure-react-select__container--error': error,
-                'pure-react-select__container--left': dropdownHorizontalPosition !== 'right',
-                'pure-react-select__container--open': dropdownOpened,
-                'pure-react-select__container--pending': isPending,
-                'pure-react-select__container--right': dropdownHorizontalPosition === 'right'
-            });
+            var selectedOption = this._getOptionById(value);
             var isSearchOnRequest = request && !request.once;
 
             return _react2.default.createElement(
                 'span',
                 { ref: 'selectContainer',
-                    className: selectContainerClassName,
+                    className: this._getSelectContainerClassName(),
                     style: { width: width },
                     disabled: disabled,
                     tabIndex: '1',
@@ -217,10 +202,10 @@ var Select = function (_Component) {
                     onClick: this._onContainerClick,
                     onKeyDown: this._onContainerKeyDown },
                 _react2.default.createElement(_SelectSelection2.default, {
-                    clearable: clearable,
-                    selection: selectedOption && selectedOption.text,
+                    clearable: this._isClearable(),
+                    onClearSelection: this._onClearSelection,
                     placeholder: placeholder,
-                    onClearSelection: this._onClearSelection
+                    selection: selectedOption && selectedOption.text
                 }),
                 dropdownOpened ? _react2.default.createElement(_SelectDropdown2.default, {
                     highlighted: highlighted,
@@ -306,7 +291,7 @@ Select.defaultProps = {
         width: '245px'
     },
     name: (0, _uniqueId2.default)('reactSelect_'),
-    options: [],
+    options: null,
     search: {
         minimumResults: 20
     }
@@ -319,7 +304,7 @@ Select.initialState = function () {
         isPending: false,
         options: [],
         searchShow: false,
-        selectedOption: null
+        value: undefined
     };
 };
 
@@ -365,7 +350,7 @@ var _initialiseProps = function _initialiseProps() {
     };
 
     this._isValidValue = function (value) {
-        return _this2.props.options.some(function (_ref2) {
+        return _this2.state.options.some(function (_ref2) {
             var id = _ref2.id;
             return value === id;
         });
@@ -373,15 +358,15 @@ var _initialiseProps = function _initialiseProps() {
 
     this._setSelectedOption = function (value, defaultValue) {
         // Validate value prop if defined
-        if (typeof value !== 'undefined' && !_this2._isValidValue(value)) {
-            throw new Error('Provided value prop is invalid. Expected option\'s id');
+        if (typeof value !== 'undefined' && value !== null && !_this2._isValidValue(value)) {
+            // throw new Error('Provided value prop is invalid. Expected option\'s id')
         }
 
         return _this2._getOptionById(defaultValue || value);
     };
 
     this._setOptions = function (children, options) {
-        return _this2._getOptionsFromChildren(children) || options;
+        return options || _this2._getOptionsFromChildren(children) || [];
     };
 
     this._getOptionsFromChildren = function (children) {
@@ -412,10 +397,17 @@ var _initialiseProps = function _initialiseProps() {
     };
 
     this._getOptionById = function (value) {
-        return _this2.props.options.find(function (_ref5) {
-            var id = _ref5.id;
-            return id == value;
-        }) || null;
+        var options = _this2.state.options;
+
+
+        if (options && options.length) {
+            return options.find(function (_ref5) {
+                var id = _ref5.id;
+                return id == value;
+            }); // eslint-disable-line eqeqeq
+        }
+
+        return null;
     };
 
     this._onContainerClick = function () {
@@ -435,8 +427,7 @@ var _initialiseProps = function _initialiseProps() {
             ArrowUp: _this2._setHighlightedOption.bind(null, -1),
             ArrowDown: _this2._setHighlightedOption.bind(null, 1),
             Enter: _this2._selectHighlighted,
-            // 'Space' key
-            ' ': _this2._selectHighlighted,
+            ' ': _this2._selectHighlighted, // 'Space' key
             Escape: _this2._closeDropdown
         };
 
@@ -459,7 +450,7 @@ var _initialiseProps = function _initialiseProps() {
         // TODO: request options from server
         // const { request } = this.props
 
-        console.log(term);
+        console.log(term); // eslint-disable-line no-console
     };
 
     this._onSelect = function (option) {
@@ -478,7 +469,7 @@ var _initialiseProps = function _initialiseProps() {
             }
         };
 
-        _this2.setState({ selectedOption: option }, function () {
+        _this2.setState({ value: value }, function () {
             if ((0, _isFunction2.default)(onSelect)) {
                 onSelect(selectionEvent);
             }
@@ -533,13 +524,47 @@ var _initialiseProps = function _initialiseProps() {
         // If dropdown not opened or there is no highlighted item yet
 
         if (!dropdownOpened || highlighted === null) {
-
             // Open dropdown and hightlight first item
-            _this2.setState({ dropdownOpened: true, highlighted: 0 });
+            _this2.setState({
+                dropdownOpened: true,
+                highlighted: 0
+            });
         } else {
             // Select highlighted item
             _this2._onSelect(options[highlighted]);
         }
+    };
+
+    this._getSelectContainerClassName = function () {
+        var _props3 = _this2.props,
+            className = _props3.className,
+            disabled = _props3.disabled,
+            dropdownHorizontalPosition = _props3.dropdownHorizontalPosition,
+            dropdownVerticalPosition = _props3.dropdownVerticalPosition,
+            error = _props3.error;
+        var _state4 = _this2.state,
+            dropdownOpened = _state4.dropdownOpened,
+            isPending = _state4.isPending;
+
+
+        return (0, _classnames2.default)('pure-react-select__container ' + (className || ''), {
+            'pure-react-select__container--above': dropdownVerticalPosition === 'above',
+            'pure-react-select__container--below': dropdownVerticalPosition !== 'above',
+            'pure-react-select__container--disabled': disabled,
+            'pure-react-select__container--error': error,
+            'pure-react-select__container--left': dropdownHorizontalPosition !== 'right',
+            'pure-react-select__container--open': dropdownOpened,
+            'pure-react-select__container--pending': isPending,
+            'pure-react-select__container--right': dropdownHorizontalPosition === 'right'
+        });
+    };
+
+    this._isClearable = function () {
+        var allowClear = _this2.props.allowClear;
+        var value = _this2.state.value;
+
+
+        return allowClear && typeof value !== 'undefined' && value !== null;
     };
 };
 
