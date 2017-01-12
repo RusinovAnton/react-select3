@@ -14,6 +14,10 @@ var _classnames = require('classnames');
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
+var _debounce = require('lodash/debounce');
+
+var _debounce2 = _interopRequireDefault(_debounce);
+
 var _fetch = require('../utils/fetch');
 
 var _fetch2 = _interopRequireDefault(_fetch);
@@ -46,10 +50,6 @@ var _qs = require('qs');
 
 var _qs2 = _interopRequireDefault(_qs);
 
-var _throttle = require('lodash/throttle');
-
-var _throttle2 = _interopRequireDefault(_throttle);
-
 var _uniqueId = require('lodash/uniqueId');
 
 var _uniqueId2 = _interopRequireDefault(_uniqueId);
@@ -81,7 +81,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 // TODO: styles
-// TODO: request
 // TODO: multiselect
 // TODO: label
 // TODO: optgroups
@@ -132,26 +131,41 @@ var Select = function (_Component) {
             value = props.value;
 
 
-        var requestDelay = request && request.delay ? request.delay : 3000;
+        if (request && typeof request.endpoint !== 'string') {
+            throw new Error('Request endpoint must be a string.');
+        }
+
+        /**
+         * @var {boolean} does select need to send request for options on searchTermChange
+         */
+        var requestSearch = request && !request.once;
+
+        if (requestSearch) {
+            var requestDelay = request && request.delay ? request.delay : 500;
+
+            _this._requestOptions = (0, _debounce2.default)(_this._request, requestDelay);
+        } else {
+            _this._requestOptions = _this._request;
+        }
 
         /**
          * @type {{
-         *   dropdownOpened: boolean,
-         *   highlight: *,
-         *   isPending: boolean,
-         *   options: array,
-         *   searchShow: boolean,
-         *   value: *,
+         *  dropdownOpened: boolean,
+         *  error: string|boolean,
+         *  highlighted: number,
+         *  isPending: boolean,
+         *  options: array,
+         *  requestSearch: boolean
+         *  searchTerm: string,
+         *  value: string,
          * }}
          */
         _this.state = Object.assign(Select.initialState(), {
             error: error,
             options: _this._setOptions(options, children),
-            requestSearch: request && !request.once,
+            requestSearch: requestSearch,
             value: value || defaultValue
         });
-
-        _this._requestOptions = (0, _throttle2.default)(_this._request, requestDelay, { trailing: false });
         return _this;
     }
 
@@ -168,7 +182,7 @@ var Select = function (_Component) {
 
             var isValueDefined = typeof value !== 'undefined';
 
-            if (isValueDefined && typeof newProps.onSelect === 'undefined' && typeof this.props.onSelect === 'undefined') {
+            if (this._isValidValue(value)) {} else if (isValueDefined && typeof newProps.onSelect === 'undefined' && typeof this.props.onSelect === 'undefined') {
                 /* eslint-disable */
                 console.error('Warning: You\'re setting value for Select component throught props\n                but not passing onSelect callback which can lead to unforeseen consequences(bugs).\n                Please consider using onSelect callback or defaultValue instead of value');
                 /* eslint-enable */
@@ -197,6 +211,9 @@ var Select = function (_Component) {
         /**
          * Close SelectDropdown on click outside using 'react-click-outside' library
          */
+
+
+        // @fixme: getChildrenTextContent function is not perfect tbh
 
 
         /**
@@ -248,9 +265,9 @@ var Select = function (_Component) {
             var _state = this.state,
                 dropdownOpened = _state.dropdownOpened,
                 highlighted = _state.highlighted,
-                requestSearch = _state.requestSearch,
                 isPending = _state.isPending,
-                options = _state.options,
+                requestSearch = _state.requestSearch,
+                searchTerm = _state.searchTerm,
                 value = _state.value;
 
             var selectedOption = this._getOptionById(value);
@@ -273,13 +290,14 @@ var Select = function (_Component) {
                 }),
                 dropdownOpened ? _react2.default.createElement(_SelectDropdown2.default, {
                     highlighted: highlighted,
-                    lang: lang,
                     isPending: isPending,
-                    requestSearch: requestSearch,
-                    onSearch: requestSearch ? this._onSearchTermChange : null,
+                    lang: lang,
+                    onSearchTermChange: this._onSearchTermChange,
                     onSelect: this._onSelectOption,
-                    options: options,
+                    options: this._getOptionsList(),
+                    requestSearch: requestSearch,
                     search: search,
+                    searchTerm: searchTerm,
                     value: value
                 }) : _react2.default.createElement(_SelectError2.default, { error: error })
             );
@@ -304,8 +322,14 @@ Select.propTypes = {
      * You can provide error message to display or just boolean to highlight select container with error styles
      */
     error: _react.PropTypes.oneOfType([_react.PropTypes.bool, _react.PropTypes.string]),
+    /**
+     * Provide custom messages
+     */
     lang: _react.PropTypes.object,
     layout: _react.PropTypes.shape({
+        /**
+         * Container's width
+         */
         width: _react.PropTypes.string,
         /**
          * Defines whether SelectDropdown should be opened above or below the container.
@@ -317,32 +341,62 @@ Select.propTypes = {
     }),
     name: _react.PropTypes.string,
     /**
-     * Provide needed options to fetch data from server by term query
-     */
-    /**
      * Array of option items
      */
     options: _react.PropTypes.arrayOf(_react.PropTypes.shape({
         id: _selectPropTypes.selectPropTypes.optionId.isRequired,
         text: _selectPropTypes.selectPropTypes.selection.isRequired
     })),
-    // TODO: validate request object
+    /**
+     * Provide needed options to fetch data from server by term query
+     */
     request: _react.PropTypes.shape({
-        delay: _react.PropTypes.number, // default 3000
+        /**
+         * Delays between requests
+         */
+        delay: _react.PropTypes.number, // default 500
         endpoint: _react.PropTypes.string.isRequired,
+        /**
+         * Whenever to fetch options once at mount or on searchTermChange
+         */
         once: _react.PropTypes.bool,
+        /**
+         * Additional query params
+         */
         params: _react.PropTypes.object,
+        /**
+         * You can provide custom ajaxClient instead of built-in fetchJson
+         * which invokes on termChange or once at component mount with endpoint
+         * and query params as string argument
+         */
         ajaxClient: _react.PropTypes.func,
-        // function that creates standart shaped object { id: number|string, text: string|element } from response data
+        /**
+         * Pass in function that will used to map response data array
+         * `{ id: number|string, text: string|element }`
+         */
         responseDataFormatter: _react.PropTypes.func,
+        /**
+         * Name of the key of searchTerm query param
+         * `{ [termQuery]: 'search term' }`
+         */
         termQuery: _react.PropTypes.string
     }),
     onSelect: _react.PropTypes.func,
     placeholder: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.element]),
     search: _react.PropTypes.shape({
+        /**
+         * Minimum results amount before showing search input
+         */
         minimumResults: _react.PropTypes.number,
-        onSearchTermChange: _react.PropTypes.func
+        /**
+         * Minimum characters before sending request
+         */
+        minLength: _react.PropTypes.number
     }),
+    /**
+     * Search input change callback
+     */
+    onSearchTermChange: _react.PropTypes.func,
     /**
      * Value can be set by providing option id
      */
@@ -360,7 +414,8 @@ Select.defaultProps = {
     name: (0, _uniqueId2.default)('reactSelect_'),
     options: null,
     search: {
-        minimumResults: 20
+        minimumResults: 20,
+        minLength: 3
     }
 };
 
@@ -371,9 +426,18 @@ Select.initialState = function () {
         highlighted: null,
         isPending: false,
         options: [],
-        searchShow: false,
+        requestSearch: false,
+        searchTerm: '',
         value: null
     };
+};
+
+Select.getChildrenTextContent = function (element) {
+    if (typeof element === 'string') {
+        return element;
+    }
+
+    return Select.getChildrenTextContent(_react.Children.toArray(element)[0].props.children);
 };
 
 var _initialiseProps = function _initialiseProps() {
@@ -397,8 +461,31 @@ var _initialiseProps = function _initialiseProps() {
         if (request && request.once) _this3._requestOptions();
     };
 
+    this.componentWillUnmount = function () {
+        if (_this3.state.requestSearch) {
+            _this3._requestOptions.cancel();
+        }
+    };
+
     this.handleClickOutside = function () {
         _this3._closeDropdown();
+    };
+
+    this._isValidValue = function (value) {
+        var options = _this3.state.options;
+
+        var isValid = false;
+
+        if (value === null) {
+            isValid = true;
+        } else if (options && options.length) {
+            isValid = options.some(function (_ref2) {
+                var id = _ref2.id;
+                return id === value;
+            });
+        }
+
+        return isValid;
     };
 
     this._hasResponseDataFormatter = function () {
@@ -420,9 +507,9 @@ var _initialiseProps = function _initialiseProps() {
 
         function composeFetchPath(endpoint) {
             var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-            var _ref2 = arguments[2];
-            var searchTerm = _ref2.searchTerm,
-                termQuery = _ref2.termQuery;
+            var _ref3 = arguments[2];
+            var searchTerm = _ref3.searchTerm,
+                termQuery = _ref3.termQuery;
 
             var fetchPath = void 0;
             var fetchParams = Object.assign({}, params);
@@ -486,9 +573,9 @@ var _initialiseProps = function _initialiseProps() {
         var stateOptions = _this3.state.options || [];
 
         if (Array.isArray(options) && options.length) {
-            stateOptions = options.map(function (_ref3) {
-                var id = _ref3.id,
-                    text = _ref3.text;
+            stateOptions = options.map(function (_ref4) {
+                var id = _ref4.id,
+                    text = _ref4.text;
 
                 if (typeof id === 'undefined' || typeof text === 'undefined') {
                     throw new Error('options array is not formatted properly, option object must have "id" and "text"');
@@ -500,13 +587,13 @@ var _initialiseProps = function _initialiseProps() {
                 };
             });
         } else if (_react.Children.count(children)) {
-            stateOptions = _react.Children.toArray(children).filter(function (_ref4) {
-                var type = _ref4.type;
+            stateOptions = _react.Children.toArray(children).filter(function (_ref5) {
+                var type = _ref5.type;
                 return type === 'option';
-            }).map(function (_ref5) {
-                var _ref5$props = _ref5.props,
-                    text = _ref5$props.children,
-                    id = _ref5$props.value;
+            }).map(function (_ref6) {
+                var _ref6$props = _ref6.props,
+                    text = _ref6$props.children,
+                    id = _ref6$props.value;
                 return { id: String(id), text: text };
             });
         }
@@ -530,8 +617,8 @@ var _initialiseProps = function _initialiseProps() {
 
 
         if (options && options.length) {
-            return options.find(function (_ref6) {
-                var id = _ref6.id;
+            return options.find(function (_ref7) {
+                var id = _ref7.id;
                 return id === value;
             }); // eslint-disable-line eqeqeq
         }
@@ -576,11 +663,6 @@ var _initialiseProps = function _initialiseProps() {
             _this3._onSelect(null);
         }
     };
-
-    this._onSearchTermChange = function (term) {}
-    // TODO: request options from server
-    // const { request } = this.props
-    ;
 
     this._onSelect = function (option) {
         var _props3 = _this3.props,
@@ -697,6 +779,58 @@ var _initialiseProps = function _initialiseProps() {
 
 
         return allowClear && (0, _hasValue2.default)(value);
+    };
+
+    this._getOptionsList = function () {
+        var _state5 = _this3.state,
+            options = _state5.options,
+            searchTerm = _state5.searchTerm;
+
+        var optionsList = options || [];
+
+        if (searchTerm && optionsList.length) {
+            (function () {
+                var searchRegExp = new RegExp(searchTerm, 'gi');
+                optionsList = options.filter(function (_ref8) {
+                    var element = _ref8.text;
+
+                    var elementText = Select.getChildrenTextContent(element);
+
+                    return searchRegExp.test(elementText);
+                });
+            })();
+        }
+
+        return optionsList;
+    };
+
+    this._onSearchTermChange = function (e) {
+        var term = e.target.value;
+        var _props5 = _this3.props,
+            _props5$search$minLen = _props5.search.minLength,
+            minLength = _props5$search$minLen === undefined ? 3 : _props5$search$minLen,
+            onSearchTermChange = _props5.onSearchTermChange;
+        var _state6 = _this3.state,
+            stateSearchTerm = _state6.searchTerm,
+            requestSearch = _state6.requestSearch;
+
+        // If size of text is increases
+        // const isTextIncreasing = term && (!stateSearchTerm || term.length > stateSearchTerm.length)
+
+        // reset searchTerm if term === ''
+
+        var searchTerm = term || null;
+
+        if ((0, _isFunction2.default)(onSearchTermChange)) {
+            onSearchTermChange(e);
+        }
+
+        // If requestSearch enabled
+        if (searchTerm && searchTerm.length >= minLength && requestSearch) {
+            _this3._requestOptions(searchTerm);
+        }
+
+        _this3.setState({ searchTerm: searchTerm });
     };
 };
 

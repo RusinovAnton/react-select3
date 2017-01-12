@@ -1,6 +1,7 @@
 import React, { Children, Component, PropTypes } from 'react'
 
 import classNames from 'classnames'
+import debounce from 'lodash/debounce'
 import fetchJson from '../utils/fetch'
 import hasValue from '../utils/hasValue'
 import isEqual from 'lodash/isEqual'
@@ -9,7 +10,6 @@ import keys from 'lodash/keys'
 import path from 'path'
 import provideClickOutside from 'react-click-outside'
 import qs from 'qs'
-import throttle from 'lodash/throttle'
 import uniqueId from 'lodash/uniqueId'
 import { selectPropTypes } from '../utils/selectPropTypes'
 import { stopPropagation } from '../utils/events'
@@ -20,7 +20,6 @@ import SelectSelection from './SelectSelection'
 
 
 // TODO: styles
-// TODO: request
 // TODO: multiselect
 // TODO: label
 // TODO: optgroups
@@ -41,8 +40,14 @@ class Select extends Component {
          * You can provide error message to display or just boolean to highlight select container with error styles
          */
         error: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+        /**
+         * Provide custom messages
+         */
         lang: PropTypes.object,
         layout: PropTypes.shape({
+            /**
+             * Container's width
+             */
             width: PropTypes.string,
             /**
              * Defines whether SelectDropdown should be opened above or below the container.
@@ -54,32 +59,62 @@ class Select extends Component {
         }),
         name: PropTypes.string,
         /**
-         * Provide needed options to fetch data from server by term query
-         */
-        /**
          * Array of option items
          */
         options: PropTypes.arrayOf(PropTypes.shape({
             id: selectPropTypes.optionId.isRequired,
             text: selectPropTypes.selection.isRequired,
         })),
-        // TODO: validate request object
+        /**
+         * Provide needed options to fetch data from server by term query
+         */
         request: PropTypes.shape({
-            delay: PropTypes.number, // default 3000
+            /**
+             * Delays between requests
+             */
+            delay: PropTypes.number, // default 500
             endpoint: PropTypes.string.isRequired,
+            /**
+             * Whenever to fetch options once at mount or on searchTermChange
+             */
             once: PropTypes.bool,
+            /**
+             * Additional query params
+             */
             params: PropTypes.object,
+            /**
+             * You can provide custom ajaxClient instead of built-in fetchJson
+             * which invokes on termChange or once at component mount with endpoint
+             * and query params as string argument
+             */
             ajaxClient: PropTypes.func,
-            // function that creates standart shaped object { id: number|string, text: string|element } from response data
+            /**
+             * Pass in function that will used to map response data array
+             * `{ id: number|string, text: string|element }`
+             */
             responseDataFormatter: PropTypes.func,
+            /**
+             * Name of the key of searchTerm query param
+             * `{ [termQuery]: 'search term' }`
+             */
             termQuery: PropTypes.string,
         }),
         onSelect: PropTypes.func,
         placeholder: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
         search: PropTypes.shape({
+            /**
+             * Minimum results amount before showing search input
+             */
             minimumResults: PropTypes.number,
-            onSearchTermChange: PropTypes.func,
+            /**
+             * Minimum characters before sending request
+             */
+            minLength: PropTypes.number,
         }),
+        /**
+         * Search input change callback
+         */
+        onSearchTermChange: PropTypes.func,
         /**
          * Value can be set by providing option id
          */
@@ -99,6 +134,7 @@ class Select extends Component {
         options: null,
         search: {
             minimumResults: 20,
+            minLength: 3,
         },
     }
 
@@ -108,7 +144,8 @@ class Select extends Component {
         highlighted: null,
         isPending: false,
         options: [],
-        searchShow: false,
+        requestSearch: false,
+        searchTerm: '',
         value: null,
     })
 
@@ -133,7 +170,6 @@ class Select extends Component {
     constructor(props, context) { // eslint-disable-line consistent-return
         super(props, context)
 
-
         this.state = {}
 
         const {
@@ -145,26 +181,41 @@ class Select extends Component {
             value,
         } = props
 
-        const requestDelay = (request && request.delay) ? request.delay : 3000
+        if (request && typeof request.endpoint !== 'string') {
+            throw new Error('Request endpoint must be a string.')
+        }
+
+        /**
+         * @var {boolean} does select need to send request for options on searchTermChange
+         */
+        const requestSearch = request && !request.once
+
+        if (requestSearch) {
+            const requestDelay = (request && request.delay) ? request.delay : 500
+
+            this._requestOptions = debounce(this._request, requestDelay)
+        } else {
+            this._requestOptions = this._request
+        }
 
         /**
          * @type {{
-         *   dropdownOpened: boolean,
-         *   highlight: *,
-         *   isPending: boolean,
-         *   options: array,
-         *   searchShow: boolean,
-         *   value: *,
+         *  dropdownOpened: boolean,
+         *  error: string|boolean,
+         *  highlighted: number,
+         *  isPending: boolean,
+         *  options: array,
+         *  requestSearch: boolean
+         *  searchTerm: string,
+         *  value: string,
          * }}
          */
         this.state = Object.assign(Select.initialState(), {
             error,
             options: this._setOptions(options, children),
-            requestSearch: request && !request.once,
+            requestSearch,
             value: value || defaultValue,
         })
-
-        this._requestOptions = throttle(this._request, requestDelay, { trailing: false })
     }
 
     componentWillReceiveProps(newProps) {
@@ -177,7 +228,9 @@ class Select extends Component {
         } = newProps
         const isValueDefined = typeof value !== 'undefined'
 
-        if (isValueDefined && typeof newProps.onSelect === 'undefined' && typeof this.props.onSelect === 'undefined') {
+        if (this._isValidValue(value)) {
+
+        } else if (isValueDefined && typeof newProps.onSelect === 'undefined' && typeof this.props.onSelect === 'undefined') {
             /* eslint-disable */
             console.error(`Warning: You're setting value for Select component throught props
                 but not passing onSelect callback which can lead to unforeseen consequences(bugs).
@@ -220,11 +273,30 @@ class Select extends Component {
         if (request && request.once) this._requestOptions()
     }
 
+    componentWillUnmount = () => {
+        if (this.state.requestSearch) {
+            this._requestOptions.cancel()
+        }
+    }
+
     /**
      * Close SelectDropdown on click outside using 'react-click-outside' library
      */
     handleClickOutside = () => {
         this._closeDropdown()
+    }
+
+    _isValidValue = value => {
+        const { options } = this.state
+        let isValid = false
+
+        if (value === null) {
+            isValid = true
+        } else if (options && options.length) {
+            isValid = options.some(({ id }) => id === value)
+        }
+
+        return isValid
     }
 
     _hasResponseDataFormatter = () => {
@@ -233,6 +305,15 @@ class Select extends Component {
         }
 
         return this.hasResponseDataFormatter
+    }
+
+    // @fixme: getChildrenTextContent function is not perfect tbh
+    static getChildrenTextContent = element => {
+        if (typeof element === 'string') {
+            return element
+        }
+
+        return Select.getChildrenTextContent(Children.toArray(element)[0].props.children)
     }
 
     _request = searchTerm => {
@@ -395,11 +476,6 @@ class Select extends Component {
         }
     }
 
-    _onSearchTermChange = term => {
-        // TODO: request options from server
-        // const { request } = this.props
-    }
-
     /**
      * Setting selected value
      * @param {object} option - option object from data array
@@ -524,6 +600,45 @@ class Select extends Component {
         return (allowClear && hasValue(value))
     }
 
+    _getOptionsList = () => {
+        const { options, searchTerm } = this.state
+        let optionsList = options || []
+
+        if (searchTerm && optionsList.length) {
+            const searchRegExp = new RegExp(searchTerm, 'gi')
+            optionsList = options.filter(({ text: element }) => {
+                const elementText = Select.getChildrenTextContent(element)
+
+                return searchRegExp.test(elementText)
+            })
+        }
+
+        return optionsList
+    }
+
+    _onSearchTermChange = e => {
+        const { target: { value: term } } = e
+        const { search: { minLength = 3 }, onSearchTermChange } = this.props
+        const { searchTerm: stateSearchTerm, requestSearch } = this.state
+
+        // If size of text is increases
+        // const isTextIncreasing = term && (!stateSearchTerm || term.length > stateSearchTerm.length)
+
+        // reset searchTerm if term === ''
+        const searchTerm = term || null
+
+        if (isFunction(onSearchTermChange)) {
+            onSearchTermChange(e)
+        }
+
+        // If requestSearch enabled
+        if (searchTerm && searchTerm.length >= minLength && requestSearch) {
+            this._requestOptions(searchTerm)
+        }
+
+        this.setState({ searchTerm })
+    }
+
     render() {
         const {
             disabled,
@@ -533,7 +648,14 @@ class Select extends Component {
             placeholder,
             search,
         } = this.props
-        const { dropdownOpened, highlighted, requestSearch, isPending, options, value } = this.state
+        const {
+            dropdownOpened,
+            highlighted,
+            isPending,
+            requestSearch,
+            searchTerm,
+            value,
+        } = this.state
         const selectedOption = this._getOptionById(value)
 
         return (
@@ -555,13 +677,14 @@ class Select extends Component {
                     dropdownOpened ?
                         <SelectDropdown {...{
                             highlighted,
-                            lang,
                             isPending,
-                            requestSearch,
-                            onSearch: requestSearch ? this._onSearchTermChange : null,
+                            lang,
+                            onSearchTermChange: this._onSearchTermChange,
                             onSelect: this._onSelectOption,
-                            options,
+                            options: this._getOptionsList(),
+                            requestSearch,
                             search,
+                            searchTerm,
                             value,
                         }}/>
                         : <SelectError error={ error }/>
