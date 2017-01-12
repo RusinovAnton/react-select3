@@ -189,12 +189,20 @@ class Select extends Component {
             this._closeDropdown()
         }
 
-        this.setState(state => ({
-            disabled,
-            options: this._setOptions(options, children),
-            value: isValueDefined ? String(value) : state.value,
-            error: hasValue(error) ? error : state.error
-        }))
+        this.setState(state => {
+            let newValue = state.value
+
+            if (isValueDefined) {
+                newValue = value === null ? null : String(value)
+            }
+
+            return {
+                disabled,
+                options: this._setOptions(options, children),
+                value: newValue,
+                error: hasValue(error) ? error : state.error
+            }
+        })
     }
 
     shouldComponentUpdate = ({ error, disabled, value, children }, nextState) => (

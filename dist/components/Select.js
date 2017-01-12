@@ -179,10 +179,16 @@ var Select = function (_Component) {
             }
 
             this.setState(function (state) {
+                var newValue = state.value;
+
+                if (isValueDefined) {
+                    newValue = value === null ? null : String(value);
+                }
+
                 return {
                     disabled: disabled,
                     options: _this2._setOptions(options, children),
-                    value: isValueDefined ? String(value) : state.value,
+                    value: newValue,
                     error: (0, _hasValue2.default)(error) ? error : state.error
                 };
             });
