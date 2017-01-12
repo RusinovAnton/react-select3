@@ -122,6 +122,8 @@ var Select = function (_Component) {
 
         _initialiseProps.call(_this);
 
+        _this.state = {};
+
         var children = props.children,
             defaultValue = props.defaultValue,
             error = props.error,
@@ -144,7 +146,7 @@ var Select = function (_Component) {
          */
         _this.state = Object.assign(Select.initialState(), {
             error: error,
-            options: _this._setOptions(children, options),
+            options: _this._setOptions(options, children),
             requestSearch: request && !request.once,
             value: value || defaultValue
         });
@@ -179,7 +181,7 @@ var Select = function (_Component) {
             this.setState(function (state) {
                 return {
                     disabled: disabled,
-                    options: _this2._setOptions(children, options),
+                    options: _this2._setOptions(options, children),
                     value: isValueDefined ? String(value) : state.value,
                     error: (0, _hasValue2.default)(error) ? error : state.error
                 };
@@ -446,7 +448,7 @@ var _initialiseProps = function _initialiseProps() {
             }
 
             _this3.setState({
-                options: options,
+                options: _this3._setOptions(options),
                 isPending: false
             });
         }).catch(function (error) {
@@ -474,8 +476,8 @@ var _initialiseProps = function _initialiseProps() {
         }
     };
 
-    this._setOptions = function (children, options) {
-        var stateOptions = [];
+    this._setOptions = function (options, children) {
+        var stateOptions = _this3.state.options || [];
 
         if (Array.isArray(options) && options.length) {
             stateOptions = options.map(function (_ref3) {

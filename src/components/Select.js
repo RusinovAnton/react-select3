@@ -133,6 +133,9 @@ class Select extends Component {
     constructor(props, context) { // eslint-disable-line consistent-return
         super(props, context)
 
+
+        this.state = {}
+
         const {
             children,
             defaultValue,
@@ -156,7 +159,7 @@ class Select extends Component {
          */
         this.state = Object.assign(Select.initialState(), {
             error,
-            options: this._setOptions(children, options),
+            options: this._setOptions(options, children),
             requestSearch: request && !request.once,
             value: value || defaultValue,
         })
@@ -188,7 +191,7 @@ class Select extends Component {
 
         this.setState(state => ({
             disabled,
-            options: this._setOptions(children, options),
+            options: this._setOptions(options, children),
             value: isValueDefined ? String(value) : state.value,
             error: hasValue(error) ? error : state.error
         }))
@@ -267,7 +270,7 @@ class Select extends Component {
                 }
 
                 this.setState({
-                    options,
+                    options: this._setOptions(options),
                     isPending: false,
                 })
             })
@@ -296,8 +299,8 @@ class Select extends Component {
         }
     }
 
-    _setOptions = (children, options) => {
-        let stateOptions = []
+    _setOptions = (options, children) => {
+        let stateOptions = this.state.options || []
 
         if (Array.isArray(options) && options.length) {
             stateOptions = options.map(({ id, text }) => {
