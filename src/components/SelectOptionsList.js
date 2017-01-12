@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react'
 
 import classNames from 'classnames'
-import hasValue from '../shared/hasValue'
-import { stopPropagation } from '../shared/events'
+import hasValue from '../utils/hasValue'
+import { stopPropagation } from '../utils/events'
 
 
 const SelectOptionsList = ({ highlighted, value, options = [], onSelect }) => {

@@ -8,7 +8,7 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _selectPropTypes = require('../shared/selectPropTypes');
+var _selectPropTypes = require('../utils/selectPropTypes');
 
 var _classnames = require('classnames');
 

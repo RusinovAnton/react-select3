@@ -1,4 +1,4 @@
-export default (endpoint, params = {}, headers = {}) => {
+export default (endpoint) => {
     if (typeof endpoint !== 'string') {
         throw new Error('Endpoint must be a string')
     }
@@ -6,7 +6,6 @@ export default (endpoint, params = {}, headers = {}) => {
     return fetch(endpoint, {
         method: 'GET',
         credentials: 'same-origin',
-        headers
     })
         .then(response => {
             if (response.ok) {

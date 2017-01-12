@@ -1,19 +1,20 @@
 import React, { Children, Component, PropTypes } from 'react'
 
 import isFunction from 'lodash/isFunction'
+import { stopPropagation } from '../utils/events'
 
-import SelectSearchInput from './SelectSearchInput'
 import SelectOptionsList from './SelectOptionsList'
+import SelectSearchInput from './SelectSearchInput'
 
 
-const LANG_RU = {
-    pending: 'Поиск...',
-    // @fixme: hardcoded minlength
-    minLength: 'Введите минимум 3 буквы',
-    loading: 'Загрузка...',
-    error: 'Не удалось получить данные!',
+const LANG_DEFAULT = {
     empty: 'Ничего не найдено',
     emptyValue: '-',
+    error: 'Не удалось получить данные!',
+    loading: 'Загрузка...',
+    // @fixme: hardcoded minlength
+    minLength: 'Введите минимум 3 буквы',
+    pending: 'Поиск...',
 }
 
 const getChildrenText = element => {
@@ -30,46 +31,44 @@ class SelectDropdown extends Component {
         onSearch: PropTypes.func,
         onSelect: PropTypes.func.isRequired,
         options: PropTypes.array.isRequired,
+        requestSearch: PropTypes.bool,
         search: PropTypes.object.isRequired,
         value: PropTypes.string,
     }
 
-    static initialState = () => ({
-        filterTerm: null,
-        options: [],
-    })
+    constructor(props, context) {
+        super(props, context)
 
-    constructor(props) {
-        super(props)
-
-        const { options } = props
-        this.state = Object.assign(SelectDropdown.initialState(), { options })
-    }
-
-    _onFilterTermChange = ({ target: { value: term } }) => {
-        const { onSearch } = this.props
-        // reset filterTerm if term === ''
-        const filterTerm = term || null
-
-        if (isFunction(onSearch)) {
-            onSearch(filterTerm)
-        } else {
-            this.setState({ filterTerm })
+        this.state = {
+            searchTerm: null,
+            options: props.options,
         }
     }
 
-    componentWillUpdate = ({ options: propsOptions }, { filterTerm }) => {
-        if (filterTerm === this.state.filterTerm) {
+    _onSearchTermChange = ({ target: { value: term } }) => {
+        const { onSearch } = this.props
+        // reset searchTerm if term === ''
+        const searchTerm = term || null
+
+        if (isFunction(onSearch)) {
+            onSearch(searchTerm)
+        } else {
+            this.setState({ searchTerm })
+        }
+    }
+
+    componentWillUpdate = ({ options: propsOptions }, { searchTerm }) => {
+        if (searchTerm === this.state.searchTerm) {
             return
-        } else if (!filterTerm) {
+        } else if (!searchTerm) {
             this.setState(Object.assign(SelectDropdown.initialState(), { options: propsOptions }))
         } else {
-            const filterRegExp = new RegExp(filterTerm, 'gi')
+            const searchRegExp = new RegExp(searchTerm, 'gi')
             const options = propsOptions.filter(({ text: element }) => {
                 // @fixme: getChildrenText is not perfect tbh
                 const elementText = getChildrenText(element)
 
-                return filterRegExp.test(elementText)
+                return searchRegExp.test(elementText)
             })
 
             this.setState({ options })
@@ -79,14 +78,23 @@ class SelectDropdown extends Component {
     render = () => {
         // TODO: fetch dropdown
         // TODO: language
-        const { highlighted, lang, isPending, search, value, onSelect } = this.props
+        const {
+            highlighted,
+            isPending,
+            lang,
+            onSelect,
+            requestSearch,
+            search,
+            value,
+        } = this.props
+
         const { options } = this.state
-        const language = Object.assign({}, LANG_RU, lang)
-        const showSearch = search.minimumResults <= options.length
+        const language = Object.assign({}, LANG_DEFAULT, lang)
+        const showSearch = requestSearch || search.minimumResults <= options.length
 
         return (
             <span className="pure-react-select__dropdown">
-                { showSearch && <SelectSearchInput onChange={ this._onFilterTermChange }/> }
+                { showSearch && <SelectSearchInput onClick={ stopPropagation() } onChange={ this._onSearchTermChange }/> }
                 <SelectOptionsList {...{ options, value, highlighted, onSelect }} />
             </span>
         )

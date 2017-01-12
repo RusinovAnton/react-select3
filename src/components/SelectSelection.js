@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 
-import { selectPropTypes } from '../shared/selectPropTypes'
+import { selectPropTypes } from '../utils/selectPropTypes'
 import classNames from 'classnames'
 
 

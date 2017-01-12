@@ -12,11 +12,11 @@ var _classnames = require('classnames');
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
-var _hasValue = require('../shared/hasValue');
+var _hasValue = require('../utils/hasValue');
 
 var _hasValue2 = _interopRequireDefault(_hasValue);
 
-var _events = require('../shared/events');
+var _events = require('../utils/events');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

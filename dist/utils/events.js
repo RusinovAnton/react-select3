@@ -7,7 +7,7 @@ var makeEventMiddleware = function makeEventMiddleware(functionName) {
     return function (func) {
         return function (event) {
             if (event && event[functionName]) event[functionName]();
-            func(event);
+            if (func) func(event);
         };
     };
 };

@@ -14,6 +14,14 @@ var _classnames = require('classnames');
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
+var _fetch = require('../utils/fetch');
+
+var _fetch2 = _interopRequireDefault(_fetch);
+
+var _hasValue = require('../utils/hasValue');
+
+var _hasValue2 = _interopRequireDefault(_hasValue);
+
 var _isEqual = require('lodash/isEqual');
 
 var _isEqual2 = _interopRequireDefault(_isEqual);
@@ -22,21 +30,33 @@ var _isFunction = require('lodash/isFunction');
 
 var _isFunction2 = _interopRequireDefault(_isFunction);
 
+var _keys = require('lodash/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
+
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
 var _reactClickOutside = require('react-click-outside');
 
 var _reactClickOutside2 = _interopRequireDefault(_reactClickOutside);
+
+var _qs = require('qs');
+
+var _qs2 = _interopRequireDefault(_qs);
+
+var _throttle = require('lodash/throttle');
+
+var _throttle2 = _interopRequireDefault(_throttle);
 
 var _uniqueId = require('lodash/uniqueId');
 
 var _uniqueId2 = _interopRequireDefault(_uniqueId);
 
-var _selectPropTypes = require('../shared/selectPropTypes');
+var _selectPropTypes = require('../utils/selectPropTypes');
 
-var _hasValue = require('../shared/hasValue');
-
-var _hasValue2 = _interopRequireDefault(_hasValue);
-
-var _events = require('../shared/events');
+var _events = require('../utils/events');
 
 var _SelectDropdown = require('./SelectDropdown');
 
@@ -52,12 +72,16 @@ var _SelectSelection2 = _interopRequireDefault(_SelectSelection);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+// TODO: styles
+// TODO: request
 // TODO: multiselect
 // TODO: label
 // TODO: optgroups
@@ -98,10 +122,15 @@ var Select = function (_Component) {
 
         _initialiseProps.call(_this);
 
-        var value = props.value,
+        var children = props.children,
             defaultValue = props.defaultValue,
-            children = props.children,
-            options = props.options;
+            error = props.error,
+            options = props.options,
+            request = props.request,
+            value = props.value;
+
+
+        var requestDelay = request && request.delay ? request.delay : 3000;
 
         /**
          * @type {{
@@ -113,11 +142,14 @@ var Select = function (_Component) {
          *   value: *,
          * }}
          */
-
         _this.state = Object.assign(Select.initialState(), {
+            error: error,
             options: _this._setOptions(children, options),
+            requestSearch: request && !request.once,
             value: value || defaultValue
         });
+
+        _this._requestOptions = (0, _throttle2.default)(_this._request, requestDelay, { trailing: false });
         return _this;
     }
 
@@ -127,6 +159,7 @@ var Select = function (_Component) {
             var _this2 = this;
 
             var disabled = newProps.disabled,
+                error = newProps.error,
                 options = newProps.options,
                 children = newProps.children,
                 value = newProps.value;
@@ -134,7 +167,9 @@ var Select = function (_Component) {
             var isValueDefined = typeof value !== 'undefined';
 
             if (isValueDefined && typeof newProps.onSelect === 'undefined' && typeof this.props.onSelect === 'undefined') {
+                /* eslint-disable */
                 console.error('Warning: You\'re setting value for Select component throught props\n                but not passing onSelect callback which can lead to unforeseen consequences(bugs).\n                Please consider using onSelect callback or defaultValue instead of value');
+                /* eslint-enable */
             }
 
             if (disabled) {
@@ -145,7 +180,8 @@ var Select = function (_Component) {
                 return {
                     disabled: disabled,
                     options: _this2._setOptions(children, options),
-                    value: isValueDefined ? String(value) : state.value
+                    value: isValueDefined ? String(value) : state.value,
+                    error: (0, _hasValue2.default)(error) ? error : state.error
                 };
             });
         }
@@ -200,17 +236,16 @@ var Select = function (_Component) {
                 lang = _props.lang,
                 width = _props.layout.width,
                 placeholder = _props.placeholder,
-                request = _props.request,
                 search = _props.search;
             var _state = this.state,
                 dropdownOpened = _state.dropdownOpened,
                 highlighted = _state.highlighted,
+                requestSearch = _state.requestSearch,
                 isPending = _state.isPending,
                 options = _state.options,
                 value = _state.value;
 
             var selectedOption = this._getOptionById(value);
-            var isSearchOnRequest = request && !request.once;
 
             return _react2.default.createElement(
                 'span',
@@ -232,7 +267,8 @@ var Select = function (_Component) {
                     highlighted: highlighted,
                     lang: lang,
                     isPending: isPending,
-                    onSearch: isSearchOnRequest ? this._onSearchTermChange : null,
+                    requestSearch: requestSearch,
+                    onSearch: requestSearch ? this._onSearchTermChange : null,
                     onSelect: this._onSelectOption,
                     options: options,
                     search: search,
@@ -285,9 +321,10 @@ Select.propTypes = {
     // TODO: validate request object
     request: _react.PropTypes.shape({
         delay: _react.PropTypes.number, // default 3000
-        endpoint: _react.PropTypes.string,
+        endpoint: _react.PropTypes.string.isRequired,
         once: _react.PropTypes.bool,
         params: _react.PropTypes.object,
+        ajaxClient: _react.PropTypes.func,
         // function that creates standart shaped object { id: number|string, text: string|element } from response data
         responseDataFormatter: _react.PropTypes.func,
         termQuery: _react.PropTypes.string
@@ -322,6 +359,7 @@ Select.defaultProps = {
 Select.initialState = function () {
     return {
         dropdownOpened: false,
+        error: null,
         highlighted: null,
         isPending: false,
         options: [],
@@ -342,13 +380,81 @@ var _initialiseProps = function _initialiseProps() {
     };
 
     this.componentDidMount = function () {
-        if (_this3.props.autoFocus) {
-            _this3._focusContainer();
-        }
+        var _props2 = _this3.props,
+            autoFocus = _props2.autoFocus,
+            request = _props2.request;
+
+
+        if (autoFocus) _this3._focusContainer();
+        if (request && request.once) _this3._requestOptions();
     };
 
     this.handleClickOutside = function () {
         _this3._closeDropdown();
+    };
+
+    this._hasResponseDataFormatter = function () {
+        if (!(0, _hasValue2.default)(_this3.hasResponseDataFormatter)) {
+            _this3.hasResponseDataFormatter = (0, _isFunction2.default)(_this3.props.request.responseDataFormatter);
+        }
+
+        return _this3.hasResponseDataFormatter;
+    };
+
+    this._request = function (searchTerm) {
+        var _props$request = _this3.props.request,
+            ajaxClient = _props$request.ajaxClient,
+            endpoint = _props$request.endpoint,
+            params = _props$request.params,
+            responseDataFormatter = _props$request.responseDataFormatter,
+            termQuery = _props$request.termQuery;
+
+
+        function composeFetchPath(endpoint) {
+            var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+            var _ref2 = arguments[2];
+            var searchTerm = _ref2.searchTerm,
+                termQuery = _ref2.termQuery;
+
+            var fetchPath = void 0;
+            var fetchParams = Object.assign({}, params);
+
+            if (searchTerm) {
+                if (!termQuery) throw new Error('Provide request.termQuery prop');
+                fetchParams = Object.assign(fetchParams, _defineProperty({}, termQuery, searchTerm));
+            }
+
+            if ((0, _keys2.default)(fetchParams)) {
+                fetchPath = _path2.default.join(endpoint, '?' + _qs2.default.stringify(fetchParams));
+            }
+
+            return fetchPath;
+        }
+
+        var fetchClient = ajaxClient || _fetch2.default;
+        var fetchPath = composeFetchPath(endpoint, params, { searchTerm: searchTerm, termQuery: termQuery });
+
+        _this3.setState({
+            error: _this3.props.error || null,
+            isPending: true
+        });
+
+        fetchClient(fetchPath).then(function (data) {
+            var options = data;
+            if (_this3._hasResponseDataFormatter()) {
+                options = data.map(responseDataFormatter);
+            }
+
+            _this3.setState({
+                options: options,
+                isPending: false
+            });
+        }).catch(function (error) {
+            _this3.setState({
+                error: error.message || true,
+                isPending: false
+            });
+        });
     };
 
     this._closeDropdown = function () {
@@ -372,9 +478,9 @@ var _initialiseProps = function _initialiseProps() {
         var stateOptions = [];
 
         if (Array.isArray(options) && options.length) {
-            stateOptions = options.map(function (_ref2) {
-                var id = _ref2.id,
-                    text = _ref2.text;
+            stateOptions = options.map(function (_ref3) {
+                var id = _ref3.id,
+                    text = _ref3.text;
 
                 if (typeof id === 'undefined' || typeof text === 'undefined') {
                     throw new Error('options array is not formatted properly, option object must have "id" and "text"');
@@ -386,13 +492,13 @@ var _initialiseProps = function _initialiseProps() {
                 };
             });
         } else if (_react.Children.count(children)) {
-            stateOptions = _react.Children.toArray(children).filter(function (_ref3) {
-                var type = _ref3.type;
+            stateOptions = _react.Children.toArray(children).filter(function (_ref4) {
+                var type = _ref4.type;
                 return type === 'option';
-            }).map(function (_ref4) {
-                var _ref4$props = _ref4.props,
-                    text = _ref4$props.children,
-                    id = _ref4$props.value;
+            }).map(function (_ref5) {
+                var _ref5$props = _ref5.props,
+                    text = _ref5$props.children,
+                    id = _ref5$props.value;
                 return { id: String(id), text: text };
             });
         }
@@ -416,8 +522,8 @@ var _initialiseProps = function _initialiseProps() {
 
 
         if (options && options.length) {
-            return options.find(function (_ref5) {
-                var id = _ref5.id;
+            return options.find(function (_ref6) {
+                var id = _ref6.id;
                 return id === value;
             }); // eslint-disable-line eqeqeq
         }
@@ -469,9 +575,9 @@ var _initialiseProps = function _initialiseProps() {
     ;
 
     this._onSelect = function (option) {
-        var _props2 = _this3.props,
-            name = _props2.name,
-            onSelect = _props2.onSelect;
+        var _props3 = _this3.props,
+            name = _props3.name,
+            onSelect = _props3.onSelect;
         // Setup structure of selection event
 
         var value = option ? option.id : null;
@@ -551,12 +657,13 @@ var _initialiseProps = function _initialiseProps() {
     };
 
     this._getSelectContainerClassName = function () {
-        var _props3 = _this3.props,
-            className = _props3.className,
-            disabled = _props3.disabled,
-            dropdownHorizontalPosition = _props3.dropdownHorizontalPosition,
-            dropdownVerticalPosition = _props3.dropdownVerticalPosition,
-            error = _props3.error;
+        var _props4 = _this3.props,
+            className = _props4.className,
+            disabled = _props4.disabled,
+            _props4$layout = _props4.layout,
+            dropdownHorizontalPosition = _props4$layout.dropdownHorizontalPosition,
+            dropdownVerticalPosition = _props4$layout.dropdownVerticalPosition,
+            error = _props4.error;
         var _state4 = _this3.state,
             dropdownOpened = _state4.dropdownOpened,
             isPending = _state4.isPending,

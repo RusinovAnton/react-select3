@@ -1,6 +1,6 @@
 const makeEventMiddleware = functionName => func => event => {
     if (event && event[functionName]) event[functionName]()
-    func(event)
+    if (func) func(event)
 }
 
 export const preventDefault = makeEventMiddleware('preventDefault')

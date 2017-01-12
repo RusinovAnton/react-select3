@@ -1,19 +1,26 @@
 import React, { Children, Component, PropTypes } from 'react'
 
 import classNames from 'classnames'
+import fetchJson from '../utils/fetch'
+import hasValue from '../utils/hasValue'
 import isEqual from 'lodash/isEqual'
 import isFunction from 'lodash/isFunction'
+import keys from 'lodash/keys'
+import path from 'path'
 import provideClickOutside from 'react-click-outside'
+import qs from 'qs'
+import throttle from 'lodash/throttle'
 import uniqueId from 'lodash/uniqueId'
-import { selectPropTypes } from '../shared/selectPropTypes'
-import hasValue from '../shared/hasValue'
-import { stopPropagation } from '../shared/events'
+import { selectPropTypes } from '../utils/selectPropTypes'
+import { stopPropagation } from '../utils/events'
 
 import SelectDropdown from './SelectDropdown'
 import SelectError from './SelectError'
 import SelectSelection from './SelectSelection'
 
 
+// TODO: styles
+// TODO: request
 // TODO: multiselect
 // TODO: label
 // TODO: optgroups
@@ -59,9 +66,10 @@ class Select extends Component {
         // TODO: validate request object
         request: PropTypes.shape({
             delay: PropTypes.number, // default 3000
-            endpoint: PropTypes.string,
+            endpoint: PropTypes.string.isRequired,
             once: PropTypes.bool,
             params: PropTypes.object,
+            ajaxClient: PropTypes.func,
             // function that creates standart shaped object { id: number|string, text: string|element } from response data
             responseDataFormatter: PropTypes.func,
             termQuery: PropTypes.string,
@@ -96,6 +104,7 @@ class Select extends Component {
 
     static initialState = () => ({
         dropdownOpened: false,
+        error: null,
         highlighted: null,
         isPending: false,
         options: [],
@@ -124,7 +133,16 @@ class Select extends Component {
     constructor(props, context) { // eslint-disable-line consistent-return
         super(props, context)
 
-        const { value, defaultValue, children, options } = props
+        const {
+            children,
+            defaultValue,
+            error,
+            options,
+            request,
+            value,
+        } = props
+
+        const requestDelay = (request && request.delay) ? request.delay : 3000
 
         /**
          * @type {{
@@ -137,29 +155,42 @@ class Select extends Component {
          * }}
          */
         this.state = Object.assign(Select.initialState(), {
+            error,
             options: this._setOptions(children, options),
+            requestSearch: request && !request.once,
             value: value || defaultValue,
         })
+
+        this._requestOptions = throttle(this._request, requestDelay, { trailing: false })
     }
 
     componentWillReceiveProps(newProps) {
-        const { disabled, options, children, value } = newProps
+        const {
+            disabled,
+            error,
+            options,
+            children,
+            value,
+        } = newProps
         const isValueDefined = typeof value !== 'undefined'
 
         if (isValueDefined && typeof newProps.onSelect === 'undefined' && typeof this.props.onSelect === 'undefined') {
-            console.error(`Warning: You\'re setting value for Select component throught props
+            /* eslint-disable */
+            console.error(`Warning: You're setting value for Select component throught props
                 but not passing onSelect callback which can lead to unforeseen consequences(bugs).
                 Please consider using onSelect callback or defaultValue instead of value`)
+            /* eslint-enable */
         }
 
         if (disabled) {
             this._closeDropdown()
         }
 
-        this.setState((state) => ({
+        this.setState(state => ({
             disabled,
             options: this._setOptions(children, options),
             value: isValueDefined ? String(value) : state.value,
+            error: hasValue(error) ? error : state.error
         }))
     }
 
@@ -172,9 +203,10 @@ class Select extends Component {
     )
 
     componentDidMount = () => {
-        if (this.props.autoFocus) {
-            this._focusContainer()
-        }
+        const { autoFocus, request } = this.props
+
+        if (autoFocus) this._focusContainer()
+        if (request && request.once) this._requestOptions()
     }
 
     /**
@@ -182,6 +214,69 @@ class Select extends Component {
      */
     handleClickOutside = () => {
         this._closeDropdown()
+    }
+
+    _hasResponseDataFormatter = () => {
+        if (!hasValue(this.hasResponseDataFormatter)) {
+            this.hasResponseDataFormatter = isFunction(this.props.request.responseDataFormatter)
+        }
+
+        return this.hasResponseDataFormatter
+    }
+
+    _request = searchTerm => {
+        const {
+            request: {
+                ajaxClient,
+                endpoint,
+                params,
+                responseDataFormatter,
+                termQuery,
+            }
+        } = this.props
+
+        function composeFetchPath(endpoint, params = {}, { searchTerm, termQuery }) {
+            let fetchPath
+            let fetchParams = Object.assign({}, params)
+
+            if (searchTerm) {
+                if (!termQuery) throw new Error('Provide request.termQuery prop')
+                fetchParams = Object.assign(fetchParams, { [termQuery]: searchTerm })
+            }
+
+            if (keys(fetchParams)) {
+                fetchPath = path.join(endpoint, '?' + qs.stringify(fetchParams))
+            }
+
+            return fetchPath
+        }
+
+        const fetchClient = ajaxClient || fetchJson
+        const fetchPath = composeFetchPath(endpoint, params, { searchTerm, termQuery })
+
+        this.setState({
+            error: this.props.error || null,
+            isPending: true,
+        })
+
+        fetchClient(fetchPath)
+            .then(data => {
+                let options = data
+                if (this._hasResponseDataFormatter()) {
+                    options = data.map(responseDataFormatter)
+                }
+
+                this.setState({
+                    options,
+                    isPending: false,
+                })
+            })
+            .catch(error => {
+                this.setState({
+                    error: error.message || true,
+                    isPending: false,
+                })
+            })
     }
 
     _closeDropdown = () => {
@@ -386,8 +481,10 @@ class Select extends Component {
         const {
             className,
             disabled,
-            dropdownHorizontalPosition,
-            dropdownVerticalPosition,
+            layout: {
+                dropdownHorizontalPosition,
+                dropdownVerticalPosition,
+            },
             error,
         } = this.props
         const {
@@ -423,12 +520,10 @@ class Select extends Component {
             lang,
             layout: { width },
             placeholder,
-            request,
             search,
         } = this.props
-        const { dropdownOpened, highlighted, isPending, options, value } = this.state
+        const { dropdownOpened, highlighted, requestSearch, isPending, options, value } = this.state
         const selectedOption = this._getOptionById(value)
-        const isSearchOnRequest = request && !request.once
 
         return (
             <span ref='selectContainer'
@@ -451,7 +546,8 @@ class Select extends Component {
                             highlighted,
                             lang,
                             isPending,
-                            onSearch: isSearchOnRequest ? this._onSearchTermChange : null,
+                            requestSearch,
+                            onSearch: requestSearch ? this._onSearchTermChange : null,
                             onSelect: this._onSelectOption,
                             options,
                             search,
