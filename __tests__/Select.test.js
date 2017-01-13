@@ -1,7 +1,5 @@
 import React from 'react'
 import Select from '../src/components/Select'
-import renderer from 'react-test-renderer'
-
 
 
 const dummyData = [
@@ -10,16 +8,26 @@ const dummyData = [
     { id: 5, text: 'five' },
 ]
 
-it('should render a Select container', () => {
-    const component = shallow(<Select/>);
-    expect(component).toMatchSnapshot();
+
+test('<Select/>', () => {
+    it('should render a Select', () => {
+        const component = shallow(<Select/>);
+
+        expect(component).toMatchSnapshot();
+    });
+
+    it('should render a Select container with options', () => {
+        const component = shallow(<Select options={ dummyData }/>);
+
+        console.log(component.state())
+        console.log(component.debug())
+        expect(component).toMatchSnapshot();
+    });
+
+    it('should render a Select container with options', () => {
+        const component = shallow(<Select placeholder='Select something' options={ dummyData }/>);
+
+        expect(component.find('.pure-react-select__selection--placeholder').text()).to.equal('Select something')
+        expect(component).toMatchSnapshot();
+    });
 });
-
-test('Open dropdown on container click', () => {
-    const component = shallow(<Select/>)
-    expect(component).toMatchSnapshot()
-
-    component.find('[class="react-select__selection"]').simulate('click');
-
-    expect(component).toMatchSnapshot();
-})

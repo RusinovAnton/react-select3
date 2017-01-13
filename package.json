@@ -52,7 +52,7 @@
       "./.jestrc.js"
     ],
     "snapshotSerializers": [
-      "node_modules/enzyme-to-json/serializer"
+      "<rootDir>/node_modules/enzyme-to-json/serializer"
     ]
   },
   "keywords": [
