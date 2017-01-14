@@ -54,6 +54,8 @@ var _uniqueId = require('lodash/uniqueId');
 
 var _uniqueId2 = _interopRequireDefault(_uniqueId);
 
+var _consts = require('../consts');
+
 var _selectPropTypes = require('../utils/selectPropTypes');
 
 var _events = require('../utils/events');
@@ -84,7 +86,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 // TODO: multiselect
 // TODO: label
 // TODO: optgroups
-// TODO: lang module
+// TODO: make separate modules for simple, fetch once, fetch on search, multiselect etc
+
 var Select = function (_Component) {
     _inherits(Select, _Component);
 
@@ -98,6 +101,9 @@ var Select = function (_Component) {
         get: function get() {
             return this.refs.selectContainer;
         }
+
+        // @fixme: getChildrenTextContent function is not perfect tbh
+
     }, {
         key: 'value',
         get: function get() {
@@ -166,6 +172,8 @@ var Select = function (_Component) {
             requestSearch: requestSearch,
             value: value || defaultValue
         });
+
+        _this.lang = _this._composeLanguageObject();
         return _this;
     }
 
@@ -180,9 +188,9 @@ var Select = function (_Component) {
                 children = newProps.children,
                 value = newProps.value;
 
-            var isValueDefined = typeof value !== 'undefined';
+            var isValueValid = this._isValidValue(value);
 
-            if (this._isValidValue(value)) {} else if (isValueDefined && typeof newProps.onSelect === 'undefined' && typeof this.props.onSelect === 'undefined') {
+            if (isValueValid && typeof newProps.onSelect === 'undefined' && typeof this.props.onSelect === 'undefined') {
                 /* eslint-disable */
                 console.error('Warning: You\'re setting value for Select component throught props\n                but not passing onSelect callback which can lead to unforeseen consequences(bugs).\n                Please consider using onSelect callback or defaultValue instead of value');
                 /* eslint-enable */
@@ -195,7 +203,7 @@ var Select = function (_Component) {
             this.setState(function (state) {
                 var newValue = state.value;
 
-                if (isValueDefined) {
+                if (isValueValid) {
                     newValue = value === null ? null : String(value);
                 }
 
@@ -211,9 +219,6 @@ var Select = function (_Component) {
         /**
          * Close SelectDropdown on click outside using 'react-click-outside' library
          */
-
-
-        // @fixme: getChildrenTextContent function is not perfect tbh
 
 
         /**
@@ -256,14 +261,13 @@ var Select = function (_Component) {
         key: 'render',
         value: function render() {
             var _props = this.props,
-                disabled = _props.disabled,
-                error = _props.error,
-                lang = _props.lang,
                 width = _props.layout.width,
                 placeholder = _props.placeholder,
                 search = _props.search;
             var _state = this.state,
+                disabled = _state.disabled,
                 dropdownOpened = _state.dropdownOpened,
+                error = _state.error,
                 highlighted = _state.highlighted,
                 isPending = _state.isPending,
                 requestSearch = _state.requestSearch,
@@ -291,12 +295,11 @@ var Select = function (_Component) {
                 dropdownOpened ? _react2.default.createElement(_SelectDropdown2.default, {
                     highlighted: highlighted,
                     isPending: isPending,
-                    lang: lang,
+                    language: this.language || {},
                     onSearchTermChange: this._onSearchTermChange,
                     onSelect: this._onSelectOption,
                     options: this._getOptionsList(),
-                    requestSearch: requestSearch,
-                    search: search,
+                    showSearch: requestSearch || search.minimumResults <= this.state.options.length,
                     searchTerm: searchTerm,
                     value: value
                 }) : _react2.default.createElement(_SelectError2.default, { error: error })
@@ -309,7 +312,7 @@ var Select = function (_Component) {
 
 Select.propTypes = {
     /**
-     * Whether allow user to clear select or not
+     * Whether to allow user to clear select
      */
     allowClear: _react.PropTypes.bool,
     /**
@@ -319,13 +322,13 @@ Select.propTypes = {
     defaultValue: _selectPropTypes.selectPropTypes.optionId,
     disabled: _react.PropTypes.bool,
     /**
-     * You can provide error message to display or just boolean to highlight select container with error styles
+     * Provide error message to display or just boolean to highlight select container with error styles
      */
     error: _react.PropTypes.oneOfType([_react.PropTypes.bool, _react.PropTypes.string]),
     /**
      * Provide custom messages
      */
-    lang: _react.PropTypes.object,
+    language: _react.PropTypes.object,
     layout: _react.PropTypes.shape({
         /**
          * Container's width
@@ -354,7 +357,7 @@ Select.propTypes = {
         /**
          * Delays between requests
          */
-        delay: _react.PropTypes.number, // default 500
+        delay: _react.PropTypes.number, // default: 500
         endpoint: _react.PropTypes.string.isRequired,
         /**
          * Whenever to fetch options once at mount or on searchTermChange
@@ -391,8 +394,7 @@ Select.propTypes = {
         /**
          * Minimum characters before sending request
          */
-        minLength: _react.PropTypes.number
-    }),
+        minLength: _react.PropTypes.number }),
     /**
      * Search input change callback
      */
@@ -405,7 +407,6 @@ Select.propTypes = {
 Select.defaultProps = {
     allowClear: false,
     disabled: false,
-    lang: {},
     layout: {
         dropdownHorizontalPosition: 'left',
         dropdownVerticalPosition: 'below',
@@ -421,6 +422,7 @@ Select.defaultProps = {
 
 Select.initialState = function () {
     return {
+        disabled: false,
         dropdownOpened: false,
         error: null,
         highlighted: null,
@@ -476,7 +478,9 @@ var _initialiseProps = function _initialiseProps() {
 
         var isValid = false;
 
-        if (value === null) {
+        if (typeof value === 'undefined') {
+            isValid = false;
+        } else if (value === null) {
             isValid = true;
         } else if (options && options.length) {
             isValid = options.some(function (_ref2) {
@@ -488,12 +492,40 @@ var _initialiseProps = function _initialiseProps() {
         return isValid;
     };
 
+    this._composeLanguageObject = function () {
+        var _props3 = _this3.props,
+            language = _props3.language,
+            search = _props3.search;
+
+        var minLength = search && search.minLength || 3;
+
+        var lang = Object.assign({}, _consts.DEFAULT_LANG, language);
+
+        lang.minLength = lang.minLength.replace(/\$\{minLength\}/, minLength);
+
+        return;
+    };
+
     this._hasResponseDataFormatter = function () {
-        if (!(0, _hasValue2.default)(_this3.hasResponseDataFormatter)) {
-            _this3.hasResponseDataFormatter = (0, _isFunction2.default)(_this3.props.request.responseDataFormatter);
+        var request = _this3.props.request;
+        // Caching result of calculation of isFunction
+
+        if (typeof _this3.hasResponseDataFormatter === 'undefined') {
+            _this3.hasResponseDataFormatter = request && (0, _isFunction2.default)(request.responseDataFormatter);
         }
 
         return _this3.hasResponseDataFormatter;
+    };
+
+    this._hasSearchTermChangeCallback = function () {
+        var onSearchTermChange = _this3.props.onSearchTermChange;
+
+
+        if (typeof _this3.hasSearchTermChangeCallback === 'undefined') {
+            _this3.hasSearchTermChangeCallback = onSearchTermChange && (0, _isFunction2.default)(onSearchTermChange);
+        }
+
+        return _this3.hasSearchTermChangeCallback;
     };
 
     this._request = function (searchTerm) {
@@ -665,9 +697,9 @@ var _initialiseProps = function _initialiseProps() {
     };
 
     this._onSelect = function (option) {
-        var _props3 = _this3.props,
-            name = _props3.name,
-            onSelect = _props3.onSelect;
+        var _props4 = _this3.props,
+            name = _props4.name,
+            onSelect = _props4.onSelect;
         // Setup structure of selection event
 
         var value = option ? option.id : null;
@@ -747,13 +779,13 @@ var _initialiseProps = function _initialiseProps() {
     };
 
     this._getSelectContainerClassName = function () {
-        var _props4 = _this3.props,
-            className = _props4.className,
-            disabled = _props4.disabled,
-            _props4$layout = _props4.layout,
-            dropdownHorizontalPosition = _props4$layout.dropdownHorizontalPosition,
-            dropdownVerticalPosition = _props4$layout.dropdownVerticalPosition,
-            error = _props4.error;
+        var _props5 = _this3.props,
+            className = _props5.className,
+            disabled = _props5.disabled,
+            _props5$layout = _props5.layout,
+            dropdownHorizontalPosition = _props5$layout.dropdownHorizontalPosition,
+            dropdownVerticalPosition = _props5$layout.dropdownVerticalPosition,
+            error = _props5.error;
         var _state4 = _this3.state,
             dropdownOpened = _state4.dropdownOpened,
             isPending = _state4.isPending,
@@ -791,11 +823,17 @@ var _initialiseProps = function _initialiseProps() {
         if (searchTerm && optionsList.length) {
             (function () {
                 var searchRegExp = new RegExp(searchTerm, 'gi');
+
                 optionsList = options.filter(function (_ref8) {
                     var element = _ref8.text;
 
                     var elementText = Select.getChildrenTextContent(element);
 
+                    // @fixme: last match receives false
+                    // e.g.
+                    // true /pro/gi "Progressive"
+                    // true /pro/gi "reciprocal"
+                    // false /pro/gi "protocol"
                     return searchRegExp.test(elementText);
                 });
             })();
@@ -806,13 +844,11 @@ var _initialiseProps = function _initialiseProps() {
 
     this._onSearchTermChange = function (e) {
         var term = e.target.value;
-        var _props5 = _this3.props,
-            _props5$search$minLen = _props5.search.minLength,
-            minLength = _props5$search$minLen === undefined ? 3 : _props5$search$minLen,
-            onSearchTermChange = _props5.onSearchTermChange;
-        var _state6 = _this3.state,
-            stateSearchTerm = _state6.searchTerm,
-            requestSearch = _state6.requestSearch;
+        var _props6 = _this3.props,
+            _props6$search$minLen = _props6.search.minLength,
+            minLength = _props6$search$minLen === undefined ? 3 : _props6$search$minLen,
+            onSearchTermChange = _props6.onSearchTermChange;
+        var requestSearch = _this3.state.requestSearch;
 
         // If size of text is increases
         // const isTextIncreasing = term && (!stateSearchTerm || term.length > stateSearchTerm.length)
@@ -821,7 +857,8 @@ var _initialiseProps = function _initialiseProps() {
 
         var searchTerm = term || null;
 
-        if ((0, _isFunction2.default)(onSearchTermChange)) {
+        // if callback were passed in props
+        if (_this3._hasSearchTermChangeCallback()) {
             onSearchTermChange(e);
         }
 

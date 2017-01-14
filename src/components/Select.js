@@ -11,6 +11,7 @@ import path from 'path'
 import provideClickOutside from 'react-click-outside'
 import qs from 'qs'
 import uniqueId from 'lodash/uniqueId'
+import { DEFAULT_LANG } from  '../consts'
 import { selectPropTypes } from '../utils/selectPropTypes'
 import { stopPropagation } from '../utils/events'
 
@@ -23,11 +24,12 @@ import SelectSelection from './SelectSelection'
 // TODO: multiselect
 // TODO: label
 // TODO: optgroups
-// TODO: lang module
+// TODO: make separate modules for simple, fetch once, fetch on search, multiselect etc
+
 class Select extends Component {
     static propTypes = {
         /**
-         * Whether allow user to clear select or not
+         * Whether to allow user to clear select
          */
         allowClear: PropTypes.bool,
         /**
@@ -37,13 +39,13 @@ class Select extends Component {
         defaultValue: selectPropTypes.optionId,
         disabled: PropTypes.bool,
         /**
-         * You can provide error message to display or just boolean to highlight select container with error styles
+         * Provide error message to display or just boolean to highlight select container with error styles
          */
         error: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
         /**
          * Provide custom messages
          */
-        lang: PropTypes.object,
+        language: PropTypes.object,
         layout: PropTypes.shape({
             /**
              * Container's width
@@ -72,7 +74,7 @@ class Select extends Component {
             /**
              * Delays between requests
              */
-            delay: PropTypes.number, // default 500
+            delay: PropTypes.number, // default: 500
             endpoint: PropTypes.string.isRequired,
             /**
              * Whenever to fetch options once at mount or on searchTermChange
@@ -109,7 +111,7 @@ class Select extends Component {
             /**
              * Minimum characters before sending request
              */
-            minLength: PropTypes.number,
+            minLength: PropTypes.number, // default: 3
         }),
         /**
          * Search input change callback
@@ -124,7 +126,6 @@ class Select extends Component {
     static defaultProps = {
         allowClear: false,
         disabled: false,
-        lang: {},
         layout: {
             dropdownHorizontalPosition: 'left',
             dropdownVerticalPosition: 'below',
@@ -139,6 +140,7 @@ class Select extends Component {
     }
 
     static initialState = () => ({
+        disabled: false,
         dropdownOpened: false,
         error: null,
         highlighted: null,
@@ -148,6 +150,15 @@ class Select extends Component {
         searchTerm: '',
         value: null,
     })
+
+    // @fixme: getChildrenTextContent function is not perfect tbh
+    static getChildrenTextContent = element => {
+        if (typeof element === 'string') {
+            return element
+        }
+
+        return Select.getChildrenTextContent(Children.toArray(element)[0].props.children)
+    }
 
     get selectNode() {
         return this.refs.selectContainer
@@ -216,6 +227,8 @@ class Select extends Component {
             requestSearch,
             value: value || defaultValue,
         })
+
+        this.lang = this._composeLanguageObject()
     }
 
     componentWillReceiveProps(newProps) {
@@ -226,16 +239,14 @@ class Select extends Component {
             children,
             value,
         } = newProps
-        const isValueDefined = typeof value !== 'undefined'
+        const isValueValid = this._isValidValue(value)
 
-        if (this._isValidValue(value)) {
-
-        } else if (isValueDefined && typeof newProps.onSelect === 'undefined' && typeof this.props.onSelect === 'undefined') {
+        if (isValueValid && typeof newProps.onSelect === 'undefined' && typeof this.props.onSelect === 'undefined') {
             /* eslint-disable */
             console.error(`Warning: You're setting value for Select component throught props
                 but not passing onSelect callback which can lead to unforeseen consequences(bugs).
                 Please consider using onSelect callback or defaultValue instead of value`)
-            /* eslint-enable */
+                /* eslint-enable */
         }
 
         if (disabled) {
@@ -245,7 +256,7 @@ class Select extends Component {
         this.setState(state => {
             let newValue = state.value
 
-            if (isValueDefined) {
+            if (isValueValid) {
                 newValue = value === null ? null : String(value)
             }
 
@@ -290,7 +301,9 @@ class Select extends Component {
         const { options } = this.state
         let isValid = false
 
-        if (value === null) {
+        if (typeof value === 'undefined') {
+            isValid = false
+        } else if (value === null) {
             isValid = true
         } else if (options && options.length) {
             isValid = options.some(({ id }) => id === value)
@@ -299,21 +312,35 @@ class Select extends Component {
         return isValid
     }
 
+    _composeLanguageObject = () => {
+        const { language, search } = this.props
+        const minLength = (search && search.minLength) || 3
+
+        const lang = Object.assign({}, DEFAULT_LANG, language)
+
+        lang.minLength = lang.minLength.replace(/\$\{minLength\}/, minLength)
+
+        return
+    }
+
     _hasResponseDataFormatter = () => {
-        if (!hasValue(this.hasResponseDataFormatter)) {
-            this.hasResponseDataFormatter = isFunction(this.props.request.responseDataFormatter)
+        const { request } = this.props
+            // Caching result of calculation of isFunction
+        if (typeof this.hasResponseDataFormatter === 'undefined') {
+            this.hasResponseDataFormatter = request && isFunction(request.responseDataFormatter)
         }
 
         return this.hasResponseDataFormatter
     }
 
-    // @fixme: getChildrenTextContent function is not perfect tbh
-    static getChildrenTextContent = element => {
-        if (typeof element === 'string') {
-            return element
+    _hasSearchTermChangeCallback = () => {
+        const { onSearchTermChange } = this.props
+
+        if (typeof this.hasSearchTermChangeCallback === 'undefined') {
+            this.hasSearchTermChangeCallback = onSearchTermChange && isFunction(onSearchTermChange)
         }
 
-        return Select.getChildrenTextContent(Children.toArray(element)[0].props.children)
+        return this.hasSearchTermChangeCallback
     }
 
     _request = searchTerm => {
@@ -333,7 +360,8 @@ class Select extends Component {
 
             if (searchTerm) {
                 if (!termQuery) throw new Error('Provide request.termQuery prop')
-                fetchParams = Object.assign(fetchParams, { [termQuery]: searchTerm })
+                fetchParams = Object.assign(fetchParams, {
+                    [termQuery]: searchTerm })
             }
 
             if (keys(fetchParams)) {
@@ -465,7 +493,7 @@ class Select extends Component {
         if (!KEY_FUNTIONS[key]) return
 
         event.preventDefault()
-        // Handle key click
+            // Handle key click
         KEY_FUNTIONS[key]()
     }
 
@@ -482,7 +510,7 @@ class Select extends Component {
      */
     _onSelect = option => {
         const { name, onSelect } = this.props
-        // Setup structure of selection event
+            // Setup structure of selection event
         const value = option ? option.id : null
         const selectionEvent = {
             type: 'select',
@@ -527,8 +555,7 @@ class Select extends Component {
 
         const optionsLength = options.length - 1
         const nextHighlighted = (highlighted !== null) ?
-        highlighted + direction
-            : 0
+            highlighted + direction : 0
 
         // TODO: scroll SelectDropdown block to show highlighted item when overflows
         // If dropdown not opened or there is no highlighted item yet
@@ -606,9 +633,15 @@ class Select extends Component {
 
         if (searchTerm && optionsList.length) {
             const searchRegExp = new RegExp(searchTerm, 'gi')
+
             optionsList = options.filter(({ text: element }) => {
                 const elementText = Select.getChildrenTextContent(element)
 
+                // @fixme: last match receives false
+                // e.g.
+                // true /pro/gi "Progressive"
+                // true /pro/gi "reciprocal"
+                // false /pro/gi "protocol"
                 return searchRegExp.test(elementText)
             })
         }
@@ -619,7 +652,10 @@ class Select extends Component {
     _onSearchTermChange = e => {
         const { target: { value: term } } = e
         const { search: { minLength = 3 }, onSearchTermChange } = this.props
-        const { searchTerm: stateSearchTerm, requestSearch } = this.state
+        const {
+            // searchTerm: stateSearchTerm,
+            requestSearch
+        } = this.state
 
         // If size of text is increases
         // const isTextIncreasing = term && (!stateSearchTerm || term.length > stateSearchTerm.length)
@@ -627,7 +663,8 @@ class Select extends Component {
         // reset searchTerm if term === ''
         const searchTerm = term || null
 
-        if (isFunction(onSearchTermChange)) {
+        // if callback were passed in props
+        if (this._hasSearchTermChangeCallback()) {
             onSearchTermChange(e)
         }
 
@@ -641,15 +678,14 @@ class Select extends Component {
 
     render() {
         const {
-            disabled,
-            error,
-            lang,
             layout: { width },
             placeholder,
             search,
         } = this.props
         const {
+            disabled,
             dropdownOpened,
+            error,
             highlighted,
             isPending,
             requestSearch,
@@ -673,23 +709,22 @@ class Select extends Component {
                     placeholder,
                     selection: selectedOption && selectedOption.text,
                 }}/>
-                {
-                    dropdownOpened ?
-                        <SelectDropdown {...{
-                            highlighted,
-                            isPending,
-                            lang,
-                            onSearchTermChange: this._onSearchTermChange,
-                            onSelect: this._onSelectOption,
-                            options: this._getOptionsList(),
-                            requestSearch,
-                            search,
-                            searchTerm,
-                            value,
-                        }}/>
-                        : <SelectError error={ error }/>
-                }
-             </span>
+                    {
+                        dropdownOpened ?
+                            <SelectDropdown {... {
+                                highlighted,
+                                isPending,
+                                language: this.language || {},
+                                onSearchTermChange: this._onSearchTermChange,
+                                onSelect: this._onSelectOption,
+                                options: this._getOptionsList(),
+                                showSearch: requestSearch || search.minimumResults <= this.state.options.length,
+                                searchTerm,
+                                value,
+                            }}/>
+                            : <SelectError error={ error }/>
+                    }
+            </span>
         )
     }
 }

@@ -1,56 +1,39 @@
-import React, { Children, Component, PropTypes } from 'react'
+import React, { PropTypes } from 'react'
 
 import SelectOptionsList from './SelectOptionsList'
 import SelectSearchInput from './SelectSearchInput'
 
 
-const LANG_DEFAULT = {
-    empty: 'Ничего не найдено',
-    emptyValue: '-',
-    error: 'Не удалось получить данные!',
-    loading: 'Загрузка...',
-    // @fixme: hardcoded minlength
-    minLength: 'Введите минимум 3 буквы',
-    pending: 'Поиск...',
-}
-
-
 const SelectDropdown = ({
     highlighted,
     isPending,
-    lang,
+    language,
     onSearchTermChange,
     onSelect,
     options,
-    requestSearch,
-    search,
+    showSearch,
     searchTerm,
     value,
-}) => {
-    const language = Object.assign({}, LANG_DEFAULT, lang)
-    const showSearch = requestSearch || search.minimumResults <= options.length
-
-    return (
-        <span className="pure-react-select__dropdown">
-            { showSearch &&
-                <SelectSearchInput value={ searchTerm } onChange={ onSearchTermChange }/> }
-            { isPending && !options.length ?
-                'Loading...'
-                : <SelectOptionsList {...{ options, value, highlighted, onSelect }} />
-            }
-        </span>
-    )
-}
+}) => (
+    <span className="pure-react-select__dropdown">
+        { showSearch &&
+            <SelectSearchInput value={ searchTerm } onChange={ onSearchTermChange }/> }
+        { isPending && !options.length ?
+            language.isPending
+            : <SelectOptionsList {...{ options, value, highlighted, onSelect }} />
+        }
+    </span>
+)
 
 SelectDropdown.propTypes = {
     highlighted: PropTypes.number,
     isPending: PropTypes.bool,
-    lang: PropTypes.object,
-    onSearch: PropTypes.func,
+    language: PropTypes.object.isRequired,
+    onSearchTermChange: PropTypes.func.isRequired,
     onSelect: PropTypes.func.isRequired,
     options: PropTypes.array.isRequired,
-    requestSearch: PropTypes.bool,
-    search: PropTypes.object.isRequired,
+    searchTerm: PropTypes.string,
+    showSearch: PropTypes.bool.isRequired,
     value: PropTypes.string,
 }
 
