@@ -256,6 +256,7 @@ var Select = function (_Component) {
         /**
          * Select current highlighted option
          */
+        // @fixme: selects invalid option when options list filtered by searchTerm
 
     }, {
         key: 'render',
@@ -296,11 +297,12 @@ var Select = function (_Component) {
                     highlighted: highlighted,
                     isPending: isPending,
                     language: this.language || {},
+                    onKeyDown: this._onContainerKeyDown,
                     onSearchTermChange: this._onSearchTermChange,
                     onSelect: this._onSelectOption,
                     options: this._getOptionsList(),
-                    showSearch: requestSearch || search.minimumResults <= this.state.options.length,
                     searchTerm: searchTerm,
+                    showSearch: requestSearch || search.minimumResults <= this.state.options.length,
                     value: value
                 }) : _react2.default.createElement(_SelectError2.default, { error: error })
             );
@@ -792,16 +794,16 @@ var _initialiseProps = function _initialiseProps() {
             value = _state4.value;
 
 
-        return (0, _classnames2.default)('pure-react-select__container ' + (className || ''), {
-            'pure-react-select__container--above': dropdownVerticalPosition === 'above',
-            'pure-react-select__container--below': dropdownVerticalPosition !== 'above',
-            'pure-react-select__container--disabled': disabled,
-            'pure-react-select__container--error': error,
-            'pure-react-select__container--left': dropdownHorizontalPosition !== 'right',
-            'pure-react-select__container--open': dropdownOpened,
-            'pure-react-select__container--pending': isPending,
-            'pure-react-select__container--right': dropdownHorizontalPosition === 'right',
-            'pure-react-select__container--selected': (0, _hasValue2.default)(value)
+        return (0, _classnames2.default)('PureReactSelect__container ' + (className || ''), {
+            'PureReactSelect--above': dropdownVerticalPosition === 'above',
+            'PureReactSelect--below': dropdownVerticalPosition !== 'above',
+            'PureReactSelect--disabled': disabled,
+            'PureReactSelect--error': error,
+            'PureReactSelect--left': dropdownHorizontalPosition !== 'right',
+            'PureReactSelect--open': dropdownOpened,
+            'PureReactSelect--pending': isPending,
+            'PureReactSelect--right': dropdownHorizontalPosition === 'right',
+            'PureReactSelect--selected': (0, _hasValue2.default)(value)
         });
     };
 
@@ -853,9 +855,7 @@ var _initialiseProps = function _initialiseProps() {
         // If size of text is increases
         // const isTextIncreasing = term && (!stateSearchTerm || term.length > stateSearchTerm.length)
 
-        // reset searchTerm if term === ''
-
-        var searchTerm = term || null;
+        var searchTerm = term || '';
 
         // if callback were passed in props
         if (_this3._hasSearchTermChangeCallback()) {

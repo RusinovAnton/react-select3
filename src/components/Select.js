@@ -575,6 +575,7 @@ class Select extends Component {
     /**
      * Select current highlighted option
      */
+     // @fixme: selects invalid option when options list filtered by searchTerm
     _selectHighlighted = () => {
         const { options, highlighted, dropdownOpened } = this.state
 
@@ -607,16 +608,16 @@ class Select extends Component {
             value,
         } = this.state
 
-        return classNames('pure-react-select__container ' + (className || ''), {
-            'pure-react-select__container--above': dropdownVerticalPosition === 'above',
-            'pure-react-select__container--below': dropdownVerticalPosition !== 'above',
-            'pure-react-select__container--disabled': disabled,
-            'pure-react-select__container--error': error,
-            'pure-react-select__container--left': dropdownHorizontalPosition !== 'right',
-            'pure-react-select__container--open': dropdownOpened,
-            'pure-react-select__container--pending': isPending,
-            'pure-react-select__container--right': dropdownHorizontalPosition === 'right',
-            'pure-react-select__container--selected': hasValue(value),
+        return classNames('PureReactSelect__container ' + (className || ''), {
+            'PureReactSelect--above': dropdownVerticalPosition === 'above',
+            'PureReactSelect--below': dropdownVerticalPosition !== 'above',
+            'PureReactSelect--disabled': disabled,
+            'PureReactSelect--error': error,
+            'PureReactSelect--left': dropdownHorizontalPosition !== 'right',
+            'PureReactSelect--open': dropdownOpened,
+            'PureReactSelect--pending': isPending,
+            'PureReactSelect--right': dropdownHorizontalPosition === 'right',
+            'PureReactSelect--selected': hasValue(value),
         })
     }
 
@@ -660,8 +661,7 @@ class Select extends Component {
         // If size of text is increases
         // const isTextIncreasing = term && (!stateSearchTerm || term.length > stateSearchTerm.length)
 
-        // reset searchTerm if term === ''
-        const searchTerm = term || null
+        const searchTerm = term || ''
 
         // if callback were passed in props
         if (this._hasSearchTermChangeCallback()) {
@@ -715,11 +715,12 @@ class Select extends Component {
                                 highlighted,
                                 isPending,
                                 language: this.language || {},
+                                onKeyDown: this._onContainerKeyDown,
                                 onSearchTermChange: this._onSearchTermChange,
                                 onSelect: this._onSelectOption,
                                 options: this._getOptionsList(),
-                                showSearch: requestSearch || search.minimumResults <= this.state.options.length,
                                 searchTerm,
+                                showSearch: requestSearch || search.minimumResults <= this.state.options.length,
                                 value,
                             }}/>
                             : <SelectError error={ error }/>

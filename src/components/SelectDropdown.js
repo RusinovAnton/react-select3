@@ -2,26 +2,28 @@ import React, { PropTypes } from 'react'
 
 import SelectOptionsList from './SelectOptionsList'
 import SelectSearchInput from './SelectSearchInput'
+import SelectStatus from './SelectStatus'
 
 
 const SelectDropdown = ({
     highlighted,
     isPending,
     language,
+    onKeyDown,
     onSearchTermChange,
     onSelect,
     options,
-    showSearch,
     searchTerm,
+    showSearch,
     value,
 }) => (
-    <span className="pure-react-select__dropdown">
+    <span className="PureReactSelect__dropdown">
         { showSearch &&
-            <SelectSearchInput value={ searchTerm } onChange={ onSearchTermChange }/> }
-        { isPending && !options.length ?
-            language.isPending
-            : <SelectOptionsList {...{ options, value, highlighted, onSelect }} />
-        }
+            <SelectSearchInput value={ searchTerm }
+                               onKeyDown={ onKeyDown }
+                               onChange={ onSearchTermChange }/> }
+        <SelectStatus {...{ isPending, language }}/>
+        { !!options.length && <SelectOptionsList {...{ options, value, highlighted, onSelect }}/> }
     </span>
 )
 

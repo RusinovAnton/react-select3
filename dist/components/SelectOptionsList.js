@@ -35,9 +35,9 @@ var SelectOptionsList = function SelectOptionsList(_ref) {
         if (isHidden) return null;
 
         var isSelected = (0, _hasValue2.default)(value) && value === id;
-        var optionClassName = (0, _classnames2.default)('pure-react-select-results__option', {
-            'pure-react-select-results--selected': isSelected,
-            'pure-react-select-results__option--highlighted': i === highlighted
+        var optionClassName = (0, _classnames2.default)('PureReactSelect__option', {
+            'PureReactSelect__option--selected': isSelected,
+            'PureReactSelect__option--highlighted': i === highlighted
         });
 
         var onOptionSelect = isSelected ? null : onSelect.bind(null, id);
@@ -53,7 +53,7 @@ var SelectOptionsList = function SelectOptionsList(_ref) {
 
     return _react2.default.createElement(
         'ul',
-        { className: 'pure-react-select__results-options' },
+        { className: 'PureReactSelect__options-list' },
         optionsList
     );
 };

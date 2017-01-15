@@ -10,9 +10,9 @@ const SelectOptionsList = ({ highlighted, value, options = [], onSelect }) => {
         if (isHidden) return null
 
         const isSelected = hasValue(value) && value === id
-        const optionClassName = classNames('pure-react-select-results__option', {
-            'pure-react-select-results--selected': isSelected,
-            'pure-react-select-results__option--highlighted': i === highlighted
+        const optionClassName = classNames('PureReactSelect__option', {
+            'PureReactSelect__option--selected': isSelected,
+            'PureReactSelect__option--highlighted': i === highlighted
         })
 
         const onOptionSelect = isSelected ? null : onSelect.bind(null, id)
@@ -27,7 +27,7 @@ const SelectOptionsList = ({ highlighted, value, options = [], onSelect }) => {
     })
 
     return (
-        <ul className="pure-react-select__results-options">
+        <ul className="PureReactSelect__options-list">
             { optionsList }
         </ul>
     )

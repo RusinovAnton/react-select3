@@ -14,8 +14,8 @@ const SelectSearchInput = props => {
     }
 
     return (
-        <span className='pure-react-select__search'>
-            <input className='pure-react-select__search-field'
+        <span className='PureReactSelect__search'>
+            <input className='PureReactSelect__search-field'
                    type='search'
                    tabIndex='0'
                    autoFocus

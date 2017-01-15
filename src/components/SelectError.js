@@ -5,7 +5,7 @@ const SelectError = ({ error }) => {
     if (typeof error !== 'string') return null
 
     return (
-        <span className='help-block'>{ error }</span>
+        <span className='PureReactSelect__error help-block'>{ error }</span>
     )
 }
 

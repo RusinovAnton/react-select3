@@ -16,23 +16,31 @@ var _SelectSearchInput = require('./SelectSearchInput');
 
 var _SelectSearchInput2 = _interopRequireDefault(_SelectSearchInput);
 
+var _SelectStatus = require('./SelectStatus');
+
+var _SelectStatus2 = _interopRequireDefault(_SelectStatus);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var SelectDropdown = function SelectDropdown(_ref) {
     var highlighted = _ref.highlighted,
         isPending = _ref.isPending,
         language = _ref.language,
+        onKeyDown = _ref.onKeyDown,
         onSearchTermChange = _ref.onSearchTermChange,
         onSelect = _ref.onSelect,
         options = _ref.options,
-        showSearch = _ref.showSearch,
         searchTerm = _ref.searchTerm,
+        showSearch = _ref.showSearch,
         value = _ref.value;
     return _react2.default.createElement(
         'span',
-        { className: 'pure-react-select__dropdown' },
-        showSearch && _react2.default.createElement(_SelectSearchInput2.default, { value: searchTerm, onChange: onSearchTermChange }),
-        isPending && !options.length ? language.isPending : _react2.default.createElement(_SelectOptionsList2.default, { options: options, value: value, highlighted: highlighted, onSelect: onSelect })
+        { className: 'PureReactSelect__dropdown' },
+        showSearch && _react2.default.createElement(_SelectSearchInput2.default, { value: searchTerm,
+            onKeyDown: onKeyDown,
+            onChange: onSearchTermChange }),
+        _react2.default.createElement(_SelectStatus2.default, { isPending: isPending, language: language }),
+        !!options.length && _react2.default.createElement(_SelectOptionsList2.default, { options: options, value: value, highlighted: highlighted, onSelect: onSelect })
     );
 };
 

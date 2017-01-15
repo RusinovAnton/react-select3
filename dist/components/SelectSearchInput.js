@@ -30,8 +30,8 @@ var SelectSearchInput = function SelectSearchInput(props) {
 
     return _react2.default.createElement(
         'span',
-        { className: 'pure-react-select__search' },
-        _react2.default.createElement('input', _extends({ className: 'pure-react-select__search-field',
+        { className: 'PureReactSelect__search' },
+        _react2.default.createElement('input', _extends({ className: 'PureReactSelect__search-field',
             type: 'search',
             tabIndex: '0',
             autoFocus: true,

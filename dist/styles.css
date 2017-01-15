@@ -1,4 +1,4 @@
-.pure-react-select__container {
+.PureReactSelect__container {
   display: inline-block;
   position: relative;
   background: #fff;
@@ -9,45 +9,50 @@
   -ms-user-select: none;
   user-select: none;
   outline: none; }
-  .pure-react-select__container > * {
+  .PureReactSelect__container > * {
     box-sizing: border-box;
     outline: none; }
-  .pure-react-select__container .dropdown-wrapper {
-    display: block;
-    position: absolute;
-    top: 100%;
-    width: 100%;
-    z-index: 1; }
-  .pure-react-select__container.pure-react-select-container--below .dropdown-wrapper {
-    top: 100%; }
-  .pure-react-select__container.pure-react-select-container--above .dropdown-wrapper {
-    bottom: 100%; }
 
-.pure-react-select__selection {
+.PureReactSelect--open.PureReactSelect--below .PureReactSelect__selection {
+  border-radius: 0 0 0 0;
+  border-bottom: 0; }
+
+.PureReactSelect--open.PureReactSelect--below .PureReactSelect__dropdown {
+  top: 100%;
+  border-radius: 0 0 0 0; }
+
+.PureReactSelect--open.PureReactSelect--above .PureReactSelect__selection {
+  border-radius: 0 0 0 0;
+  border-top: 0; }
+
+.PureReactSelect--open.PureReactSelect--above .PureReactSelect__dropdown {
+  bottom: 100%;
+  border-radius: 0 0 0 0; }
+
+.PureReactSelect__selection {
   white-space: nowrap;
   overflow: hidden;
-  border-radius: 3px;
-  border: 1px solid #e0e0e0;
+  border-radius: 0;
+  border: 1px solid #cecece;
   box-shadow: 1px 1px 1px 0 #f0f0f0;
   display: block;
-  box-sizing: border-box;
   height: 31px;
   padding: 0 20px 0 10px;
   line-height: 31px; }
-  .pure-react-select-container--clearable .pure-react-select__selection {
-    padding-right: 30px; }
+  .PureReactSelect__selection.PureReactSelect--clearable {
+    padding-right: 40px; }
 
-.pure-react-select__selection--placeholder {
-  opacity: 0.5; }
+.PureReactSelect__selection--placeholder {
+  color: #cecece; }
 
-.pure-react-select__selection-arrow {
+.PureReactSelect__selection-arrow {
   display: block;
   position: absolute;
   right: 10px;
   top: 13px;
   height: 5px;
   width: 5px; }
-  .pure-react-select__selection-arrow i {
+  .PureReactSelect__selection-arrow i {
     display: block;
     border-color: currentColor rgba(255, 255, 255, 0) rgba(255, 255, 255, 0) rgba(255, 255, 255, 0);
     border-style: solid;
@@ -55,7 +60,7 @@
     height: 0;
     width: 0; }
 
-.pure-react-select__selection-clear {
+.PureReactSelect__clear-selection {
   display: block;
   position: absolute;
   right: 20px;
@@ -64,32 +69,36 @@
   width: 10px;
   height: 10px; }
 
-.pure-react-select__dropdown {
+.PureReactSelect__dropdown {
   display: block;
-  border-radius: 3px;
-  border: 1px solid #e0e0e0;
+  position: absolute;
+  width: 100%;
+  background-color: #fff;
+  border-radius: 0;
+  border: 1px solid #cecece;
   box-shadow: 1px 1px 1px 0 #f0f0f0; }
 
-.pure-react-select__results-options {
+.PureReactSelect__options-list {
   display: block;
   list-style: none;
   padding: 0;
   margin: 0; }
-  .pure-react-select__results-options li {
+  .PureReactSelect__options-list li {
     line-height: 31px;
     white-space: nowrap;
     overflow: hidden;
     padding: 0 10px; }
 
-.pure-react-select-results__option--highlighted {
+.PureReactSelect__option--highlighted {
   background-color: #efefef; }
 
-.pure-react-select-results--selected {
+.PureReactSelect__option--selected {
   background: #00a7ff;
   color: #fff; }
 
-.pure-react-select__search-field {
+.PureReactSelect__search-field {
   display: block;
+  -webkit-appearance: none;
   height: 31px;
   padding: 0 10px;
   width: calc(100% - 20px);
@@ -97,3 +106,8 @@
   border-bottom: 1px solid #ccc;
   margin: 0 auto;
   outline: none; }
+
+.PureReactSelect__status {
+  display: block;
+  padding: 3px 10px;
+  color: #cecece; }
