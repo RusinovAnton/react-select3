@@ -6,7 +6,7 @@
   "repository": "https://github.com/RusinovAnton/react-select2.git",
   "scripts": {
     "build": "gulp dist",
-    "prepublish": "npm run build --production",
+    "prepublish": "npm run test && npm run build --production",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
