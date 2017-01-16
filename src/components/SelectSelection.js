@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react'
-
 import classNames from 'classnames'
-import selectPropTypes from '../utils/selectPropTypes'
+import { stopPropagation } from '../utils/events'
 
 
 const SelectSelection = ({ clearable, selection = null, placeholder = null, onClearSelection }) => (
@@ -15,7 +14,7 @@ const SelectSelection = ({ clearable, selection = null, placeholder = null, onCl
     { clearable && (
       <span className="PureReactSelect__clear-selection"
             role="presentation"
-            onClick={ onClearSelection }>
+            onClick={ stopPropagation(onClearSelection) }>
         &times;
       </span>
     )}

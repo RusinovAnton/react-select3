@@ -16,9 +16,9 @@ var _isFunction = require('lodash/isFunction');
 
 var _isFunction2 = _interopRequireDefault(_isFunction);
 
-var _hasValue = require('../utils/hasValue');
+var _isNil = require('lodash/isNil');
 
-var _hasValue2 = _interopRequireDefault(_hasValue);
+var _isNil2 = _interopRequireDefault(_isNil);
 
 var _events = require('../utils/events');
 
@@ -45,7 +45,7 @@ var SelectOptionsList = function SelectOptionsList(_ref) {
       return null;
     }
 
-    var isSelected = (0, _hasValue2.default)(value) && value === id;
+    var isSelected = !(0, _isNil2.default)(value) && value === id;
     var optionClassName = (0, _classnames2.default)('PureReactSelect__option', {
       'PureReactSelect__option--selected': isSelected,
       'PureReactSelect__option--highlighted': i === highlighted
@@ -73,6 +73,7 @@ var SelectOptionsList = function SelectOptionsList(_ref) {
 SelectOptionsList.propTypes = {
   highlighted: _react.PropTypes.number,
   onSelect: _react.PropTypes.func.isRequired,
+  optionRenderer: _react.PropTypes.func,
   options: _react.PropTypes.array.isRequired,
   value: _react.PropTypes.string
 };

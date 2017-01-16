@@ -12,9 +12,7 @@ var _classnames = require('classnames');
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
-var _selectPropTypes = require('../utils/selectPropTypes');
-
-var _selectPropTypes2 = _interopRequireDefault(_selectPropTypes);
+var _events = require('../utils/events');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -40,7 +38,7 @@ var SelectSelection = function SelectSelection(_ref) {
       'span',
       { className: 'PureReactSelect__clear-selection',
         role: 'presentation',
-        onClick: onClearSelection },
+        onClick: (0, _events.stopPropagation)(onClearSelection) },
       '\xD7'
     ),
     _react2.default.createElement(

@@ -4,6 +4,7 @@ import classNames from 'classnames'
 import debounce from 'lodash/debounce'
 import isEqual from 'lodash/isEqual'
 import isFunction from 'lodash/isFunction'
+import isNil from 'lodash/isNil'
 import keys from 'lodash/keys'
 import path from 'path'
 import provideClickOutside from 'react-click-outside'
@@ -11,10 +12,9 @@ import qs from 'qs'
 import uniqueId from 'lodash/uniqueId'
 
 import fetchJson from '../utils/fetch'
-import hasValue from '../utils/hasValue'
+import makeString from '../utils/makeString'
 import selectPropTypes from '../utils/selectPropTypes'
 import { DEFAULT_LANG } from  '../consts'
-import { stopPropagation } from '../utils/events'
 
 import SelectError from './SelectError'
 import SelectOptionsList from './SelectOptionsList'
@@ -190,6 +190,21 @@ export class Select extends Component {
   constructor(props, context) { // eslint-disable-line consistent-return
     super(props, context)
 
+    const onArrowUp = this._setHighlightedOption.bind(null, -1)
+    const onArrowDown = this._setHighlightedOption.bind(null, 1)
+
+    this.KEY_FUNCTIONS = {
+      ArrowUp: onArrowUp,
+      38: onArrowUp,
+      ArrowDown: onArrowDown,
+      40: onArrowDown,
+      Enter: this._selectHighlighted,
+      13: this._selectHighlighted,
+      ' ': this._selectHighlighted, // 'Space' key
+      32: this._selectHighlighted, // 'Space' key
+      Escape: this._closeDropdown,
+      27: this._closeDropdown,
+    }
     this.state = {}
 
     const {
@@ -241,13 +256,7 @@ export class Select extends Component {
   }
 
   componentWillReceiveProps(newProps) {
-    const {
-      disabled,
-      error,
-      options,
-      children,
-      value,
-    } = newProps
+    const { disabled, error, options, children, value } = newProps
     const isValueValid = this._isValidValue(value)
 
     if (isValueValid && typeof newProps.onSelect === 'undefined' && typeof this.props.onSelect === 'undefined') {
@@ -266,14 +275,14 @@ export class Select extends Component {
       let newValue = state.value
 
       if (isValueValid) {
-        newValue = value === null ? null : String(value)
+        newValue = makeString(value)
       }
 
       return {
         disabled,
         options: this._setOptions(options, children),
         value: newValue,
-        error: hasValue(error) ? error : state.error
+        error: !isNil(error) ? error : state.error
       }
     })
   }
@@ -428,8 +437,11 @@ export class Select extends Component {
 
   _setValue = () => {
     const { value, defaultValue } = this.props
+    const newValue = value === null ?
+      null
+      : value || defaultValue
 
-    return String(value || defaultValue)
+    return makeString(newValue)
   }
 
 
@@ -495,25 +507,16 @@ export class Select extends Component {
   _onContainerKeyDown = event => {
     if (this.props.disabled) return
 
-    const KEY_FUNTIONS = {
-      ArrowUp: this._setHighlightedOption.bind(null, -1),
-      ArrowDown: this._setHighlightedOption.bind(null, 1),
-      Enter: this._selectHighlighted,
-      ' ': this._selectHighlighted, // 'Space' key
-      Escape: this._closeDropdown
-    }
-
-    const { key } = event
-
-    if (!KEY_FUNTIONS[key]) return
+    const key = event.key || event.keyCode
+    if (!this.KEY_FUNCTIONS[key]) return
 
     event.preventDefault()
     // Handle key click
-    KEY_FUNTIONS[key]()
+    this.KEY_FUNCTIONS[key]()
   }
 
   _onClearSelection = () => {
-    // Dont clear when disabled, dont fire extra event when value is already cleared
+    // Dont clear when disabled && dont fire extra event when value is already cleared
     if (!this.state.disabled && this.state.value !== null) {
       this._onSelect(null)
     }
@@ -632,7 +635,7 @@ export class Select extends Component {
       'PureReactSelect--open': dropdownOpened,
       'PureReactSelect--pending': isPending,
       'PureReactSelect--right': dropdownHorizontalPosition === 'right',
-      'PureReactSelect--selected': hasValue(value),
+      'PureReactSelect--selected': !isNil(value),
     })
   }
 
@@ -640,7 +643,7 @@ export class Select extends Component {
     const { allowClear } = this.props
     const { value } = this.state
 
-    return (allowClear && hasValue(value))
+    return (allowClear && !isNil(value))
   }
 
   _getOptionsList = () => {
@@ -672,10 +675,8 @@ export class Select extends Component {
       // searchTerm: stateSearchTerm,
       requestSearch
     } = this.state
-
     // If size of text is increases
     // const isTextIncreasing = term && (!stateSearchTerm || term.length > stateSearchTerm.length)
-
     const searchTerm = term || ''
 
     // if callback were passed in props
@@ -752,12 +753,12 @@ export class Select extends Component {
             role='combobox'
             onClick={ this._onContainerClick }
             onKeyDown={ this._onContainerKeyDown }>
-                <SelectSelection {...{
-                  clearable: this._isClearable(),
-                  onClearSelection: stopPropagation(this._onClearSelection),
-                  placeholder,
-                  selection: selectedOption && selectedOption.text,
-                }}/>
+            <SelectSelection {...{
+              clearable: this._isClearable(),
+              onClearSelection: this._onClearSelection,
+              placeholder,
+              selection: selectedOption && selectedOption.text,
+            }}/>
         {
           dropdownOpened ?
             this._renderSelectDropdown()
@@ -768,7 +769,4 @@ export class Select extends Component {
   }
 }
 
-export
-default
-
-provideClickOutside(Select)
+export default provideClickOutside(Select)

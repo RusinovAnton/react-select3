@@ -2,5 +2,5 @@
 .DS_Store
 .idea
 node_modules/
-__tests__/__snapshots__/
+__snapshots__/
 coverage/

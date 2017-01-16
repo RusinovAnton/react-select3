@@ -3,7 +3,7 @@ import React, { PropTypes } from 'react'
 import classNames from 'classnames'
 import isFunction from 'lodash/isFunction'
 
-import hasValue from '../utils/hasValue'
+import isNil from 'lodash/isNil'
 import { stopPropagation } from '../utils/events'
 
 
@@ -17,7 +17,7 @@ const SelectOptionsList = ({ highlighted, value, optionRenderer, options = [], o
       return null
     }
 
-    const isSelected = hasValue(value) && value === id
+    const isSelected = !isNil(value) && value === id
     const optionClassName = classNames('PureReactSelect__option', {
       'PureReactSelect__option--selected': isSelected,
       'PureReactSelect__option--highlighted': i === highlighted
@@ -45,6 +45,7 @@ const SelectOptionsList = ({ highlighted, value, optionRenderer, options = [], o
 SelectOptionsList.propTypes = {
   highlighted: PropTypes.number,
   onSelect: PropTypes.func.isRequired,
+  optionRenderer: PropTypes.func,
   options: PropTypes.array.isRequired,
   value: PropTypes.string,
 }

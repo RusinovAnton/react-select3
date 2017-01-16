@@ -27,6 +27,10 @@ var _isFunction = require('lodash/isFunction');
 
 var _isFunction2 = _interopRequireDefault(_isFunction);
 
+var _isNil = require('lodash/isNil');
+
+var _isNil2 = _interopRequireDefault(_isNil);
+
 var _keys = require('lodash/keys');
 
 var _keys2 = _interopRequireDefault(_keys);
@@ -51,17 +55,15 @@ var _fetch = require('../utils/fetch');
 
 var _fetch2 = _interopRequireDefault(_fetch);
 
-var _hasValue = require('../utils/hasValue');
+var _makeString = require('../utils/makeString');
 
-var _hasValue2 = _interopRequireDefault(_hasValue);
+var _makeString2 = _interopRequireDefault(_makeString);
 
 var _selectPropTypes = require('../utils/selectPropTypes');
 
 var _selectPropTypes2 = _interopRequireDefault(_selectPropTypes);
 
 var _consts = require('../consts');
-
-var _events = require('../utils/events');
 
 var _SelectError = require('./SelectError');
 
@@ -137,6 +139,21 @@ var Select = exports.Select = function (_Component) {
 
     _initialiseProps.call(_this);
 
+    var onArrowUp = _this._setHighlightedOption.bind(null, -1);
+    var onArrowDown = _this._setHighlightedOption.bind(null, 1);
+
+    _this.KEY_FUNCTIONS = {
+      ArrowUp: onArrowUp,
+      38: onArrowUp,
+      ArrowDown: onArrowDown,
+      40: onArrowDown,
+      Enter: _this._selectHighlighted,
+      13: _this._selectHighlighted,
+      ' ': _this._selectHighlighted, // 'Space' key
+      32: _this._selectHighlighted, // 'Space' key
+      Escape: _this._closeDropdown,
+      27: _this._closeDropdown
+    };
     _this.state = {};
 
     var children = props.children,
@@ -214,14 +231,14 @@ var Select = exports.Select = function (_Component) {
         var newValue = state.value;
 
         if (isValueValid) {
-          newValue = value === null ? null : String(value);
+          newValue = (0, _makeString2.default)(value);
         }
 
         return {
           disabled: disabled,
           options: _this2._setOptions(options, children),
           value: newValue,
-          error: (0, _hasValue2.default)(error) ? error : state.error
+          error: !(0, _isNil2.default)(error) ? error : state.error
         };
       });
     }
@@ -294,7 +311,7 @@ var Select = exports.Select = function (_Component) {
           onKeyDown: this._onContainerKeyDown },
         _react2.default.createElement(_SelectSelection2.default, {
           clearable: this._isClearable(),
-          onClearSelection: (0, _events.stopPropagation)(this._onClearSelection),
+          onClearSelection: this._onClearSelection,
           placeholder: placeholder,
           selection: selectedOption && selectedOption.text
         }),
@@ -609,8 +626,9 @@ var _initialiseProps = function _initialiseProps() {
         value = _props4.value,
         defaultValue = _props4.defaultValue;
 
+    var newValue = value === null ? null : value || defaultValue;
 
-    return String(value || defaultValue);
+    return (0, _makeString2.default)(newValue);
   };
 
   this._setOptions = function (options, children) {
@@ -682,26 +700,16 @@ var _initialiseProps = function _initialiseProps() {
   this._onContainerKeyDown = function (event) {
     if (_this3.props.disabled) return;
 
-    var KEY_FUNTIONS = {
-      ArrowUp: _this3._setHighlightedOption.bind(null, -1),
-      ArrowDown: _this3._setHighlightedOption.bind(null, 1),
-      Enter: _this3._selectHighlighted,
-      ' ': _this3._selectHighlighted, // 'Space' key
-      Escape: _this3._closeDropdown
-    };
-
-    var key = event.key;
-
-
-    if (!KEY_FUNTIONS[key]) return;
+    var key = event.key || event.keyCode;
+    if (!_this3.KEY_FUNCTIONS[key]) return;
 
     event.preventDefault();
     // Handle key click
-    KEY_FUNTIONS[key]();
+    _this3.KEY_FUNCTIONS[key]();
   };
 
   this._onClearSelection = function () {
-    // Dont clear when disabled, dont fire extra event when value is already cleared
+    // Dont clear when disabled && dont fire extra event when value is already cleared
     if (!_this3.state.disabled && _this3.state.value !== null) {
       _this3._onSelect(null);
     }
@@ -812,7 +820,7 @@ var _initialiseProps = function _initialiseProps() {
       'PureReactSelect--open': dropdownOpened,
       'PureReactSelect--pending': isPending,
       'PureReactSelect--right': dropdownHorizontalPosition === 'right',
-      'PureReactSelect--selected': (0, _hasValue2.default)(value)
+      'PureReactSelect--selected': !(0, _isNil2.default)(value)
     });
   };
 
@@ -821,7 +829,7 @@ var _initialiseProps = function _initialiseProps() {
     var value = _this3.state.value;
 
 
-    return allowClear && (0, _hasValue2.default)(value);
+    return allowClear && !(0, _isNil2.default)(value);
   };
 
   this._getOptionsList = function () {
@@ -860,7 +868,6 @@ var _initialiseProps = function _initialiseProps() {
         minLength = _props7$search$minLen === undefined ? 3 : _props7$search$minLen,
         onSearchTermChange = _props7.onSearchTermChange;
     var requestSearch = _this3.state.requestSearch;
-
     // If size of text is increases
     // const isTextIncreasing = term && (!stateSearchTerm || term.length > stateSearchTerm.length)
 
