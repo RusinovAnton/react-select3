@@ -16,9 +16,10 @@ import selectPropTypes from '../utils/selectPropTypes'
 import { DEFAULT_LANG } from  '../consts'
 import { stopPropagation } from '../utils/events'
 
-import SelectDropdown from './SelectDropdown'
 import SelectError from './SelectError'
+import SelectOptionsList from './SelectOptionsList'
 import SelectSelection from './SelectSelection'
+import SelectStatus from './SelectStatus'
 
 
 // TODO: styles
@@ -26,7 +27,7 @@ import SelectSelection from './SelectSelection'
 // TODO: label
 // TODO: optgroups
 // TODO: make separate modules for simple, fetch once, fetch on search, multiselect etc
-class Select extends Component {
+export class Select extends Component {
   static propTypes = {
     /**
      * Whether to allow user to clear select
@@ -61,11 +62,18 @@ class Select extends Component {
     }),
     name: PropTypes.string,
     /**
+     * Function to transform options' 'text' to display in the SelectDropdown if needed
+     * @param {object} option
+     * @returns React element
+     */
+    optionRenderer: PropTypes.func,
+    /**
      * Array of option items
      */
     options: PropTypes.arrayOf(PropTypes.shape({
       id: selectPropTypes.optionId.isRequired,
-      text: selectPropTypes.selection.isRequired,
+      isHidden: PropTypes.bool,
+      text: PropTypes.string.isRequired,
     })),
     /**
      * Provide needed options to fetch data from server by term query
@@ -185,11 +193,10 @@ class Select extends Component {
 
     const {
       children,
-      defaultValue,
+      disabled,
       error,
       options,
       request,
-      value,
     } = props
 
     if (request && typeof request.endpoint !== 'string') {
@@ -222,13 +229,14 @@ class Select extends Component {
          * }}
      */
     this.state = Object.assign(Select.initialState(), {
+      disabled,
       error,
       options: this._setOptions(options, children),
       requestSearch,
-      value: value || defaultValue,
+      value: this._setValue(),
     })
 
-    this.lang = this._composeLanguageObject()
+    this.language = this._composeLanguageObject()
   }
 
   componentWillReceiveProps(newProps) {
@@ -243,7 +251,7 @@ class Select extends Component {
 
     if (isValueValid && typeof newProps.onSelect === 'undefined' && typeof this.props.onSelect === 'undefined') {
       /* eslint-disable */
-      console.error(`Warning: You're setting value for Select component throught props
+      console.warn(`Warning: You're setting value for Select component throught props
                 but not passing onSelect callback which can lead to unforeseen consequences(bugs).
                 Please consider using onSelect callback or defaultValue instead of value`)
       /* eslint-enable */
@@ -306,7 +314,7 @@ class Select extends Component {
     } else if (value === null) {
       isValid = true
     } else if (options && options.length) {
-      isValid = options.some(({ id }) => id === value)
+      isValid = options.some(({ id }) => id === String(value))
     }
 
     return isValid
@@ -417,6 +425,13 @@ class Select extends Component {
     }
   }
 
+  _setValue = () => {
+    const { value, defaultValue } = this.props
+
+    return String(value || defaultValue)
+  }
+
+
   _setOptions = (options, children) => {
     let stateOptions = this.state.options || []
 
@@ -467,11 +482,9 @@ class Select extends Component {
   }
 
   _onContainerClick = () => {
-    this.setState(state => {
-      const { dropdownOpened, disabled } = state
-
-      return disabled ? state : ({ dropdownOpened: !dropdownOpened })
-    })
+    if (!this.state.disabled) {
+      this.setState(({ dropdownOpened }) => ({ dropdownOpened: !dropdownOpened }))
+    }
   }
 
   /**
@@ -677,23 +690,57 @@ class Select extends Component {
     this.setState({ searchTerm })
   }
 
+  _renderSelectDropdown = () => {
+    const {
+      search,
+      optionRenderer,
+    } = this.props
+    const {
+      highlighted,
+      isPending,
+      options,
+      requestSearch,
+      searchTerm,
+      value,
+    } = this.state
+    const showSearch = requestSearch || search.minimumResults <= options.length
+
+    return (
+      <span className="PureReactSelect__dropdown">
+        {
+          showSearch && <SelectSearchInput value={ searchTerm }
+                                           onKeyDown={ this._onContainerKeyDown }
+                                           onChange={ this._onSearchTermChange }/>
+        }
+        <SelectStatus {...{ isPending, language: this.language || {} }}/>
+        {
+          !!options.length &&
+          <SelectOptionsList {...{
+            highlighted,
+            onSelect: this._onSelectOption,
+            optionRenderer,
+            options: this._getOptionsList(),
+            value
+          }}/>
+        }
+      </span>
+    )
+  }
+
   render() {
     const {
       layout: { width },
       placeholder,
-      search,
+
     } = this.props
     const {
       disabled,
       dropdownOpened,
       error,
-      highlighted,
-      isPending,
-      requestSearch,
-      searchTerm,
       value,
     } = this.state
     const selectedOption = this._getOptionById(value)
+
 
     return (
       <span ref='selectContainer'
@@ -712,18 +759,7 @@ class Select extends Component {
                 }}/>
         {
           dropdownOpened ?
-            <SelectDropdown {... {
-              highlighted,
-              isPending,
-              language: this.language || {},
-              onKeyDown: this._onContainerKeyDown,
-              onSearchTermChange: this._onSearchTermChange,
-              onSelect: this._onSelectOption,
-              options: this._getOptionsList(),
-              searchTerm,
-              showSearch: requestSearch || search.minimumResults <= this.state.options.length,
-              value,
-            }}/>
+            this._renderSelectDropdown()
             : <SelectError error={ error }/>
         }
       </span>
@@ -731,4 +767,7 @@ class Select extends Component {
   }
 }
 
-export default provideClickOutside(Select)
+export
+default
+
+provideClickOutside(Select)

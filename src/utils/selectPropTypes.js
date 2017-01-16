@@ -5,8 +5,4 @@ export default {
     PropTypes.number,
     PropTypes.string,
   ]),
-  selection: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.element,
-  ]),
 }

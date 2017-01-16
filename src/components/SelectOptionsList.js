@@ -1,13 +1,21 @@
 import React, { PropTypes } from 'react'
 
 import classNames from 'classnames'
+import isFunction from 'lodash/isFunction'
+
 import hasValue from '../utils/hasValue'
 import { stopPropagation } from '../utils/events'
 
 
-const SelectOptionsList = ({ highlighted, value, options = [], onSelect }) => {
+const SelectOptionsList = ({ highlighted, value, optionRenderer, options = [], onSelect }) => {
   const optionsList = options.map(({ id, text, isHidden }, i) => {
-    if (isHidden) return null
+    let optionText = text
+
+    if (isFunction(optionRenderer)) {
+      optionText = optionRenderer({ id, text, isHidden })
+    } else if (isHidden) {
+      return null
+    }
 
     const isSelected = hasValue(value) && value === id
     const optionClassName = classNames('PureReactSelect__option', {
@@ -19,9 +27,10 @@ const SelectOptionsList = ({ highlighted, value, options = [], onSelect }) => {
 
     return (
       <li key={ id }
+          data-id={ id }
           className={ optionClassName }
           onClick={ stopPropagation(onOptionSelect) }>
-        { text }
+        { optionText }
       </li>
     )
   })

@@ -12,19 +12,18 @@ const SelectDropdown = ({
   onKeyDown,
   onSearchTermChange,
   onSelect,
+  optionRenderer,
   options,
   searchTerm,
   showSearch,
   value,
 }) => (
   <span className="PureReactSelect__dropdown">
-        { showSearch &&
-        <SelectSearchInput value={ searchTerm }
-                           onKeyDown={ onKeyDown }
-                           onChange={ onSearchTermChange }/> }
+    { showSearch &&
+    <SelectSearchInput value={ searchTerm } onKeyDown={ onKeyDown } onChange={ onSearchTermChange }/> }
     <SelectStatus {...{ isPending, language }}/>
-    { !!options.length && <SelectOptionsList {...{ options, value, highlighted, onSelect }}/> }
-    </span>
+    { !!options.length && <SelectOptionsList {...{ highlighted, onSelect, optionRenderer, options, value }}/> }
+  </span>
 )
 
 SelectDropdown.propTypes = {

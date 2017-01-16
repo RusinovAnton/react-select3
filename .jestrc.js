@@ -1,13 +1,31 @@
 // Make Enzyme functions available in all test files without importing
+import React from 'react'
 import { shallow, render, mount } from 'enzyme';
+import sinon from 'sinon'
 
-global.shallow = shallow;
-global.render = render;
+global.React = React
+
 global.mount = mount;
+global.render = render;
+global.shallow = shallow;
+global.sinon = sinon;
+
+global.dummyData = [
+  { id: 3, text: 'three' },
+  { id: 4, text: 'four' },
+  { id: 5, text: 'five' },
+  { id: 6, text: 'six' },
+  { id: 7, text: 'seven' },
+  { id: 8, text: 'eight' },
+  { id: 9, text: 'nine' },
+  { id: 10, text: 'ten' },
+  { id: 11, text: 'eleven' },
+  { id: 12, text: ('twelve') },
+]
 
 // Skip createElement warnings but fail tests on any other warning
 console.error = message => {
-    if (!/(React.createElement: type should not be null)/.test(message)) {
-        throw new Error(message);
-    }
+  if (!/(React.createElement: type should not be null)/.test(message)) {
+    throw new Error(message);
+  }
 };

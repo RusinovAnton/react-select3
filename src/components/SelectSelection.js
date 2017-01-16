@@ -28,8 +28,8 @@ const SelectSelection = ({ clearable, selection = null, placeholder = null, onCl
 SelectSelection.propTypes = {
   clearable: PropTypes.bool,
   onClearSelection: PropTypes.func,
-  placeholder: selectPropTypes.selection,
-  selection: selectPropTypes.selection,
+  placeholder: PropTypes.string,
+  selection: PropTypes.string,
 }
 
 export default SelectSelection
