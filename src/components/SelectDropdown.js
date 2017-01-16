@@ -6,37 +6,37 @@ import SelectStatus from './SelectStatus'
 
 
 const SelectDropdown = ({
-    highlighted,
-    isPending,
-    language,
-    onKeyDown,
-    onSearchTermChange,
-    onSelect,
-    options,
-    searchTerm,
-    showSearch,
-    value,
+  highlighted,
+  isPending,
+  language,
+  onKeyDown,
+  onSearchTermChange,
+  onSelect,
+  options,
+  searchTerm,
+  showSearch,
+  value,
 }) => (
-    <span className="PureReactSelect__dropdown">
+  <span className="PureReactSelect__dropdown">
         { showSearch &&
-            <SelectSearchInput value={ searchTerm }
-                               onKeyDown={ onKeyDown }
-                               onChange={ onSearchTermChange }/> }
-        <SelectStatus {...{ isPending, language }}/>
-        { !!options.length && <SelectOptionsList {...{ options, value, highlighted, onSelect }}/> }
+        <SelectSearchInput value={ searchTerm }
+                           onKeyDown={ onKeyDown }
+                           onChange={ onSearchTermChange }/> }
+    <SelectStatus {...{ isPending, language }}/>
+    { !!options.length && <SelectOptionsList {...{ options, value, highlighted, onSelect }}/> }
     </span>
 )
 
 SelectDropdown.propTypes = {
-    highlighted: PropTypes.number,
-    isPending: PropTypes.bool,
-    language: PropTypes.object.isRequired,
-    onSearchTermChange: PropTypes.func.isRequired,
-    onSelect: PropTypes.func.isRequired,
-    options: PropTypes.array.isRequired,
-    searchTerm: PropTypes.string,
-    showSearch: PropTypes.bool.isRequired,
-    value: PropTypes.string,
+  highlighted: PropTypes.number,
+  isPending: PropTypes.bool,
+  language: PropTypes.object.isRequired,
+  onSearchTermChange: PropTypes.func.isRequired,
+  onSelect: PropTypes.func.isRequired,
+  options: PropTypes.array.isRequired,
+  searchTerm: PropTypes.string,
+  showSearch: PropTypes.bool.isRequired,
+  value: PropTypes.string,
 }
 
 export default SelectDropdown

@@ -7,14 +7,18 @@
     "extends": [
         "eslint:recommended",
         "plugin:react/recommended",
-        "airbnb-base/legacy"
+        "airbnb-base"
     ],
     "plugins": [
         "react"
     ],
     "rules": {
-        "indent": ["error", 4],
+        "indent": [
+            "error",
+            2
+        ],
         "semi": 0,
+        "arrow-parens": 0,
         "no-shadow": 0,
         "func-names": 0,
         "no-console": 1,
@@ -23,6 +27,7 @@
         "padded-blocks": 0,
         "no-multi-spaces": 0,
         "prefer-const": 2,
+        "import/no-unresolved": 0,
         "max-len": [
             "error",
             128

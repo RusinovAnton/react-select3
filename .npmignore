@@ -8,3 +8,4 @@ gulpfile.js
 .eslintrc
 .jsdoc
 .jestrc.js
+*.lock
