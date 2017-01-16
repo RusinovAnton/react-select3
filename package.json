@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "repository": "https://github.com/RusinovAnton/react-select2.git",
   "scripts": {
-    "build": "gulp dist",
+    "build": "gulp",
     "prepublish": "npm run test && npm run build --production",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -127,6 +127,7 @@
     "babel-preset-react": "^6.16.0",
     "babel-preset-react-optimize": "^1.0.1",
     "babel-preset-stage-0": "^6.16.0",
+    "del": "^2.2.2",
     "enzyme": "^2.7.0",
     "enzyme-to-json": "^1.4.5",
     "eslint": "^3.3.0",
@@ -148,6 +149,7 @@
     "react-addons-test-utils": "^15.4.1",
     "react-stub-context": "^0.7.0",
     "react-test-renderer": "^15.4.1",
+    "run-sequence": "^1.2.2",
     "sinon": "^1.17.7"
   }
 }
