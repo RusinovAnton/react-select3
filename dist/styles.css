@@ -42,7 +42,7 @@
   .PureReactSelect__selection.PureReactSelect--clearable {
     padding-right: 40px; }
 
-.PureReactSelect__selection--placeholder {
+.PureReactSelect__selection--placeholder .PureReactSelect__selection-text {
   color: #cecece; }
 
 .PureReactSelect__selection-arrow {

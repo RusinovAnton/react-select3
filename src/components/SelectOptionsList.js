@@ -7,7 +7,7 @@ import isNil from 'lodash/isNil'
 import { stopPropagation } from '../utils/events'
 
 
-const SelectOptionsList = ({ highlighted, value, optionRenderer, options = [], onSelect }) => {
+const SelectOptionsList = ({ highlighted, value, optionRenderer, options = [], onSelect }, { cssClassNameSelector }) => {
   const optionsList = options.map(({ id, text, isHidden }) => {
     let optionText = text
 
@@ -18,9 +18,9 @@ const SelectOptionsList = ({ highlighted, value, optionRenderer, options = [], o
     }
 
     const isSelected = !isNil(value) && value === id
-    const optionClassName = classNames('PureReactSelect__option', {
-      'PureReactSelect__option--selected': isSelected,
-      'PureReactSelect__option--highlighted': id === highlighted
+    const optionClassName = classNames(`${cssClassNameSelector}__option`, {
+      [`${cssClassNameSelector}__option--selected`]: isSelected,
+      [`${cssClassNameSelector}__option--highlighted`]: id === highlighted
     })
 
     const onOptionSelect = isSelected ? null : onSelect.bind(null, id)
@@ -36,10 +36,14 @@ const SelectOptionsList = ({ highlighted, value, optionRenderer, options = [], o
   })
 
   return (
-    <ul className="PureReactSelect__options-list">
+    <ul className={`${cssClassNameSelector}__options-list`}>
       { optionsList }
     </ul>
   )
+}
+
+SelectOptionsList.contextTypes = {
+  cssClassNameSelector: PropTypes.string,
 }
 
 SelectOptionsList.propTypes = {

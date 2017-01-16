@@ -5,8 +5,7 @@ import { stopPropagation } from '../utils/events'
 export const inArray = (item, array) => array.indexOf(item) !== -1
 const allowedKeysArray = ['Escape']
 
-const SelectSearchInput = ({ onClick, onKeyDown, ...props }) => { // eslint-disable-line no-unused-vars
-  // TODO: close dropdown on esc click when SearchInput focused
+const SelectSearchInput = ({ onClick, onKeyDown, ...props }, { cssClassNameSelector }) => { // eslint-disable-line no-unused-vars
   const filterKeyDowns = e => {
     if (inArray(e.key, allowedKeysArray)) {
       onKeyDown(e)
@@ -14,8 +13,8 @@ const SelectSearchInput = ({ onClick, onKeyDown, ...props }) => { // eslint-disa
   }
 
   return (
-    <span className='PureReactSelect__search'>
-      <input className='PureReactSelect__search-field'
+    <span className={`${cssClassNameSelector}__search`}>
+      <input className={`${cssClassNameSelector}__search-field`}
              type='search'
              tabIndex='0'
              autoFocus
@@ -29,6 +28,11 @@ const SelectSearchInput = ({ onClick, onKeyDown, ...props }) => { // eslint-disa
              {...props}/>
     </span>
   )
+}
+
+
+SelectSearchInput.contextTypes = {
+  cssClassNameSelector: React.PropTypes.string
 }
 
 export default SelectSearchInput

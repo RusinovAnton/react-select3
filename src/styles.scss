@@ -93,7 +93,9 @@ $select-padding-horizontal: $padding-base !default;
 }
 
 .#{$selector}__selection--placeholder {
-    color: $color-placeholder;
+    .#{$selector}__selection-text {
+        color: $color-placeholder;
+    }
 }
 
 .#{$selector}__selection-arrow {

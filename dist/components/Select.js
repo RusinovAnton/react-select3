@@ -5,8 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Select = undefined;
 
-var _jsx = function () { var REACT_ELEMENT_TYPE = typeof Symbol === "function" && Symbol.for && Symbol.for("react.element") || 0xeac7; return function createRawReactElement(type, props, key, children) { var defaultProps = type && type.defaultProps; var childrenLength = arguments.length - 3; if (!props && childrenLength !== 0) { props = {}; } if (props && defaultProps) { for (var propName in defaultProps) { if (props[propName] === void 0) { props[propName] = defaultProps[propName]; } } } else if (!props) { props = defaultProps || {}; } if (childrenLength === 1) { props.children = children; } else if (childrenLength > 1) { var childArray = Array(childrenLength); for (var i = 0; i < childrenLength; i++) { childArray[i] = arguments[i + 3]; } props.children = childArray; } return { $$typeof: REACT_ELEMENT_TYPE, type: type, key: key === undefined ? null : '' + key, ref: null, props: props, _owner: null }; }; }();
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = require('react');
@@ -308,9 +306,7 @@ var Select = exports.Select = function (_Component) {
           placeholder: placeholder,
           selection: selectedOption && selectedOption.text
         }),
-        dropdownOpened ? this._renderSelectDropdown() : _jsx(_SelectError2.default, {
-          error: error
-        })
+        dropdownOpened ? this._renderSelectDropdown() : _react2.default.createElement(_SelectError2.default, { error: error })
       );
     }
   }]);
@@ -318,8 +314,114 @@ var Select = exports.Select = function (_Component) {
   return Select;
 }(_react.Component);
 
+Select.childContextTypes = {
+  cssClassNameSelector: _react.PropTypes.string
+};
+Select.propTypes = {
+  /**
+   * Whether to allow user to clear select
+   */
+  allowClear: _react.PropTypes.bool,
+  cssClassNameSelector: _react.PropTypes.string,
+  /**
+   * Whether to focus itself on mount
+   */
+  autoFocus: _react.PropTypes.bool,
+  defaultValue: _selectPropTypes2.default.optionId,
+  disabled: _react.PropTypes.bool,
+  /**
+   * Provide error message to display or just boolean to highlight select container with error styles
+   */
+  error: _react.PropTypes.oneOfType([_react.PropTypes.bool, _react.PropTypes.string]),
+  /**
+   * Provide custom messages
+   */
+  language: _react.PropTypes.object,
+  layout: _react.PropTypes.shape({
+    /**
+     * Container's width
+     */
+    width: _react.PropTypes.string,
+    /**
+     * Defines whether SelectDropdown should be opened above or below the container.
+     * default: 'below'
+     */
+    // TODO: define position automatically depends on SelectContainer position in the viewport
+    dropdownVerticalPosition: _react.PropTypes.oneOf(['above', 'below']),
+    dropdownHorizontalPosition: _react.PropTypes.oneOf(['left', 'right'])
+  }),
+  name: _react.PropTypes.string,
+  /**
+   * Function to transform options' 'text' to display in the SelectDropdown if needed
+   * @param {object} option
+   * @returns React element
+   */
+  optionRenderer: _react.PropTypes.func,
+  /**
+   * Array of option items
+   */
+  options: _react.PropTypes.arrayOf(_react.PropTypes.shape({
+    id: _selectPropTypes2.default.optionId.isRequired,
+    isHidden: _react.PropTypes.bool,
+    text: _react.PropTypes.string.isRequired
+  })),
+  /**
+   * Provide needed options to fetch data from server by term query
+   */
+  request: _react.PropTypes.shape({
+    /**
+     * Delays between requests
+     */
+    delay: _react.PropTypes.number, // default: 500
+    endpoint: _react.PropTypes.string.isRequired,
+    /**
+     * Whenever to fetch options once at mount or on searchTermChange
+     */
+    once: _react.PropTypes.bool,
+    /**
+     * Additional query params
+     */
+    params: _react.PropTypes.object,
+    /**
+     * You can provide custom ajaxClient instead of built-in fetchJson
+     * which invokes on termChange or once at component mount with endpoint
+     * and query params as string argument
+     */
+    ajaxClient: _react.PropTypes.func,
+    /**
+     * Pass in function that will used to map response data array
+     * `{ id: number|string, text: string|element }`
+     */
+    responseDataFormatter: _react.PropTypes.func,
+    /**
+     * Name of the key of searchTerm query param
+     * `{ [termQuery]: 'search term' }`
+     */
+    termQuery: _react.PropTypes.string
+  }),
+  onSelect: _react.PropTypes.func,
+  placeholder: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.element]),
+  search: _react.PropTypes.shape({
+    /**
+     * Minimum results amount before showing search input
+     */
+    minimumResults: _react.PropTypes.number,
+    /**
+     * Minimum characters before sending request
+     */
+    minLength: _react.PropTypes.number }),
+  /**
+   * Search input change callback
+   */
+  onSearchTermChange: _react.PropTypes.func,
+  /**
+   * Value can be set by providing option id
+   */
+  value: _selectPropTypes2.default.optionId
+};
 Select.defaultProps = {
   allowClear: false,
+  cssClassNameSelector: 'PureReactSelect',
   disabled: false,
   layout: {
     dropdownHorizontalPosition: 'left',
@@ -362,6 +464,12 @@ Select.makeHighlightedObject = function (index, options) {
 
 var _initialiseProps = function _initialiseProps() {
   var _this3 = this;
+
+  this.getChildContext = function () {
+    return {
+      cssClassNameSelector: _this3.props.cssClassNameSelector
+    };
+  };
 
   this.shouldComponentUpdate = function (_ref, nextState) {
     var error = _ref.error,
@@ -714,12 +822,15 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this._getSelectContainerClassName = function () {
+    var _classNames;
+
     var _props6 = _this3.props,
         className = _props6.className,
         disabled = _props6.disabled,
         _props6$layout = _props6.layout,
         dropdownHorizontalPosition = _props6$layout.dropdownHorizontalPosition,
         dropdownVerticalPosition = _props6$layout.dropdownVerticalPosition,
+        cssClassNameSelector = _props6.cssClassNameSelector,
         error = _props6.error;
     var _state3 = _this3.state,
         dropdownOpened = _state3.dropdownOpened,
@@ -727,17 +838,7 @@ var _initialiseProps = function _initialiseProps() {
         value = _state3.value;
 
 
-    return (0, _classnames2.default)('PureReactSelect__container ' + (className || ''), {
-      'PureReactSelect--above': dropdownVerticalPosition === 'above',
-      'PureReactSelect--below': dropdownVerticalPosition !== 'above',
-      'PureReactSelect--disabled': disabled,
-      'PureReactSelect--error': error,
-      'PureReactSelect--left': dropdownHorizontalPosition !== 'right',
-      'PureReactSelect--open': dropdownOpened,
-      'PureReactSelect--pending': isPending,
-      'PureReactSelect--right': dropdownHorizontalPosition === 'right',
-      'PureReactSelect--selected': !(0, _isNil2.default)(value)
-    });
+    return (0, _classnames2.default)(cssClassNameSelector + '__container ' + (className || ''), (_classNames = {}, _defineProperty(_classNames, cssClassNameSelector + '--above', dropdownVerticalPosition === 'above'), _defineProperty(_classNames, cssClassNameSelector + '--below', dropdownVerticalPosition !== 'above'), _defineProperty(_classNames, cssClassNameSelector + '--disabled', disabled), _defineProperty(_classNames, cssClassNameSelector + '--error', error), _defineProperty(_classNames, cssClassNameSelector + '--left', dropdownHorizontalPosition !== 'right'), _defineProperty(_classNames, cssClassNameSelector + '--open', dropdownOpened), _defineProperty(_classNames, cssClassNameSelector + '--pending', isPending), _defineProperty(_classNames, cssClassNameSelector + '--right', dropdownHorizontalPosition === 'right'), _defineProperty(_classNames, cssClassNameSelector + '--selected', !(0, _isNil2.default)(value)), _classNames));
   };
 
   this._isClearable = function () {
@@ -798,7 +899,8 @@ var _initialiseProps = function _initialiseProps() {
   this._renderSelectDropdown = function () {
     var _props8 = _this3.props,
         search = _props8.search,
-        optionRenderer = _props8.optionRenderer;
+        optionRenderer = _props8.optionRenderer,
+        cssClassNameSelector = _props8.cssClassNameSelector;
     var _state5 = _this3.state,
         highlighted = _state5.highlighted,
         isPending = _state5.isPending,
@@ -809,19 +911,21 @@ var _initialiseProps = function _initialiseProps() {
 
     var showSearch = requestSearch || search.minimumResults <= options.length;
 
-    return _jsx('span', {
-      className: 'PureReactSelect__dropdown'
-    }, void 0, showSearch && _jsx(_SelectSearchInput2.default, {
-      value: searchTerm,
-      onKeyDown: _this3._onContainerKeyDown,
-      onChange: _this3._onSearchTermChange
-    }), _react2.default.createElement(_SelectStatus2.default, { isPending: isPending, language: _this3.language || {} }), !!options.length && _react2.default.createElement(_SelectOptionsList2.default, {
-      highlighted: highlighted && highlighted.id,
-      onSelect: _this3._onSelectOption,
-      optionRenderer: optionRenderer,
-      options: _this3._getOptionsList(),
-      value: value
-    }));
+    return _react2.default.createElement(
+      'span',
+      { className: cssClassNameSelector + '__dropdown' },
+      showSearch && _react2.default.createElement(_SelectSearchInput2.default, { value: searchTerm,
+        onKeyDown: _this3._onContainerKeyDown,
+        onChange: _this3._onSearchTermChange }),
+      _react2.default.createElement(_SelectStatus2.default, { isPending: isPending, language: _this3.language || {} }),
+      !!options.length && _react2.default.createElement(_SelectOptionsList2.default, {
+        highlighted: highlighted && highlighted.id,
+        onSelect: _this3._onSelectOption,
+        optionRenderer: optionRenderer,
+        options: _this3._getOptionsList(),
+        value: value
+      })
+    );
   };
 };
 

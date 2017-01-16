@@ -29,11 +29,16 @@ import SelectStatus from './SelectStatus'
 // TODO: optgroups
 // TODO: make separate modules for simple, fetch once, fetch on search, multiselect etc
 export class Select extends Component {
+  static childContextTypes = {
+    cssClassNameSelector: PropTypes.string,
+  }
+
   static propTypes = {
     /**
      * Whether to allow user to clear select
      */
     allowClear: PropTypes.bool,
+    cssClassNameSelector: PropTypes.string,
     /**
      * Whether to focus itself on mount
      */
@@ -134,6 +139,7 @@ export class Select extends Component {
 
   static defaultProps = {
     allowClear: false,
+    cssClassNameSelector: 'PureReactSelect',
     disabled: false,
     layout: {
       dropdownHorizontalPosition: 'left',
@@ -254,6 +260,10 @@ export class Select extends Component {
 
     this.language = this._composeLanguageObject()
   }
+
+  getChildContext = () => ({
+    cssClassNameSelector: this.props.cssClassNameSelector
+  })
 
   componentWillReceiveProps(newProps) {
     const { disabled, error, options, children, value } = newProps
@@ -626,6 +636,7 @@ export class Select extends Component {
         dropdownHorizontalPosition,
         dropdownVerticalPosition,
       },
+      cssClassNameSelector,
       error,
     } = this.props
     const {
@@ -634,16 +645,16 @@ export class Select extends Component {
       value,
     } = this.state
 
-    return classNames(`PureReactSelect__container ${className || ''}`, {
-      'PureReactSelect--above': dropdownVerticalPosition === 'above',
-      'PureReactSelect--below': dropdownVerticalPosition !== 'above',
-      'PureReactSelect--disabled': disabled,
-      'PureReactSelect--error': error,
-      'PureReactSelect--left': dropdownHorizontalPosition !== 'right',
-      'PureReactSelect--open': dropdownOpened,
-      'PureReactSelect--pending': isPending,
-      'PureReactSelect--right': dropdownHorizontalPosition === 'right',
-      'PureReactSelect--selected': !isNil(value),
+    return classNames(`${cssClassNameSelector}__container ${className || ''}`, {
+      [`${cssClassNameSelector}--above`]: dropdownVerticalPosition === 'above',
+      [`${cssClassNameSelector}--below`]: dropdownVerticalPosition !== 'above',
+      [`${cssClassNameSelector}--disabled`]: disabled,
+      [`${cssClassNameSelector}--error`]: error,
+      [`${cssClassNameSelector}--left`]: dropdownHorizontalPosition !== 'right',
+      [`${cssClassNameSelector}--open`]: dropdownOpened,
+      [`${cssClassNameSelector}--pending`]: isPending,
+      [`${cssClassNameSelector}--right`]: dropdownHorizontalPosition === 'right',
+      [`${cssClassNameSelector}--selected`]: !isNil(value),
     })
   }
 
@@ -690,12 +701,12 @@ export class Select extends Component {
   }
 
   _renderSelectDropdown = () => {
-    const { search, optionRenderer } = this.props
+    const { search, optionRenderer, cssClassNameSelector } = this.props
     const { highlighted, isPending, options, requestSearch, searchTerm, value } = this.state
     const showSearch = requestSearch || search.minimumResults <= options.length
 
     return (
-      <span className="PureReactSelect__dropdown">
+      <span className={`${cssClassNameSelector}__dropdown`}>
         {
           showSearch && <SelectSearchInput value={ searchTerm }
                                            onKeyDown={ this._onContainerKeyDown }

@@ -1,12 +1,16 @@
 import React, { PropTypes } from 'react'
 
 
-const SelectError = ({ error }) => {
+const SelectError = ({ error }, { cssClassNameSelector }) => {
   if (typeof error !== 'string') return null
 
   return (
-    <span className='PureReactSelect__error help-block'>{ error }</span>
+    <span className={`${cssClassNameSelector}__error help-block`}>{ error }</span>
   )
+}
+
+SelectError.contextTypes = {
+  cssClassNameSelector: PropTypes.string,
 }
 
 SelectError.propTypes = {
