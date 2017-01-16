@@ -7,6 +7,5 @@ Object.defineProperty(exports, "__esModule", {
 var _react = require('react');
 
 exports.default = {
-  optionId: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.string]),
-  selection: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.element])
+  optionId: _react.PropTypes.oneOfType([_react.PropTypes.number, _react.PropTypes.string])
 };

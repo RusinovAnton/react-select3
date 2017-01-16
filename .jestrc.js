@@ -10,18 +10,23 @@ global.render = render;
 global.shallow = shallow;
 global.sinon = sinon;
 
-global.dummyData = [
-  { id: 3, text: 'three' },
-  { id: 4, text: 'four' },
-  { id: 5, text: 'five' },
-  { id: 6, text: 'six' },
-  { id: 7, text: 'seven' },
-  { id: 8, text: 'eight' },
-  { id: 9, text: 'nine' },
-  { id: 10, text: 'ten' },
-  { id: 11, text: 'eleven' },
-  { id: 12, text: ('twelve') },
-]
+global.mock = {
+  options: [
+    { id: 3, text: 'three' },
+    { id: 4, text: 'four' },
+    { id: 5, text: 'five' },
+    { id: 6, text: 'six' },
+    { id: 7, text: 'seven' },
+    { id: 8, text: 'eight' },
+    { id: 9, text: 'nine' },
+    { id: 10, text: 'ten' },
+    { id: 11, text: 'eleven' },
+    { id: 12, text: 'twelve' },
+  ],
+  renderer({ text }) {
+    return (<span>{ text }</span>)
+  },
+}
 
 // Skip createElement warnings but fail tests on any other warning
 console.error = message => {

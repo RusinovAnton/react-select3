@@ -18,6 +18,7 @@ import { stopPropagation } from '../utils/events'
 
 import SelectError from './SelectError'
 import SelectOptionsList from './SelectOptionsList'
+import SelectSearchInput from './SelectSearchInput'
 import SelectSelection from './SelectSelection'
 import SelectStatus from './SelectStatus'
 
