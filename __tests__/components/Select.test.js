@@ -136,7 +136,7 @@ describe('onKeyDown <Select/>', () => {
   const component = mount(<Select options={ mock.options }/>)
   const selectContainer = component.find('.PureReactSelect__container')
 
-  it('should opend dropdown onKeyDown with key ArrowUp, ArrowDown, Space, Enter', () => {
+  it('should open dropdown onKeyDown with key ArrowUp, ArrowDown, Space, Enter', () => {
     selectContainer.simulate('keyDown', { keyCode: 32 })
     expect(component.state('dropdownOpened')).toBe(true)
 
@@ -181,9 +181,19 @@ describe('onKeyDown <Select/>', () => {
     selectContainer.simulate('keyDown', { keyCode: 40 })
     selectContainer.simulate('keyDown', { keyCode: 40 })
     selectContainer.simulate('keyDown', { keyCode: 38 })
-    expect(component.find('.PureReactSelect__option--highlighted').text()).toBe('four')
+    expect(component.find('.PureReactSelect__option--highlighted').text()).toBe('eight')
 
     selectContainer.simulate('keyDown', { keyCode: 13 })
-    expect(component.state('value')).toBe('4')
+    expect(component.state('value')).toBe('8')
+
+    component.setState({ searchTerm: 'ee' })
+    selectContainer.simulate('keyDown', { keyCode: 40 })
+    selectContainer.simulate('keyDown', { keyCode: 38 })
+    selectContainer.simulate('keyDown', { keyCode: 38 })
+    selectContainer.simulate('keyDown', { keyCode: 40 })
+    expect(component.find('.PureReactSelect__option--highlighted').text()).toBe('three')
+
+    selectContainer.simulate('keyDown', { keyCode: 13 })
+    expect(component.state('value')).toBe('3')
   })
 })

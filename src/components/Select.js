@@ -236,7 +236,7 @@ export class Select extends Component {
      * @type {{
          *  dropdownOpened: boolean,
          *  error: string|boolean,
-         *  highlighted: number,
+         *  highlighted: {id, index},
          *  isPending: boolean,
          *  options: array,
          *  requestSearch: boolean
@@ -343,6 +343,7 @@ export class Select extends Component {
 
   _hasResponseDataFormatter = () => {
     const { request } = this.props
+
     // Caching result of calculation of isFunction
     if (typeof this.hasResponseDataFormatter === 'undefined') {
       this.hasResponseDataFormatter = request && isFunction(request.responseDataFormatter)
@@ -418,6 +419,10 @@ export class Select extends Component {
       })
   }
 
+  _openDropdown = () => {
+    this.setState({ dropdownOpened: true })
+  }
+
   _closeDropdown = () => {
     this.setState({
       dropdownOpened: false,
@@ -437,51 +442,34 @@ export class Select extends Component {
 
   _setValue = () => {
     const { value, defaultValue } = this.props
-    const newValue = value === null ?
-      null
-      : value || defaultValue
 
-    return makeString(newValue)
+    if (value === null) {
+      return null
+    }
+
+    return makeString(value || defaultValue)
   }
 
+  _makeOption = (id, text) => {
+    if (!((typeof id === 'string' || typeof id === 'number') && (typeof text === 'string' || typeof text === 'number'))) {
+      throw new Error('Options array is not formatted properly, option object must have "id" and "text"')
+    }
+
+    return { id: String(id), text }
+  }
 
   _setOptions = (options, children) => {
     let stateOptions = this.state.options || []
 
     if (Array.isArray(options) && options.length) {
-      stateOptions = options.map(({ id, text }) => {
-        if (typeof id === 'undefined' || typeof text === 'undefined') {
-          throw new Error('options array is not formatted properly, option object must have "id" and "text"');
-        }
-
-        return {
-          id: String(id),
-          text
-        }
-      })
+      stateOptions = options.map(({ id, text }) => this._makeOption(id, text))
     } else if (Children.count(children)) {
       stateOptions = Children.toArray(children)
         .filter(({ type }) => type === 'option')
-        .map(({ props: { children: text, value: id } }) => ({ id: String(id), text }))
+        .map(({ props: { children: text, value: id } }) => this._makeOption(id, text))
     }
 
     return stateOptions
-  }
-
-  /**
-   * Returns option object from options array by given index
-   * @param {number} index
-   * @return {object} <option>
-   * @private
-   */
-  _getOptionByIndex = index => {
-    const { options } = this.state
-
-    if (index > options.length || index < 0) {
-      throw new Error('Invalid index provided')
-    }
-
-    return options[index]
   }
 
   _getOptionById = value => {
@@ -495,8 +483,14 @@ export class Select extends Component {
   }
 
   _onContainerClick = () => {
-    if (!this.state.disabled) {
-      this.setState(({ dropdownOpened }) => ({ dropdownOpened: !dropdownOpened }))
+    if (this.state.disabled) {
+      return
+    }
+
+    if (this.state.dropdownOpened) {
+      this._closeDropdown()
+    } else {
+      this._openDropdown()
     }
   }
 
@@ -560,34 +554,48 @@ export class Select extends Component {
     this._onSelect(selectedOption)
   }
 
+  static makeHighlightedObject = (index, options) => ({ id: options[index].id, index })
 
+  _hasHighlighted = () => {
+    const { highlighted } = this.state
+
+    return !!highlighted && typeof highlighted.index !== 'undefined'
+  }
   /**
    * Set next highlighted option via 'ArrowUp' or 'ArrowDown' key
    * @param {number} direction (can be -1 or 1)
    */
   _setHighlightedOption = direction => {
-    const { options, disabled, highlighted, dropdownOpened } = this.state
+    this.setState(({ disabled, highlighted, dropdownOpened }) => {
+      const options = this._getOptionsList()
 
-    // do nothing if disabled or there are no options
-    if (disabled || !options || !options.length) return
+      // do nothing if disabled or there are no options
+      if (disabled || !options || !options.length) return
 
-    const optionsLength = options.length - 1
-    const nextHighlighted = (highlighted !== null) ?
-    highlighted + direction : 0
+      const optionsLength = options.length - 1
+      const hasHighlighted = this._hasHighlighted()
+      const nextHighlighted = (hasHighlighted) ? highlighted.index + direction : 0
+      let highlightIndex
 
-    // TODO: scroll SelectDropdown block to show highlighted item when overflows
-    // If dropdown not opened or there is no highlighted item yet
-    if (!dropdownOpened || highlighted === null
-      // highlight first option after click 'ArrowDown' on the last one
-      || nextHighlighted > optionsLength) {
-      this.setState({ highlighted: 0, dropdownOpened: true })
-    } else if (nextHighlighted < 0) {
-      // Highlight last option after click 'ArrowUp' on the first one
-      this.setState({ highlighted: optionsLength })
-    } else {
-      // Highlight next option
-      this.setState({ highlighted: nextHighlighted })
-    }
+      // TODO: scroll SelectDropdown block to show highlighted item when overflows
+      // If dropdown not opened or there is no highlighted item yet
+      if (!dropdownOpened || !(hasHighlighted)
+        // highlight first option after click 'ArrowDown' on the last one
+        || nextHighlighted > optionsLength) {
+        highlightIndex = 0
+      } else if (nextHighlighted < 0) {
+        // Highlight last option after click 'ArrowUp' on the first one
+        highlightIndex = optionsLength
+      } else {
+        // Highlight next option
+        highlightIndex = nextHighlighted
+      }
+
+      return ({ // eslint-disable-line consistent-return
+        dropdownOpened: true,
+        highlighted: Select.makeHighlightedObject(highlightIndex, options)
+      })
+    })
   }
 
   /**
@@ -598,15 +606,15 @@ export class Select extends Component {
     const { options, highlighted, dropdownOpened } = this.state
 
     // If dropdown not opened or there is no highlighted item yet
-    if (!dropdownOpened || highlighted === null) {
+    if (!dropdownOpened || !this._hasHighlighted()) {
       // Open dropdown and hightlight first item
       this.setState({
         dropdownOpened: true,
-        highlighted: 0,
+        highlighted: Select.makeHighlightedObject(0, this._getOptionsList()),
       })
     } else {
       // Select highlighted item
-      this._onSelect(options[highlighted])
+      this._onSelect(options.find(({ id }) => id === highlighted.id))
     }
   }
 
@@ -653,16 +661,7 @@ export class Select extends Component {
     if (searchTerm && optionsList.length) {
       const searchRegExp = new RegExp(searchTerm, 'gi')
 
-      optionsList = options.filter(({ text: element }) => {
-        const elementText = Select.getChildrenTextContent(element)
-
-        // @fixme: last match receives false
-        // e.g.
-        // true /pro/gi "Progressive"
-        // true /pro/gi "reciprocal"
-        // false /pro/gi "protocol"
-        return searchRegExp.test(elementText)
-      })
+      optionsList = options.filter(({ text }) => searchRegExp.test(text))
     }
 
     return optionsList
@@ -671,10 +670,8 @@ export class Select extends Component {
   _onSearchTermChange = e => {
     const { target: { value: term } } = e
     const { search: { minLength = 3 }, onSearchTermChange } = this.props
-    const {
-      // searchTerm: stateSearchTerm,
-      requestSearch
-    } = this.state
+    const { requestSearch } = this.state
+
     // If size of text is increases
     // const isTextIncreasing = term && (!stateSearchTerm || term.length > stateSearchTerm.length)
     const searchTerm = term || ''
@@ -693,18 +690,8 @@ export class Select extends Component {
   }
 
   _renderSelectDropdown = () => {
-    const {
-      search,
-      optionRenderer,
-    } = this.props
-    const {
-      highlighted,
-      isPending,
-      options,
-      requestSearch,
-      searchTerm,
-      value,
-    } = this.state
+    const { search, optionRenderer } = this.props
+    const { highlighted, isPending, options, requestSearch, searchTerm, value } = this.state
     const showSearch = requestSearch || search.minimumResults <= options.length
 
     return (
@@ -718,7 +705,7 @@ export class Select extends Component {
         {
           !!options.length &&
           <SelectOptionsList {...{
-            highlighted,
+            highlighted: highlighted && highlighted.id,
             onSelect: this._onSelectOption,
             optionRenderer,
             options: this._getOptionsList(),
@@ -730,19 +717,9 @@ export class Select extends Component {
   }
 
   render() {
-    const {
-      layout: { width },
-      placeholder,
-
-    } = this.props
-    const {
-      disabled,
-      dropdownOpened,
-      error,
-      value,
-    } = this.state
+    const { layout: { width }, placeholder } = this.props
+    const { disabled, dropdownOpened, error, value } = this.state
     const selectedOption = this._getOptionById(value)
-
 
     return (
       <span ref='selectContainer'

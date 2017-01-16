@@ -8,7 +8,7 @@ import { stopPropagation } from '../utils/events'
 
 
 const SelectOptionsList = ({ highlighted, value, optionRenderer, options = [], onSelect }) => {
-  const optionsList = options.map(({ id, text, isHidden }, i) => {
+  const optionsList = options.map(({ id, text, isHidden }) => {
     let optionText = text
 
     if (isFunction(optionRenderer)) {
@@ -20,7 +20,7 @@ const SelectOptionsList = ({ highlighted, value, optionRenderer, options = [], o
     const isSelected = !isNil(value) && value === id
     const optionClassName = classNames('PureReactSelect__option', {
       'PureReactSelect__option--selected': isSelected,
-      'PureReactSelect__option--highlighted': i === highlighted
+      'PureReactSelect__option--highlighted': id === highlighted
     })
 
     const onOptionSelect = isSelected ? null : onSelect.bind(null, id)
@@ -43,7 +43,7 @@ const SelectOptionsList = ({ highlighted, value, optionRenderer, options = [], o
 }
 
 SelectOptionsList.propTypes = {
-  highlighted: PropTypes.number,
+  highlighted: PropTypes.string,
   onSelect: PropTypes.func.isRequired,
   optionRenderer: PropTypes.func,
   options: PropTypes.array.isRequired,

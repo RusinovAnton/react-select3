@@ -3,13 +3,13 @@ import { stopPropagation } from '../utils/events'
 
 
 export const inArray = (item, array) => array.indexOf(item) !== -1
-const allowedKeysArray = ['ArrowUp', 'ArrowDown', 'Escape']
+const allowedKeysArray = ['Escape']
 
-const SelectSearchInput = props => {
+const SelectSearchInput = ({ onClick, onKeyDown, ...props }) => { // eslint-disable-line no-unused-vars
   // TODO: close dropdown on esc click when SearchInput focused
   const filterKeyDowns = e => {
     if (inArray(e.key, allowedKeysArray)) {
-      props.onKeyDown(e)
+      onKeyDown(e)
     }
   }
 
