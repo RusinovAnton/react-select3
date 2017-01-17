@@ -22,7 +22,8 @@ var inArray = exports.inArray = function inArray(item, array) {
 };
 var allowedKeysArray = ['Escape'];
 
-var SelectSearchInput = function SelectSearchInput(_ref, _ref2) {
+var SelectSearchInput = function SelectSearchInput(_ref, // eslint-disable-line no-unused-vars
+_ref2) {
   var cssClassNameSelector = _ref2.cssClassNameSelector;
 
   var onClick = _ref.onClick,
@@ -30,7 +31,6 @@ var SelectSearchInput = function SelectSearchInput(_ref, _ref2) {
       isPending = _ref.isPending,
       props = _objectWithoutProperties(_ref, ['onClick', 'onKeyDown', 'isPending']);
 
-  // eslint-disable-line no-unused-vars
   var filterKeyDowns = function filterKeyDowns(e) {
     if (inArray(e.key, allowedKeysArray)) {
       onKeyDown(e);
@@ -52,8 +52,12 @@ var SelectSearchInput = function SelectSearchInput(_ref, _ref2) {
   );
 };
 
+SelectSearchInput.propTypes = {
+  isPending: _react.PropTypes.bool.isRequired
+};
+
 SelectSearchInput.contextTypes = {
-  cssClassNameSelector: _react2.default.PropTypes.string
+  cssClassNameSelector: _react.PropTypes.string
 };
 
 exports.default = SelectSearchInput;

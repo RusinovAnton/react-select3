@@ -19,7 +19,7 @@ exports.default = function (endpoint) {
       try {
         data = response.json();
       } catch (err) {
-        console.warn(err);
+        console.warn(err); // eslint-disable-line no-console
       }
     } else if (response.status === 404) {
       return [];
@@ -29,6 +29,6 @@ exports.default = function (endpoint) {
 
     return data;
   }, function (err) {
-    console.warn(err);
+    console.warn(err); // eslint-disable-line no-console
   });
 };

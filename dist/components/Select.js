@@ -946,7 +946,7 @@ var _initialiseProps = function _initialiseProps() {
         isPending: isPending,
         onKeyDown: _this3._onContainerKeyDown,
         onChange: _this3._onSearchTermChange }),
-      !!options.length ? _react2.default.createElement(_SelectOptionsList2.default, {
+      options.length ? _react2.default.createElement(_SelectOptionsList2.default, {
         highlighted: highlighted && highlighted.id,
         onSelect: _this3._onSelectOption,
         optionRenderer: optionRenderer,

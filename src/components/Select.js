@@ -739,7 +739,7 @@ export class Select extends Component {
                                            onChange={ this._onSearchTermChange }/>
         }
         {
-          !!options.length ?
+          options.length ?
             <SelectOptionsList {...{
               highlighted: highlighted && highlighted.id,
               onSelect: this._onSelectOption,

@@ -1,11 +1,12 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 import { stopPropagation } from '../utils/events'
 
 
 export const inArray = (item, array) => array.indexOf(item) !== -1
 const allowedKeysArray = ['Escape']
 
-const SelectSearchInput = ({ onClick, onKeyDown, isPending, ...props }, { cssClassNameSelector }) => { // eslint-disable-line no-unused-vars
+const SelectSearchInput = ({ onClick, onKeyDown, isPending, ...props }, // eslint-disable-line no-unused-vars
+  { cssClassNameSelector }) => {
   const filterKeyDowns = e => {
     if (inArray(e.key, allowedKeysArray)) {
       onKeyDown(e)
@@ -23,14 +24,17 @@ const SelectSearchInput = ({ onClick, onKeyDown, isPending, ...props }, { cssCla
              onKeyDown={ filterKeyDowns }
              onClick={ stopPropagation() }
              {...props}/>
-      {/*{ isPending && <span className={`${cssClassNameSelector}__loader`}/> }*/}
+      {/* { isPending && <span className={`${cssClassNameSelector}__loader`}/> } */}
     </span>
   )
 }
 
+SelectSearchInput.propTypes = {
+  isPending: PropTypes.bool.isRequired,
+}
 
 SelectSearchInput.contextTypes = {
-  cssClassNameSelector: React.PropTypes.string
+  cssClassNameSelector: PropTypes.string,
 }
 
 export default SelectSearchInput
