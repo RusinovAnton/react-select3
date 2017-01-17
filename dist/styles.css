@@ -1,8 +1,8 @@
+@charset "UTF-8";
 .PureReactSelect__container {
   display: inline-block;
   position: relative;
   background: #fff;
-  z-index: 0;
   cursor: pointer;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -12,6 +12,9 @@
   .PureReactSelect__container > * {
     box-sizing: border-box;
     outline: none; }
+
+.PureReactSelect--open.PureReactSelect--below .PureReactSelect__error {
+  display: none; }
 
 .PureReactSelect--open.PureReactSelect--below .PureReactSelect__selection {
   border-radius: 0 0 0 0;
@@ -28,6 +31,20 @@
 .PureReactSelect--open.PureReactSelect--above .PureReactSelect__dropdown {
   bottom: 100%;
   border-radius: 0 0 0 0; }
+
+.PureReactSelect--disabled {
+  opacity: 0.5; }
+
+.PureReactSelect--error .PureReactSelect__selection {
+  border-color: rgba(255, 0, 0, 0.6);
+  box-shadow: 0 0 4px 0 rgba(255, 0, 0, 0.6); }
+
+.PureReactSelect__error {
+  font-size: 12px;
+  color: #f00; }
+
+.PureReactSelect--pending {
+  cursor: progress; }
 
 .PureReactSelect__selection {
   white-space: nowrap;
@@ -72,6 +89,7 @@
 .PureReactSelect__dropdown {
   display: block;
   position: absolute;
+  z-index: 5;
   width: 100%;
   background-color: #fff;
   border-radius: 0;
@@ -81,8 +99,10 @@
 .PureReactSelect__options-list {
   display: block;
   list-style: none;
+  margin: 0;
   padding: 0;
-  margin: 0; }
+  max-height: 170px;
+  overflow: auto; }
   .PureReactSelect__options-list li {
     line-height: 31px;
     white-space: nowrap;
@@ -96,11 +116,15 @@
   background: #00a7ff;
   color: #fff; }
 
+.PureReactSelect__search {
+  display: block;
+  padding: 0 10px; }
+
 .PureReactSelect__search-field {
   display: block;
   -webkit-appearance: none;
+  appearance: none;
   height: 31px;
-  padding: 0 10px;
   width: calc(100% - 20px);
   border: 0;
   border-bottom: 1px solid #ccc;
@@ -111,3 +135,25 @@
   display: block;
   padding: 3px 10px;
   color: #cecece; }
+
+@keyframes loader {
+  0% {
+    opacity: 1; }
+  50% {
+    opacity: 0.15; }
+  100% {
+    opacity: 1; } }
+
+.PureReactSelect__status {
+  font-size: .8em; }
+
+.PureReactSelect__loader {
+  display: inline-block;
+  position: relative;
+  font-size: 50px;
+  color: #444;
+  animation: loader 2s linear infinite;
+  line-height: 0; }
+  .PureReactSelect__loader:before {
+    content: '·';
+    line-height: 0; }

@@ -18,7 +18,7 @@ var SelectError = function SelectError(_ref, _ref2) {
 
   return _react2.default.createElement(
     'span',
-    { className: cssClassNameSelector + '__error help-block' },
+    { className: cssClassNameSelector + '__error' },
     error
   );
 };

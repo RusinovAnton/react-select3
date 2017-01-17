@@ -5,7 +5,7 @@ const SelectError = ({ error }, { cssClassNameSelector }) => {
   if (typeof error !== 'string') return null
 
   return (
-    <span className={`${cssClassNameSelector}__error help-block`}>{ error }</span>
+    <span className={`${cssClassNameSelector}__error`}>{ error }</span>
   )
 }
 

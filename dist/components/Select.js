@@ -81,10 +81,6 @@ var _SelectSelection = require('./SelectSelection');
 
 var _SelectSelection2 = _interopRequireDefault(_SelectSelection);
 
-var _SelectStatus = require('./SelectStatus');
-
-var _SelectStatus2 = _interopRequireDefault(_SelectStatus);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -109,13 +105,26 @@ var Select = exports.Select = function (_Component) {
       this._onClearSelection();
     }
   }, {
+    key: 'options',
+    set: function set(options) {
+      if (Array.isArray(options)) {
+        this.setState({
+          options: this._setOptions(options),
+          value: null
+        });
+      }
+    }
+
+    // @fixme: getChildrenTextContent function is not perfect tbh
+    ,
+    get: function get() {
+      return this.state.options;
+    }
+  }, {
     key: 'selectNode',
     get: function get() {
       return this.refs.selectContainer;
     }
-
-    // @fixme: getChildrenTextContent function is not perfect tbh
-
   }, {
     key: 'value',
     get: function get() {
@@ -123,11 +132,6 @@ var Select = exports.Select = function (_Component) {
 
 
       return selectedOption ? selectedOption.id : null;
-    }
-  }, {
-    key: 'options',
-    get: function get() {
-      return this.state.options;
     }
   }]);
 
@@ -276,6 +280,9 @@ var Select = exports.Select = function (_Component) {
      */
     // @fixme: selects invalid option when options list filtered by searchTerm
 
+
+    // TODO: separate component?
+
   }, {
     key: 'render',
     value: function render() {
@@ -306,7 +313,8 @@ var Select = exports.Select = function (_Component) {
           placeholder: placeholder,
           selection: selectedOption && selectedOption.text
         }),
-        dropdownOpened ? this._renderSelectDropdown() : _react2.default.createElement(_SelectError2.default, { error: error })
+        dropdownOpened && this._renderSelectDropdown(),
+        _react2.default.createElement(_SelectError2.default, { error: error })
       );
     }
   }]);
@@ -444,6 +452,7 @@ Select.initialState = function () {
     highlighted: null,
     isPending: false,
     options: [],
+    fetched: false,
     requestSearch: false,
     searchTerm: '',
     value: null
@@ -590,6 +599,7 @@ var _initialiseProps = function _initialiseProps() {
 
     _this3.setState({
       error: _this3.props.error || null,
+      fetched: true,
       isPending: true
     });
 
@@ -601,11 +611,12 @@ var _initialiseProps = function _initialiseProps() {
 
       _this3.setState({
         options: _this3._setOptions(options),
+        fetchError: false,
         isPending: false
       });
-    }).catch(function (error) {
+    }).catch(function () {
       _this3.setState({
-        error: error.message || true,
+        fetchError: true,
         isPending: false
       });
     });
@@ -737,7 +748,7 @@ var _initialiseProps = function _initialiseProps() {
       }
     };
 
-    _this3.setState({ value: value }, function () {
+    _this3.setState({ value: value, searchTerm: '' }, function () {
       if ((0, _isFunction2.default)(onSelect)) {
         onSelect(selectionEvent);
       }
@@ -838,21 +849,23 @@ var _initialiseProps = function _initialiseProps() {
         value = _state3.value;
 
 
-    return (0, _classnames2.default)(cssClassNameSelector + '__container ' + (className || ''), (_classNames = {}, _defineProperty(_classNames, cssClassNameSelector + '--above', dropdownVerticalPosition === 'above'), _defineProperty(_classNames, cssClassNameSelector + '--below', dropdownVerticalPosition !== 'above'), _defineProperty(_classNames, cssClassNameSelector + '--disabled', disabled), _defineProperty(_classNames, cssClassNameSelector + '--error', error), _defineProperty(_classNames, cssClassNameSelector + '--left', dropdownHorizontalPosition !== 'right'), _defineProperty(_classNames, cssClassNameSelector + '--open', dropdownOpened), _defineProperty(_classNames, cssClassNameSelector + '--pending', isPending), _defineProperty(_classNames, cssClassNameSelector + '--right', dropdownHorizontalPosition === 'right'), _defineProperty(_classNames, cssClassNameSelector + '--selected', !(0, _isNil2.default)(value)), _classNames));
+    return (0, _classnames2.default)(cssClassNameSelector + '__container ' + (className || ''), (_classNames = {}, _defineProperty(_classNames, cssClassNameSelector + '--above', dropdownVerticalPosition === 'above'), _defineProperty(_classNames, cssClassNameSelector + '--below', dropdownVerticalPosition !== 'above'), _defineProperty(_classNames, cssClassNameSelector + '--disabled', disabled), _defineProperty(_classNames, cssClassNameSelector + '--error', !!error || !!_this3.state.error), _defineProperty(_classNames, cssClassNameSelector + '--left', dropdownHorizontalPosition !== 'right'), _defineProperty(_classNames, cssClassNameSelector + '--open', dropdownOpened), _defineProperty(_classNames, cssClassNameSelector + '--pending', isPending), _defineProperty(_classNames, cssClassNameSelector + '--right', dropdownHorizontalPosition === 'right'), _defineProperty(_classNames, cssClassNameSelector + '--selected', !(0, _isNil2.default)(value)), _classNames));
   };
 
   this._isClearable = function () {
     var allowClear = _this3.props.allowClear;
-    var value = _this3.state.value;
+    var _state4 = _this3.state,
+        value = _state4.value,
+        disabled = _state4.disabled;
 
 
-    return allowClear && !(0, _isNil2.default)(value);
+    return allowClear && !disabled && !(0, _isNil2.default)(value);
   };
 
   this._getOptionsList = function () {
-    var _state4 = _this3.state,
-        options = _state4.options,
-        searchTerm = _state4.searchTerm;
+    var _state5 = _this3.state,
+        options = _state5.options,
+        searchTerm = _state5.searchTerm;
 
     var optionsList = options || [];
 
@@ -901,30 +914,49 @@ var _initialiseProps = function _initialiseProps() {
         search = _props8.search,
         optionRenderer = _props8.optionRenderer,
         cssClassNameSelector = _props8.cssClassNameSelector;
-    var _state5 = _this3.state,
-        highlighted = _state5.highlighted,
-        isPending = _state5.isPending,
-        options = _state5.options,
-        requestSearch = _state5.requestSearch,
-        searchTerm = _state5.searchTerm,
-        value = _state5.value;
+    var _state6 = _this3.state,
+        fetched = _state6.fetched,
+        highlighted = _state6.highlighted,
+        isPending = _state6.isPending,
+        options = _state6.options,
+        requestSearch = _state6.requestSearch,
+        searchTerm = _state6.searchTerm,
+        value = _state6.value,
+        fetchError = _state6.fetchError;
 
     var showSearch = requestSearch || search.minimumResults <= options.length;
+    var status = null;
+
+    if (!options.length) {
+      if (!fetched) {
+        status = _this3.language.minLength;
+      } else if (isPending) {
+        status = _this3.language.isPending;
+      } else if (fetchError) {
+        status = _this3.language.serverError;
+      } else {
+        status = _this3.language.isEmpty;
+      }
+    }
 
     return _react2.default.createElement(
       'span',
       { className: cssClassNameSelector + '__dropdown' },
       showSearch && _react2.default.createElement(_SelectSearchInput2.default, { value: searchTerm,
+        isPending: isPending,
         onKeyDown: _this3._onContainerKeyDown,
         onChange: _this3._onSearchTermChange }),
-      _react2.default.createElement(_SelectStatus2.default, { isPending: isPending, language: _this3.language || {} }),
-      !!options.length && _react2.default.createElement(_SelectOptionsList2.default, {
+      !!options.length ? _react2.default.createElement(_SelectOptionsList2.default, {
         highlighted: highlighted && highlighted.id,
         onSelect: _this3._onSelectOption,
         optionRenderer: optionRenderer,
         options: _this3._getOptionsList(),
         value: value
-      })
+      }) : _react2.default.createElement(
+        'span',
+        { className: cssClassNameSelector + '__status' },
+        status
+      )
     );
   };
 };

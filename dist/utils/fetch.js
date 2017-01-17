@@ -13,20 +13,22 @@ exports.default = function (endpoint) {
     method: 'GET',
     credentials: 'same-origin'
   }).then(function (response) {
+    var data = [];
+
     if (response.ok) {
-      return response.text().then(function (text) {
-        var response = 'ok';
-
-        if (text) {
-          response = JSON.parse(text);
-        }
-
-        return response;
-      });
+      try {
+        data = response.json();
+      } catch (err) {
+        console.warn(err);
+      }
+    } else if (response.status === 404) {
+      return [];
+    } else {
+      throw new Error('Server error');
     }
 
-    return response.text().then(function (error) {
-      throw error;
-    });
+    return data;
+  }, function (err) {
+    console.warn(err);
   });
 };

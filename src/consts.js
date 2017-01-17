@@ -1,7 +1,8 @@
 export const DEFAULT_LANG = { // eslint-disable-line import/prefer-default-export
-  empty: 'Ничего не найдено.',
   emptyValue: '-',
   error: 'Не удалось получить данные.',
-  minLength: 'Введите минимум ${minlength} символа', // eslint-disable-line no-template-curly-in-string
+  isEmpty: 'Ничего не найдено.',
   isPending: '...',
+  minLength: 'Введите минимум ${minLength} символа', // eslint-disable-line no-template-curly-in-string
+  serverError: 'Ошибка сервера',
 }

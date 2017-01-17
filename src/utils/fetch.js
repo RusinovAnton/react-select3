@@ -8,24 +8,23 @@ export default (endpoint) => {
     credentials: 'same-origin',
   })
     .then(response => {
-      if (response.ok) {
-        return response
-          .text()
-          .then(text => {
-            let response = 'ok'
+        let data = []
 
-            if (text) {
-              response = JSON.parse(text)
-            }
+        if (response.ok) {
+          try {
+            data = response.json()
+          } catch (err) {
+            console.warn(err)
+          }
+        } else if (response.status === 404) {
+          return []
+        } else {
+          throw new Error('Server error')
+        }
 
-            return response
-          })
-      }
-
-      return response
-        .text()
-        .then(error => {
-          throw error
-        })
-    })
+        return data
+      },
+      err => {
+        console.warn(err)
+      })
 }

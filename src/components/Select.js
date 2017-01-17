@@ -20,7 +20,6 @@ import SelectError from './SelectError'
 import SelectOptionsList from './SelectOptionsList'
 import SelectSearchInput from './SelectSearchInput'
 import SelectSelection from './SelectSelection'
-import SelectStatus from './SelectStatus'
 
 
 // TODO: styles
@@ -161,6 +160,7 @@ export class Select extends Component {
     highlighted: null,
     isPending: false,
     options: [],
+    fetched: false,
     requestSearch: false,
     searchTerm: '',
     value: null,
@@ -173,6 +173,15 @@ export class Select extends Component {
     }
 
     return Select.getChildrenTextContent(Children.toArray(element)[0].props.children)
+  }
+
+  set options(options) {
+    if (Array.isArray(options)) {
+      this.setState({
+        options: this._setOptions(options),
+        value: null,
+      })
+    }
   }
 
   get selectNode() {
@@ -406,6 +415,7 @@ export class Select extends Component {
 
     this.setState({
       error: this.props.error || null,
+      fetched: true,
       isPending: true,
     })
 
@@ -418,12 +428,13 @@ export class Select extends Component {
 
         this.setState({
           options: this._setOptions(options),
+          fetchError: false,
           isPending: false,
         })
       })
-      .catch(error => {
+      .catch(() => {
         this.setState({
-          error: error.message || true,
+          fetchError: true,
           isPending: false,
         })
       })
@@ -436,7 +447,7 @@ export class Select extends Component {
   _closeDropdown = () => {
     this.setState({
       dropdownOpened: false,
-      highlighted: null
+      highlighted: null,
     })
   }
 
@@ -543,7 +554,7 @@ export class Select extends Component {
       }
     }
 
-    this.setState({ value }, () => {
+    this.setState({ value, searchTerm: '' }, () => {
       if (isFunction(onSelect)) {
         onSelect(selectionEvent)
       }
@@ -649,7 +660,7 @@ export class Select extends Component {
       [`${cssClassNameSelector}--above`]: dropdownVerticalPosition === 'above',
       [`${cssClassNameSelector}--below`]: dropdownVerticalPosition !== 'above',
       [`${cssClassNameSelector}--disabled`]: disabled,
-      [`${cssClassNameSelector}--error`]: error,
+      [`${cssClassNameSelector}--error`]: !!error || !!this.state.error,
       [`${cssClassNameSelector}--left`]: dropdownHorizontalPosition !== 'right',
       [`${cssClassNameSelector}--open`]: dropdownOpened,
       [`${cssClassNameSelector}--pending`]: isPending,
@@ -660,9 +671,9 @@ export class Select extends Component {
 
   _isClearable = () => {
     const { allowClear } = this.props
-    const { value } = this.state
+    const { value, disabled } = this.state
 
-    return (allowClear && !isNil(value))
+    return (allowClear && !disabled && !isNil(value))
   }
 
   _getOptionsList = () => {
@@ -700,28 +711,47 @@ export class Select extends Component {
     this.setState({ searchTerm })
   }
 
+  // TODO: separate component?
   _renderSelectDropdown = () => {
     const { search, optionRenderer, cssClassNameSelector } = this.props
-    const { highlighted, isPending, options, requestSearch, searchTerm, value } = this.state
+    const { fetched, highlighted, isPending, options, requestSearch, searchTerm, value, fetchError } = this.state
     const showSearch = requestSearch || search.minimumResults <= options.length
+    let status = null
+
+    if (!options.length) {
+      if (!fetched) {
+        status = this.language.minLength
+      } else if (isPending) {
+        status = this.language.isPending
+      } else if (fetchError) {
+        status = this.language.serverError
+      } else {
+        status = this.language.isEmpty
+      }
+    }
 
     return (
       <span className={`${cssClassNameSelector}__dropdown`}>
         {
           showSearch && <SelectSearchInput value={ searchTerm }
+                                           isPending={ isPending }
                                            onKeyDown={ this._onContainerKeyDown }
                                            onChange={ this._onSearchTermChange }/>
         }
-        <SelectStatus {...{ isPending, language: this.language || {} }}/>
         {
-          !!options.length &&
-          <SelectOptionsList {...{
-            highlighted: highlighted && highlighted.id,
-            onSelect: this._onSelectOption,
-            optionRenderer,
-            options: this._getOptionsList(),
-            value
-          }}/>
+          !!options.length ?
+            <SelectOptionsList {...{
+              highlighted: highlighted && highlighted.id,
+              onSelect: this._onSelectOption,
+              optionRenderer,
+              options: this._getOptionsList(),
+              value
+            }}/>
+            : (
+            <span className={`${cssClassNameSelector}__status`}>
+              { status }
+            </span>
+          )
         }
       </span>
     )
@@ -747,11 +777,8 @@ export class Select extends Component {
               placeholder,
               selection: selectedOption && selectedOption.text,
             }}/>
-        {
-          dropdownOpened ?
-            this._renderSelectDropdown()
-            : <SelectError error={ error }/>
-        }
+        { dropdownOpened && this._renderSelectDropdown() }
+        <SelectError error={ error }/>
       </span>
     )
   }

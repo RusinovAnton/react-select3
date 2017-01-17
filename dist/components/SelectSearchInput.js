@@ -27,7 +27,8 @@ var SelectSearchInput = function SelectSearchInput(_ref, _ref2) {
 
   var onClick = _ref.onClick,
       onKeyDown = _ref.onKeyDown,
-      props = _objectWithoutProperties(_ref, ['onClick', 'onKeyDown']);
+      isPending = _ref.isPending,
+      props = _objectWithoutProperties(_ref, ['onClick', 'onKeyDown', 'isPending']);
 
   // eslint-disable-line no-unused-vars
   var filterKeyDowns = function filterKeyDowns(e) {
@@ -40,14 +41,11 @@ var SelectSearchInput = function SelectSearchInput(_ref, _ref2) {
     'span',
     { className: cssClassNameSelector + '__search' },
     _react2.default.createElement('input', _extends({ className: cssClassNameSelector + '__search-field',
-      type: 'search',
-      tabIndex: '0',
       autoFocus: true,
       autoComplete: 'off',
       autoCorrect: 'off',
       autoCapitalize: 'off',
       spellCheck: 'false',
-      role: 'textbox',
       onKeyDown: filterKeyDowns,
       onClick: (0, _events.stopPropagation)()
     }, props))
