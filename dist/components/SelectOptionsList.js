@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _jsx = function () { var REACT_ELEMENT_TYPE = typeof Symbol === "function" && Symbol.for && Symbol.for("react.element") || 0xeac7; return function createRawReactElement(type, props, key, children) { var defaultProps = type && type.defaultProps; var childrenLength = arguments.length - 3; if (!props && childrenLength !== 0) { props = {}; } if (props && defaultProps) { for (var propName in defaultProps) { if (props[propName] === void 0) { props[propName] = defaultProps[propName]; } } } else if (!props) { props = defaultProps || {}; } if (childrenLength === 1) { props.children = children; } else if (childrenLength > 1) { var childArray = Array(childrenLength); for (var i = 0; i < childrenLength; i++) { childArray[i] = arguments[i + 3]; } props.children = childArray; } return { $$typeof: REACT_ELEMENT_TYPE, type: type, key: key === undefined ? null : '' + key, ref: null, props: props, _owner: null }; }; }();
+
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
@@ -55,33 +57,20 @@ var SelectOptionsList = function SelectOptionsList(_ref, _ref2) {
 
     var onOptionSelect = isSelected ? null : onSelect.bind(null, id);
 
-    return _react2.default.createElement(
-      'li',
-      { key: id,
-        'data-id': id,
-        className: optionClassName,
-        onClick: (0, _events.stopPropagation)(onOptionSelect) },
-      optionText
-    );
+    return _jsx('li', {
+      'data-id': id,
+      className: optionClassName,
+      onClick: (0, _events.stopPropagation)(onOptionSelect)
+    }, id, optionText);
   });
 
-  return _react2.default.createElement(
-    'ul',
-    { className: cssClassNameSelector + '__options-list' },
-    optionsList
-  );
+  return _jsx('ul', {
+    className: cssClassNameSelector + '__options-list'
+  }, void 0, optionsList);
 };
 
 SelectOptionsList.contextTypes = {
   cssClassNameSelector: _react.PropTypes.string
-};
-
-SelectOptionsList.propTypes = {
-  highlighted: _react.PropTypes.string,
-  onSelect: _react.PropTypes.func.isRequired,
-  optionRenderer: _react.PropTypes.func,
-  options: _react.PropTypes.array.isRequired,
-  value: _react.PropTypes.string
 };
 
 exports.default = SelectOptionsList;
