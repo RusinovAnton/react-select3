@@ -1,5 +1,5 @@
 #PURE-REACT-SELECT2
-This react component is wannabe replica of jquery-select2 except no jquery
+This is `<select>` written with ReactJS
 
 ## API reference
 Please watch propTypes for now ✨
