@@ -301,13 +301,13 @@ export class Select extends Component {
         disabled,
         options: this._setOptions(options, children),
         value: newValue,
-        error: !isNil(error) ? error : state.error
+        error: typeof error !== 'undefined' ? error : state.error
       }
     })
   }
 
   shouldComponentUpdate = ({ error, disabled, value, children }, nextState) => (
-    error !== this.props.error
+    (error !== this.props.error && error !== this.state.error)
     || disabled !== this.props.disabled
     || value !== this.state.value
     || !isEqual(children, this.props.children)
@@ -360,27 +360,6 @@ export class Select extends Component {
     return lang
   }
 
-  _hasResponseDataFormatter = () => {
-    const { request } = this.props
-
-    // Caching result of calculation of isFunction
-    if (typeof this.hasResponseDataFormatter === 'undefined') {
-      this.hasResponseDataFormatter = request && isFunction(request.responseDataFormatter)
-    }
-
-    return this.hasResponseDataFormatter
-  }
-
-  _hasSearchTermChangeCallback = () => {
-    const { onSearchTermChange } = this.props
-
-    if (typeof this.hasSearchTermChangeCallback === 'undefined') {
-      this.hasSearchTermChangeCallback = onSearchTermChange && isFunction(onSearchTermChange)
-    }
-
-    return this.hasSearchTermChangeCallback
-  }
-
   _request = searchTerm => {
     const {
       request: {
@@ -422,7 +401,7 @@ export class Select extends Component {
     fetchClient(fetchPath)
       .then(data => {
         let options = data
-        if (this._hasResponseDataFormatter()) {
+        if (isFunction(responseDataFormatter)) {
           options = data.map(responseDataFormatter)
         }
 
@@ -699,7 +678,7 @@ export class Select extends Component {
     const searchTerm = term || ''
 
     // if callback were passed in props
-    if (this._hasSearchTermChangeCallback()) {
+    if (isFunction(onSearchTermChange)) {
       onSearchTermChange(e)
     }
 

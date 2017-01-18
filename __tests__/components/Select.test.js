@@ -197,3 +197,19 @@ describe('onKeyDown <Select/>', () => {
     expect(component.state('value')).toBe('3')
   })
 })
+
+describe('Select error', () => {
+  const component = mount(<Select/>)
+
+  it('should render error node if error were passed with props', () => {
+    component.setProps({error: 'Test error'})
+
+    expect(component.find('.PureReactSelect__error').length).toBe(1)
+  })
+
+  it('should update error node - remove when null passed into error prop', () => {
+    component.setProps({ error: null })
+
+    expect(component.find('.PureReactSelect__error').length).toBe(0)
+  })
+})
