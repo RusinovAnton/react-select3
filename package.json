@@ -1,7 +1,7 @@
 {
   "name": "pure-react-select2",
   "version": "2.0.4",
-  "description": "select2 replica react component",
+  "description": "This is <select> written with ReactJS",
   "main": "dist/index.js",
   "repository": "https://github.com/RusinovAnton/react-select2.git",
   "scripts": {
@@ -23,7 +23,9 @@
     ]
   },
   "keywords": [
-    "cozy"
+    "select",
+    "react-component",
+    "ajax"
   ],
   "author": "Rusinov Anton",
   "license": "MIT",
@@ -141,7 +143,6 @@
     "gulp-babel": "^6.1.2",
     "gulp-browserify": "^0.5.1",
     "gulp-eslint": "^3.0.1",
-    "gulp-jsdoc3": "^1.0.1",
     "gulp-react": "^3.1.0",
     "gulp-sass": "^3.0.0",
     "gulp-uglify": "^2.0.0",

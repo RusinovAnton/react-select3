@@ -22,11 +22,11 @@ import SelectSearchInput from './SelectSearchInput'
 import SelectSelection from './SelectSelection'
 
 
-// TODO: styles
 // TODO: multiselect
 // TODO: label
 // TODO: optgroups
 // TODO: make separate modules for simple, fetch once, fetch on search, multiselect etc
+// TODO: make slim version
 export class Select extends Component {
   static childContextTypes = {
     cssClassNameSelector: PropTypes.string,
