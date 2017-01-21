@@ -2,4 +2,4 @@ language: node_js
 node_js:
     - 7.4.0
 
-script: npm test
+script: npm test && npm run build
