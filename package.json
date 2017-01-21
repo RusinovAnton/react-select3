@@ -1,6 +1,6 @@
 {
   "name": "pure-react-select2",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "This is <select> written with ReactJS",
   "main": "dist/index.js",
   "repository": "https://github.com/RusinovAnton/react-select2.git",
