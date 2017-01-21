@@ -10,6 +10,12 @@ global.render = render;
 global.shallow = shallow;
 global.sinon = sinon;
 
+global.selectComponentContext = {
+  context: {
+    cssClassNameSelector: 'PureReactComponent'
+  }
+}
+
 global.mock = {
   options: [
     { id: 3, text: 'three' },

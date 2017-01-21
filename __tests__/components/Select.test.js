@@ -46,6 +46,15 @@ describe('Render <Select/>', () => {
 })
 
 describe('Mount <Select/>', () => {
+  it('should not render search input when there is no options', () => {
+    const component = mount(
+      <Select search={{ minimumResults: 0 }}/>
+    )
+
+    component.setState({ dropdownOpened: true })
+    expect(component.find('.PureReactSelect__search-field').length).toBe(0)
+  })
+
   it('should not render a Select clear button without choosen option and should render it on option select', () => {
     const component = mount(
       <Select allowClear
@@ -95,6 +104,17 @@ describe('Mount <Select/>', () => {
     expect(makeClick.calledOnce).toBe(false)
   })
 
+  it('should change css class name if prop passed', () => {
+    const component = mount(<Select cssClassNameSelector={'TestSelector'}/>)
+
+    expect(component).toMatchSnapshot()
+    expect(component.find('.TestSelector__container').length).toBe(1)
+    expect(component.find('.TestSelector__selection').length).toBe(1)
+
+    component.setState({ dropdownOpened: true })
+    expect(component.find('.TestSelector__dropdown').length).toBe(1)
+  })
+
   it('should use optionRenderer if passed to render SelectOptionsList', () => {
     const spy = sinon.spy(mock, 'renderer')
     const component = mount(<Select optionRenderer={ mock.renderer } options={ mock.options }/>)
@@ -132,11 +152,11 @@ describe('Mount <Select/>', () => {
   })
 })
 
-describe('onKeyDown <Select/>', () => {
+describe('Control <Select/> with keyboard', () => {
   const component = mount(<Select options={ mock.options }/>)
   const selectContainer = component.find('.PureReactSelect__container')
 
-  it('should open dropdown onKeyDown with key ArrowUp, ArrowDown, Space, Enter', () => {
+  it('should open dropdown onKeyDown with key ArrowUp, ArrowDown, Space, Enter and close on Esc', () => {
     selectContainer.simulate('keyDown', { keyCode: 32 })
     expect(component.state('dropdownOpened')).toBe(true)
 
@@ -156,7 +176,7 @@ describe('onKeyDown <Select/>', () => {
     expect(component.state('dropdownOpened')).toBe(false)
   })
 
-  it('should highlight option with ArrowUp, ArrowDown and select on Enter or Space', () => {
+  it('should highlight option with ArrowUp, ArrowDown and select it on Enter or Space', () => {
     selectContainer.simulate('keyDown', { keyCode: 40 })
     selectContainer.simulate('keyDown', { keyCode: 40 })
     selectContainer.simulate('keyDown', { keyCode: 40 })
@@ -202,7 +222,7 @@ describe('Select error', () => {
   const component = mount(<Select/>)
 
   it('should render error node if error were passed with props', () => {
-    component.setProps({error: 'Test error'})
+    component.setProps({ error: 'Test error' })
 
     expect(component.find('.PureReactSelect__error').length).toBe(1)
   })

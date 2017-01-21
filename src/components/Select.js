@@ -694,7 +694,7 @@ export class Select extends Component {
   _renderSelectDropdown = () => {
     const { search, optionRenderer, cssClassNameSelector } = this.props
     const { fetched, highlighted, isPending, options, requestSearch, searchTerm, value, fetchError } = this.state
-    const showSearch = requestSearch || search.minimumResults <= options.length
+    const showSearch = requestSearch || (options.length && search.minimumResults <= options.length)
     let status = null
 
     if (!options.length) {
