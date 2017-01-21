@@ -1,4 +1,6 @@
 #PURE-REACT-SELECT2
+[![Build Status](https://travis-ci.org/RusinovAnton/pure-react-select2.svg?branch=master)](https://travis-ci.org/RusinovAnton/pure-react-select2)  
+
 This is `<select>` written with ReactJS
 
 ## API reference
