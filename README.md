@@ -1,5 +1,5 @@
-#PURE-REACT-SELECT2
-[![Build Status](https://travis-ci.org/RusinovAnton/pure-react-select2.svg?branch=master)](https://travis-ci.org/RusinovAnton/pure-react-select2)  
+#REACT-SELECT3
+[![Build Status](https://travis-ci.org/RusinovAnton/pure-react-select2.svg?branch=master)](https://travis-ci.org/RusinovAnton/react-select3)  
 
 This is `<select>` written with ReactJS
 
