@@ -1,4 +1,4 @@
-import React, { Children, Component, PropTypes } from 'react'
+import React, { Component, PropTypes } from 'react'
 
 import classNames from 'classnames'
 import isEqual from 'lodash/isEqual'
@@ -97,13 +97,10 @@ export class Select extends Component {
     allowClear: false,
     cssClassNameSelector: 'PureReactSelect',
     disabled: false,
-    layout: {
-      dropdownVerticalPosition: 'below',
-      width: '245px',
-    },
+    layout: { dropdownVerticalPosition: 'below', width: '245px' },
     name: uniqueId('reactSelect_'),
     options: null,
-    search: {},
+    search: { minimumResults: 20 },
   }
 
   set options(options) {
@@ -472,10 +469,7 @@ export class Select extends Component {
       cssClassNameSelector,
       disabled,
       error,
-      layout: {
-        dropdownHorizontalPosition,
-        dropdownVerticalPosition,
-      },
+      layout: { dropdownVerticalPosition },
     } = this.props
     const { dropdownOpened, value } = this.state
 
