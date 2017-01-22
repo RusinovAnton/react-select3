@@ -690,14 +690,11 @@ export class Select extends Component {
     this.setState({ searchTerm })
   }
 
-  // TODO: separate component?
-  _renderSelectDropdown = () => {
-    const { search, optionRenderer, cssClassNameSelector } = this.props
-    const { fetched, highlighted, isPending, options, requestSearch, searchTerm, value, fetchError } = this.state
-    const showSearch = requestSearch || (options.length && search.minimumResults <= options.length)
+  _getStatusLabel = () => {
+    const { options, requestSearch, fetched, fetchError, isPending } = this.state
     let status = null
 
-    if (!options.length) {
+    if (requestSearch) {
       if (!fetched) {
         status = this.language.minLength
       } else if (isPending) {
@@ -705,17 +702,35 @@ export class Select extends Component {
       } else if (fetchError) {
         status = this.language.serverError
       } else {
-        status = this.language.isEmpty
+        status = this.language.responseEmpty
       }
+    } else if (!options.length) {
+      return this.language.isEmpty
     }
+
+    return status
+  }
+
+  _isShowSearch = () => {
+    const { requestSearch, options, search } = this.state
+    return requestSearch || (!!options.length && (!!search && search.minimumResults) <= options.length)
+  }
+
+  // TODO: separate component?
+  _renderSelectDropdown = () => {
+    const { optionRenderer, cssClassNameSelector } = this.props
+    const { highlighted, isPending, options, searchTerm, value } = this.state
 
     return (
       <span className={`${cssClassNameSelector}__dropdown`}>
         {
-          showSearch && <SelectSearchInput value={ searchTerm }
-                                           isPending={ isPending }
-                                           onKeyDown={ this._onContainerKeyDown }
-                                           onChange={ this._onSearchTermChange }/>
+          this._isShowSearch() &&
+          (
+            <SelectSearchInput value={ searchTerm }
+                               isPending={ isPending }
+                               onKeyDown={ this._onContainerKeyDown }
+                               onChange={ this._onSearchTermChange }/>
+          )
         }
         {
           options.length ?
@@ -728,7 +743,7 @@ export class Select extends Component {
             }}/>
             : (
             <span className={`${cssClassNameSelector}__status`}>
-              { status }
+              { this._getStatusLabel() }
             </span>
           )
         }
