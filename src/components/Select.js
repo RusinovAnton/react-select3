@@ -1,24 +1,17 @@
 import React, { Children, Component, PropTypes } from 'react'
 
 import classNames from 'classnames'
-import debounce from 'lodash/debounce'
 import isEqual from 'lodash/isEqual'
 import isFunction from 'lodash/isFunction'
 import isNil from 'lodash/isNil'
-import keys from 'lodash/keys'
-import path from 'path'
 import provideClickOutside from 'react-click-outside'
-import qs from 'qs'
 import uniqueId from 'lodash/uniqueId'
 
-import fetchJson from '../utils/fetch'
 import makeString from '../utils/makeString'
-import selectPropTypes from '../utils/selectPropTypes'
-import { DEFAULT_LANG } from  '../utils/consts'
+import { DEFAULT_LANG } from '../utils/consts'
 
+import SelectDropdown from './SelectDropdown'
 import SelectError from './SelectError'
-import SelectOptionsList from './SelectOptionsList'
-import SelectSearchInput from './SelectSearchInput'
 import SelectSelection from './SelectSelection'
 
 
@@ -27,9 +20,12 @@ import SelectSelection from './SelectSelection'
 // TODO: optgroups
 // TODO: make separate modules for simple, fetch once, fetch on search, multiselect etc
 // TODO: make slim version
+// TODO: optimize isFunction calls
+
 export class Select extends Component {
   static childContextTypes = {
     cssClassNameSelector: PropTypes.string,
+    language: PropTypes.object,
   }
 
   static propTypes = {
@@ -42,7 +38,7 @@ export class Select extends Component {
      * Whether to focus itself on mount
      */
     autoFocus: PropTypes.bool,
-    defaultValue: selectPropTypes.optionId,
+    defaultValue: PropTypes.oneOf([PropTypes.string, PropTypes.number]),
     disabled: PropTypes.bool,
     /**
      * Provide error message to display or just boolean to highlight select container with error styles
@@ -63,7 +59,6 @@ export class Select extends Component {
        */
       // TODO: define position automatically depends on SelectContainer position in the viewport
       dropdownVerticalPosition: PropTypes.oneOf(['above', 'below']),
-      dropdownHorizontalPosition: PropTypes.oneOf(['left', 'right'])
     }),
     name: PropTypes.string,
     /**
@@ -76,44 +71,10 @@ export class Select extends Component {
      * Array of option items
      */
     options: PropTypes.arrayOf(PropTypes.shape({
-      id: selectPropTypes.optionId.isRequired,
+      id: PropTypes.oneOf([PropTypes.string, PropTypes.number]),
       isHidden: PropTypes.bool,
       text: PropTypes.string.isRequired,
     })),
-    /**
-     * Provide needed options to fetch data from server by term query
-     */
-    request: PropTypes.shape({
-      /**
-       * Delays between requests
-       */
-      delay: PropTypes.number, // default: 500
-      endpoint: PropTypes.string.isRequired,
-      /**
-       * Whenever to fetch options once at mount or on searchTermChange
-       */
-      once: PropTypes.bool,
-      /**
-       * Additional query params
-       */
-      params: PropTypes.object,
-      /**
-       * You can provide custom ajaxClient instead of built-in fetchJson
-       * which invokes on termChange or once at component mount with endpoint
-       * and query params as string argument
-       */
-      ajaxClient: PropTypes.func,
-      /**
-       * Pass in function that will used to map response data array
-       * `{ id: number|string, text: string|element }`
-       */
-      responseDataFormatter: PropTypes.func,
-      /**
-       * Name of the key of searchTerm query param
-       * `{ [termQuery]: 'search term' }`
-       */
-      termQuery: PropTypes.string,
-    }),
     onSelect: PropTypes.func,
     placeholder: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
     search: PropTypes.shape({
@@ -121,10 +82,6 @@ export class Select extends Component {
        * Minimum results amount before showing search input
        */
       minimumResults: PropTypes.number,
-      /**
-       * Minimum characters before sending request
-       */
-      minLength: PropTypes.number, // default: 3
     }),
     /**
      * Search input change callback
@@ -133,7 +90,7 @@ export class Select extends Component {
     /**
      * Value can be set by providing option id
      */
-    value: selectPropTypes.optionId,
+    value: PropTypes.oneOf([PropTypes.string, PropTypes.number]),
   }
 
   static defaultProps = {
@@ -141,47 +98,23 @@ export class Select extends Component {
     cssClassNameSelector: 'PureReactSelect',
     disabled: false,
     layout: {
-      dropdownHorizontalPosition: 'left',
       dropdownVerticalPosition: 'below',
       width: '245px',
     },
     name: uniqueId('reactSelect_'),
     options: null,
-    search: {
-      minimumResults: 20,
-      minLength: 3,
-    },
-  }
-
-  static initialState = () => ({
-    disabled: false,
-    dropdownOpened: false,
-    error: null,
-    highlighted: null,
-    isPending: false,
-    options: [],
-    fetched: false,
-    requestSearch: false,
-    searchTerm: '',
-    value: null,
-  })
-
-  // @fixme: getChildrenTextContent function is not perfect tbh
-  static getChildrenTextContent = element => {
-    if (typeof element === 'string') {
-      return element
-    }
-
-    return Select.getChildrenTextContent(Children.toArray(element)[0].props.children)
+    search: {},
   }
 
   set options(options) {
-    if (Array.isArray(options)) {
-      this.setState({
-        options: this._setOptions(options),
-        value: null,
-      })
+    if (!Array.isArray(options)) {
+      throw new Error('Invalid options were provided. Options must be an array.')
     }
+
+    this.setState({
+      options: this._setOptions(options),
+      value: null,
+    })
   }
 
   get selectNode() {
@@ -195,15 +128,25 @@ export class Select extends Component {
   }
 
   get options() {
-    return this.state.options
+    return [].concat(this.state.options)
   }
+
+  static initialState = () => ({
+    disabled: false,
+    dropdownOpened: false,
+    error: null,
+    highlighted: null,
+    options: [],
+    searchTerm: '',
+    value: null,
+  })
 
   clear() {
     this._onClearSelection()
   }
 
-  constructor(props, context) { // eslint-disable-line consistent-return
-    super(props, context)
+  constructor(props) { // eslint-disable-line consistent-return
+    super(props)
 
     const onArrowUp = this._setHighlightedOption.bind(null, -1)
     const onArrowDown = this._setHighlightedOption.bind(null, 1)
@@ -220,58 +163,31 @@ export class Select extends Component {
       Escape: this._closeDropdown,
       27: this._closeDropdown,
     }
-    this.state = {}
 
-    const {
-      children,
-      disabled,
-      error,
-      options,
-      request,
-    } = props
-
-    if (request && typeof request.endpoint !== 'string') {
-      throw new Error('Request endpoint must be a string.')
-    }
-
-    /**
-     * @var {boolean} does select need to send request for options on searchTermChange
-     */
-    const requestSearch = request && !request.once
-
-    if (requestSearch) {
-      const requestDelay = (request && request.delay) ? request.delay : 500
-
-      this._requestOptions = debounce(this._request, requestDelay)
-    } else {
-      this._requestOptions = this._request
-    }
+    this.state = Select.initialState()
+    const { disabled, error, options } = props
 
     /**
      * @type {{
-         *  dropdownOpened: boolean,
-         *  error: string|boolean,
-         *  highlighted: {id, index},
-         *  isPending: boolean,
-         *  options: array,
-         *  requestSearch: boolean
-         *  searchTerm: string,
-         *  value: string,
-         * }}
+     *  dropdownOpened: boolean,
+     *  error: string|boolean,
+     *  highlighted: {id, index},
+     *  options: array,
+     *  searchTerm: string,
+     *  value: string,
+     * }}
      */
-    this.state = Object.assign(Select.initialState(), {
+    this.state = Object.assign(this.state, {
       disabled,
       error,
-      options: this._setOptions(options, children),
-      requestSearch,
+      options: this._setOptions(options),
       value: this._setValue(),
     })
-
-    this.language = this._composeLanguageObject()
   }
 
   getChildContext = () => ({
-    cssClassNameSelector: this.props.cssClassNameSelector
+    cssClassNameSelector: this.props.cssClassNameSelector,
+    language: this._composeLanguageObject(),
   })
 
   componentWillReceiveProps(newProps) {
@@ -315,16 +231,9 @@ export class Select extends Component {
   )
 
   componentDidMount = () => {
-    const { autoFocus, request } = this.props
+    const { autoFocus } = this.props
 
     if (autoFocus) this._focusContainer()
-    if (request && request.once) this._requestOptions()
-  }
-
-  componentWillUnmount = () => {
-    if (this.state.requestSearch) {
-      this._requestOptions.cancel()
-    }
   }
 
   /**
@@ -358,65 +267,6 @@ export class Select extends Component {
     lang.minLength = lang.minLength.replace(/\$\{minLength\}/, minLength)
 
     return lang
-  }
-
-  _request = searchTerm => {
-    const {
-      request: {
-        ajaxClient,
-        endpoint,
-        params,
-        responseDataFormatter,
-        termQuery,
-      }
-    } = this.props
-
-    function composeFetchPath(endpoint, params = {}, { searchTerm, termQuery }) {
-      let fetchPath
-      let fetchParams = Object.assign({}, params)
-
-      if (searchTerm) {
-        if (!termQuery) throw new Error('Provide request.termQuery prop')
-        fetchParams = Object.assign(fetchParams, {
-          [termQuery]: searchTerm
-        })
-      }
-
-      if (keys(fetchParams)) {
-        fetchPath = path.join(endpoint, `?${qs.stringify(fetchParams)}`)
-      }
-
-      return fetchPath
-    }
-
-    const fetchClient = ajaxClient || fetchJson
-    const fetchPath = composeFetchPath(endpoint, params, { searchTerm, termQuery })
-
-    this.setState({
-      error: this.props.error || null,
-      fetched: true,
-      isPending: true,
-    })
-
-    fetchClient(fetchPath)
-      .then(data => {
-        let options = data
-        if (isFunction(responseDataFormatter)) {
-          options = data.map(responseDataFormatter)
-        }
-
-        this.setState({
-          options: this._setOptions(options),
-          fetchError: false,
-          isPending: false,
-        })
-      })
-      .catch(() => {
-        this.setState({
-          fetchError: true,
-          isPending: false,
-        })
-      })
   }
 
   _openDropdown = () => {
@@ -458,15 +308,11 @@ export class Select extends Component {
     return { id: String(id), text }
   }
 
-  _setOptions = (options, children) => {
+  _setOptions = (options) => {
     let stateOptions = this.state.options || []
 
     if (Array.isArray(options) && options.length) {
       stateOptions = options.map(({ id, text }) => this._makeOption(id, text))
-    } else if (Children.count(children)) {
-      stateOptions = Children.toArray(children)
-        .filter(({ type }) => type === 'option')
-        .map(({ props: { children: text, value: id } }) => this._makeOption(id, text))
     }
 
     return stateOptions
@@ -510,8 +356,10 @@ export class Select extends Component {
   }
 
   _onClearSelection = () => {
+    const { disabled, value } = this.state
+
     // Dont clear when disabled && dont fire extra event when value is already cleared
-    if (!this.state.disabled && this.state.value !== null) {
+    if (!disabled && value) {
       this._onSelect(null)
     }
   }
@@ -621,29 +469,22 @@ export class Select extends Component {
   _getSelectContainerClassName = () => {
     const {
       className,
+      cssClassNameSelector,
       disabled,
+      error,
       layout: {
         dropdownHorizontalPosition,
         dropdownVerticalPosition,
       },
-      cssClassNameSelector,
-      error,
     } = this.props
-    const {
-      dropdownOpened,
-      isPending,
-      value,
-    } = this.state
+    const { dropdownOpened, value } = this.state
 
     return classNames(`${cssClassNameSelector}__container ${className || ''}`, {
       [`${cssClassNameSelector}--above`]: dropdownVerticalPosition === 'above',
       [`${cssClassNameSelector}--below`]: dropdownVerticalPosition !== 'above',
       [`${cssClassNameSelector}--disabled`]: disabled,
       [`${cssClassNameSelector}--error`]: !!error || !!this.state.error,
-      [`${cssClassNameSelector}--left`]: dropdownHorizontalPosition !== 'right',
       [`${cssClassNameSelector}--open`]: dropdownOpened,
-      [`${cssClassNameSelector}--pending`]: isPending,
-      [`${cssClassNameSelector}--right`]: dropdownHorizontalPosition === 'right',
       [`${cssClassNameSelector}--selected`]: !isNil(value),
     })
   }
@@ -670,8 +511,7 @@ export class Select extends Component {
 
   _onSearchTermChange = e => {
     const { target: { value: term } } = e
-    const { search: { minLength = 3 }, onSearchTermChange } = this.props
-    const { requestSearch } = this.state
+    const { onSearchTermChange } = this.props
 
     // If size of text is increases
     // const isTextIncreasing = term && (!stateSearchTerm || term.length > stateSearchTerm.length)
@@ -682,78 +522,19 @@ export class Select extends Component {
       onSearchTermChange(e)
     }
 
-    // If requestSearch enabled
-    if (searchTerm && (searchTerm.length >= minLength) && requestSearch) {
-      this._requestOptions(searchTerm)
-    }
-
     this.setState({ searchTerm })
   }
 
-  _getStatusLabel = () => {
-    const { options, requestSearch, fetched, fetchError, isPending } = this.state
-    let status = null
-
-    if (requestSearch) {
-      if (!fetched) {
-        status = this.language.minLength
-      } else if (isPending) {
-        status = this.language.isPending
-      } else if (fetchError) {
-        status = this.language.serverError
-      } else {
-        status = this.language.responseEmpty
-      }
-    } else if (!options.length) {
-      return this.language.isEmpty
-    }
-
-    return status
-  }
-
   _isShowSearch = () => {
-    const { requestSearch, options, search } = this.state
-    return requestSearch || (!!options.length && (!!search && search.minimumResults) <= options.length)
-  }
+    const { options } = this.state
+    const { search: { minimumResults = 20 } } = this.props
 
-  // TODO: separate component?
-  _renderSelectDropdown = () => {
-    const { optionRenderer, cssClassNameSelector } = this.props
-    const { highlighted, isPending, options, searchTerm, value } = this.state
-
-    return (
-      <span className={`${cssClassNameSelector}__dropdown`}>
-        {
-          this._isShowSearch() &&
-          (
-            <SelectSearchInput value={ searchTerm }
-                               isPending={ isPending }
-                               onKeyDown={ this._onContainerKeyDown }
-                               onChange={ this._onSearchTermChange }/>
-          )
-        }
-        {
-          options.length ?
-            <SelectOptionsList {...{
-              highlighted: highlighted && highlighted.id,
-              onSelect: this._onSelectOption,
-              optionRenderer,
-              options: this._getOptionsList(),
-              value
-            }}/>
-            : (
-            <span className={`${cssClassNameSelector}__status`}>
-              { this._getStatusLabel() }
-            </span>
-          )
-        }
-      </span>
-    )
+    return !!options.length && (minimumResults <= options.length)
   }
 
   render() {
-    const { layout: { width }, placeholder } = this.props
-    const { disabled, dropdownOpened, error, value } = this.state
+    const { optionRenderer, layout: { width }, placeholder } = this.props
+    const { disabled, dropdownOpened, error, highlighted, searchTerm, value } = this.state
     const selectedOption = this._getOptionById(value)
 
     return (
@@ -765,13 +546,23 @@ export class Select extends Component {
             role='combobox'
             onClick={ this._onContainerClick }
             onKeyDown={ this._onContainerKeyDown }>
-            <SelectSelection {...{
-              clearable: this._isClearable(),
-              onClearSelection: this._onClearSelection,
-              placeholder,
-              selection: selectedOption && selectedOption.text,
-            }}/>
-        { dropdownOpened && this._renderSelectDropdown() }
+      <SelectSelection {...{
+        clearable: this._isClearable(),
+        onClearSelection: this._onClearSelection,
+        placeholder,
+        selection: selectedOption && selectedOption.text,
+      }}/>
+        { dropdownOpened && (
+          <SelectDropdown options={ this._getOptionsList() }
+                          showSearch={ this._isShowSearch() }
+                          highlighted={ highlighted ? highlighted.id : null }
+                          searchTerm={ searchTerm }
+                          optionRenderer={ optionRenderer }
+                          onSelect={ this._onSelectOption }
+                          onSearchInputChange={ this._onSearchTermChange }
+                          onSearchInputKeyDown={ this._onContainerKeyDown }
+                          selected={ value }/>
+        ) }
         <SelectError error={ error }/>
       </span>
     )
