@@ -1,9 +1,9 @@
 {
-  "name": "pure-react-select2",
+  "name": "react-select3",
   "version": "3.0.0-dev",
-  "description": "This is <select> written with ReactJS",
+  "description": "<Select> component made with ReactJS",
   "main": "dist/index.js",
-  "repository": "https://github.com/RusinovAnton/react-select2.git",
+  "repository": "https://github.com/RusinovAnton/react-select3.git",
   "scripts": {
     "build": "gulp",
     "prepublish": "npm run test && npm run build --production",
