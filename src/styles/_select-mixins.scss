@@ -1,6 +1,6 @@
 @mixin select--selected {
-    background: $color-selected;
-    color: #fff;
+    background: $bg-selected;
+    color: $color-selected;
 }
 
 @mixin select--box {
