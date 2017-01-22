@@ -38,7 +38,7 @@ export class Select extends Component {
      * Whether to focus itself on mount
      */
     autoFocus: PropTypes.bool,
-    defaultValue: PropTypes.oneOf([PropTypes.string, PropTypes.number]),
+    defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     disabled: PropTypes.bool,
     /**
      * Provide error message to display or just boolean to highlight select container with error styles
@@ -71,7 +71,7 @@ export class Select extends Component {
      * Array of option items
      */
     options: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.oneOf([PropTypes.string, PropTypes.number]),
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       isHidden: PropTypes.bool,
       text: PropTypes.string.isRequired,
     })),
@@ -90,7 +90,7 @@ export class Select extends Component {
     /**
      * Value can be set by providing option id
      */
-    value: PropTypes.oneOf([PropTypes.string, PropTypes.number]),
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   }
 
   static defaultProps = {
