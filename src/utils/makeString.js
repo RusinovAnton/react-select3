@@ -1,9 +1,3 @@
 import isNil from 'lodash/isNil'
 
-export default val => {
-  if (!isNil(val)) {
-    return String(val)
-  }
-
-  return val
-}
+export default val => isNil(val) ? val : String(val)

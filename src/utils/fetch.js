@@ -8,23 +8,24 @@ export default (endpoint) => {
     credentials: 'same-origin',
   })
     .then(response => {
-      let data = []
+        let data = []
 
-      if (response.ok) {
-        try {
-          data = response.json()
-        } catch (err) {
-          console.warn(err) // eslint-disable-line no-console
+        if (response.ok) {
+          try {
+            data = response.json()
+          } catch (err) {
+            console.warn(err) // eslint-disable-line no-console
+          }
+        } else if (response.status === 404) {
+          return []
+        } else {
+          throw new Error('Server error')
         }
-      } else if (response.status === 404) {
-        return []
-      } else {
-        throw new Error('Server error')
-      }
 
-      return data
-    },
-    err => {
-      console.warn(err) // eslint-disable-line no-console
-    })
+        return data
+      },
+      err => {
+        console.warn(err) // eslint-disable-line no-console
+      }
+    )
 }

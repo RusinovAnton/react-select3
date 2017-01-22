@@ -1,0 +1,21 @@
+$gray-dark: #444;
+$gray: #cecece !default;
+$gray-light: #efefef !default;
+$gray-lighter: #f0f0f0 !default;
+$brand-primary: #00a7ff !default;
+$border-radius-base: 0 !default;
+$padding-base: 10px !default;
+
+$selector: 'PureReactSelect' !default;
+
+$bg-selected: $brand-primary !default;
+$color-highlighted: $gray-light !default;
+$color-placeholder: $gray !default;
+$color-selected: #fff !default;
+
+$select-bg: #fff !default;
+$select-border-radius: $border-radius-base !default;
+$select-border-color: $gray !default;
+$select-height: 31px !default;
+$select-padding-horizontal: $padding-base !default;
+$select-color: inherit !default;

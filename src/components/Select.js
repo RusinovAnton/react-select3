@@ -14,7 +14,7 @@ import uniqueId from 'lodash/uniqueId'
 import fetchJson from '../utils/fetch'
 import makeString from '../utils/makeString'
 import selectPropTypes from '../utils/selectPropTypes'
-import { DEFAULT_LANG } from  '../consts'
+import { DEFAULT_LANG } from  '../utils/consts'
 
 import SelectError from './SelectError'
 import SelectOptionsList from './SelectOptionsList'
@@ -683,7 +683,7 @@ export class Select extends Component {
     }
 
     // If requestSearch enabled
-    if (searchTerm && searchTerm.length >= minLength && requestSearch) {
+    if (searchTerm && (searchTerm.length >= minLength) && requestSearch) {
       this._requestOptions(searchTerm)
     }
 

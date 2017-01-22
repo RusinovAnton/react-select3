@@ -1,0 +1,20 @@
+@mixin select--selected {
+    background: $color-selected;
+    color: #fff;
+}
+
+@mixin select--box {
+    border-radius: $select-border-radius;
+    border: 1px solid $gray;
+    box-shadow: 1px 1px 1px 0 $gray-lighter;
+}
+
+@mixin select--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@mixin select--error {
+    border-color: transparentize(#f00, 0.4);
+    box-shadow: 0 0 4px 0 transparentize(#f00, 0.4);
+}

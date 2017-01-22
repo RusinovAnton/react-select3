@@ -9,7 +9,7 @@ const uglify = require('gulp-uglify');
 
 
 gulp.task('styles', () => {
-  return gulp.src('./src/styles.scss')
+  return gulp.src('./src/styles/styles.scss')
     .pipe(sass())
     .pipe(gulp.dest('./dist/'))
 })
@@ -37,7 +37,7 @@ gulp.task('dist', (done) => {
 });
 
 gulp.task('watch', ['styles', 'transform'], () => {
-  gulp.watch('./src/styles.scss', ['styles'])
+  gulp.watch('./src/styles/styles.scss', ['styles'])
   gulp.watch('./src/**/*.js', ['transform'])
 })
 

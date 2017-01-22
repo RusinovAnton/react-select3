@@ -1,53 +1,9 @@
-$gray-dark: #444;
-$gray: #cecece !default;
-$gray-light: #efefef !default;
-$gray-lighter: #f0f0f0 !default;
-$brand-primary: #00a7ff !default;
-$border-radius-base: 0 !default;
-$padding-base: 10px !default;
-//
-//--------------
-$selector: 'PureReactSelect' !default;
-//
-//--------------
-$color-highlighted: $gray-light !default;
-$color-placeholder: $gray !default;
-$color-selected: $brand-primary !default;
-//
-//--------------
-$select-bg: #fff !default;
-$select-border-radius: $border-radius-base !default;
-$select-height: 31px !default;
-$select-padding-horizontal: $padding-base !default;
-//
-//
-//--------------
-@mixin selected {
-    background: $color-selected;
-    color: #fff;
-}
 
-@mixin box {
-    border-radius: $select-border-radius;
-    border: 1px solid $gray;
-    box-shadow: 1px 1px 1px 0 $gray-lighter;
-}
-
-@mixin nowrap {
-    white-space: nowrap;
-    overflow: hidden;
-}
-
-//
-//--------------
 .#{$selector}__container {
     display: inline-block;
     position: relative;
     background: $select-bg;
-    cursor: pointer;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
+    cursor: default;
     user-select: none;
     outline: none;
 
@@ -60,6 +16,7 @@ $select-padding-horizontal: $padding-base !default;
 .#{$selector}--open {
     &.#{$selector}--below {
         .#{$selector}__error {
+            // hide error block if dropdown opened below select__container
             display: none;
         }
         .#{$selector}__selection {
@@ -84,13 +41,12 @@ $select-padding-horizontal: $padding-base !default;
 }
 
 .#{$selector}--disabled {
-    opacity: 0.5;
+    @include select--disabled;
 }
 
 .#{$selector}--error {
     .#{$selector}__selection {
-        border-color: transparentize(#f00, 0.4);
-        box-shadow: 0 0 4px 0 transparentize(#f00, 0.4);
+        @include select--error;
     }
 }
 
@@ -104,12 +60,13 @@ $select-padding-horizontal: $padding-base !default;
 }
 
 .#{$selector}__selection {
-    @include nowrap;
-    @include box;
+    white-space: nowrap;
+    overflow: hidden;
     display: block;
     height: $select-height;
     padding: 0 ($select-padding-horizontal + 10) 0 $select-padding-horizontal;
     line-height: $select-height;
+    @include select--box;
 
     &.#{$selector}--clearable {
         padding-right: ($select-padding-horizontal + 30);
@@ -125,7 +82,7 @@ $select-padding-horizontal: $padding-base !default;
 .#{$selector}__selection-arrow {
     display: block;
     position: absolute;
-    right: 10px;
+    right: $select-padding-horizontal;
     top: ($select-height / 2) - 2.5;
     height: 5px;
     width: 5px;
@@ -143,7 +100,7 @@ $select-padding-horizontal: $padding-base !default;
 .#{$selector}__clear-selection {
     display: block;
     position: absolute;
-    right: 20px;
+    right: $select-padding-horizontal + 10;
     top: ($select-height / 2) - 2;
     line-height: 0;
     width: 10px;
@@ -156,7 +113,7 @@ $select-padding-horizontal: $padding-base !default;
     z-index: 5;
     width: 100%;
     background-color: $select-bg;
-    @include box;
+    @include select--box;
 }
 
 .#{$selector}__options-list {
@@ -169,7 +126,8 @@ $select-padding-horizontal: $padding-base !default;
 
     li {
         line-height: $select-height;
-        @include nowrap;
+        white-space: nowrap;
+        overflow: hidden;
         padding: 0 $select-padding-horizontal;
     }
 }
@@ -179,7 +137,7 @@ $select-padding-horizontal: $padding-base !default;
 }
 
 .#{$selector}__option--selected {
-    @include selected;
+    @include select--selected;
 }
 
 .#{$selector}__search {
@@ -192,9 +150,9 @@ $select-padding-horizontal: $padding-base !default;
     -webkit-appearance: none;
     appearance: none;
     height: 31px;
-    width: calc(100% - #{$select-padding-horizontal * 2});
+    width: 100%;
     border: 0;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid $select-border-color;
     margin: 0 auto;
     outline: none;
 }
