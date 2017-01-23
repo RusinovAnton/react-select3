@@ -4,7 +4,6 @@ import classNames from 'classnames'
 import isEqual from 'lodash/isEqual'
 import isFunction from 'lodash/isFunction'
 import isNil from 'lodash/isNil'
-import provideClickOutside from 'react-click-outside'
 import uniqueId from 'lodash/uniqueId'
 
 import makeString from '../utils/makeString'
@@ -38,6 +37,7 @@ export class Select extends Component {
      * Whether to focus itself on mount
      */
     autoFocus: PropTypes.bool,
+    closeOnClickOutside: PropTypes.bool, // Default: true
     defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     disabled: PropTypes.bool,
     /**
@@ -95,6 +95,7 @@ export class Select extends Component {
 
   static defaultProps = {
     allowClear: false,
+    closeOnClickOutside: true,
     cssClassNameSelector: 'PureReactSelect',
     disabled: false,
     layout: { dropdownVerticalPosition: 'below', width: '245px' },
@@ -228,16 +229,28 @@ export class Select extends Component {
   )
 
   componentDidMount = () => {
-    const { autoFocus } = this.props
+    const { autoFocus, closeOnClickOutside } = this.props
 
+    // Autofocus on mount if enabled
     if (autoFocus) this._focusContainer()
+
+    // Add listener for click outside if enabled
+    if (closeOnClickOutside) document.addEventListener('click', this._handleClickOutside, true)
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('click', this._handleClickOutside, true);
   }
 
   /**
-   * Close SelectDropdown on click outside using 'react-click-outside' library
+   * Close SelectDropdown on click outside
    */
-  handleClickOutside = () => {
-    this._closeDropdown()
+  _handleClickOutside = (e) => {
+    const domNode = this.selectContainer
+
+    if ((!domNode || !domNode.contains(e.target))) {
+      this._closeDropdown()
+    }
   }
 
   _isValidValue = value => {
@@ -495,9 +508,7 @@ export class Select extends Component {
     let optionsList = options || []
 
     if (searchTerm && optionsList.length) {
-      const searchRegExp = new RegExp(searchTerm, 'gi')
-
-      optionsList = options.filter(({ text }) => searchRegExp.test(text))
+      optionsList = options.filter(({ text }) => new RegExp(searchTerm, 'gi').test(text))
     }
 
     return optionsList
@@ -526,13 +537,17 @@ export class Select extends Component {
     return !!options.length && (minimumResults <= options.length)
   }
 
+  _setContainerRef = (node) => {
+    this.selectContainer = node
+  }
+
   render() {
     const { optionRenderer, layout: { width }, placeholder } = this.props
     const { disabled, dropdownOpened, error, highlighted, searchTerm, value } = this.state
     const selectedOption = this._getOptionById(value)
 
     return (
-      <span ref='selectContainer'
+      <span ref={ this._setContainerRef }
             className={ this._getSelectContainerClassName() }
             style={{ width }}
             disabled={ disabled }
@@ -563,4 +578,4 @@ export class Select extends Component {
   }
 }
 
-export default provideClickOutside(Select)
+export default Select
