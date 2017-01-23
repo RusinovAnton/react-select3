@@ -396,6 +396,7 @@ export class Select extends Component {
     const value = option ? option.id : null
     const selectionEvent = {
       type: 'select',
+      isClear: option === null,
       target: {
         name,
         option,
@@ -573,12 +574,10 @@ export class Select extends Component {
             role='combobox'
             onClick={ this._onContainerClick }
             onKeyDown={ this._onContainerKeyDown }>
-      <SelectSelection {...{
-        clearable: this._isClearable(),
-        onClearSelection: this._onClearSelection,
-        placeholder,
-        selection: selectedOption && selectedOption.text,
-      }}/>
+      <SelectSelection clearable={ this._isClearable() }
+                       onClearSelection={ this._onClearSelection }
+                       placeholder={ placeholder }
+                       selection={ selectedOption && selectedOption.text }/>
         { dropdownOpened && (
           <SelectDropdown options={ this._getOptionsList() }
                           status={ status }
