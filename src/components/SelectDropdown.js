@@ -5,7 +5,7 @@ import SelectSearchInput from './SelectSearchInput'
 
 
 const SelectDropdown = ({
-  highlighted, onSelect, optionRenderer, options, searchTerm, showSearch, selected,
+  highlighted, onSelect, optionRenderer, options, searchTerm, showSearch, status, selected,
   onSearchInputChange, onSearchInputKeyDown
 },
   { cssClassNameSelector }) => (
@@ -28,7 +28,7 @@ const SelectDropdown = ({
           selected
         }}/>
         : (
-        <span className={`${cssClassNameSelector}__status`}>{ 'No options' }</span>
+        <span className={`${cssClassNameSelector}__status`}>{ status || 'No options' }</span>
       )
     }
   </span>
@@ -46,6 +46,7 @@ SelectDropdown.propTypes = {
   optionRenderer: PropTypes.func,
   options: PropTypes.arrayOf(PropTypes.object),
   searchTerm: PropTypes.string,
+  status: PropTypes.string,
   selected: PropTypes.string,
   showSearch: PropTypes.bool,
 }

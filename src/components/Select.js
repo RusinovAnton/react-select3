@@ -78,6 +78,8 @@ export class Select extends Component {
     onSelect: PropTypes.func,
     placeholder: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
     search: PropTypes.shape({
+      show: PropTypes.bool,
+      status: PropTypes.string,
       /**
        * Minimum results amount before showing search input
        */
@@ -548,9 +550,9 @@ export class Select extends Component {
 
   _isShowSearch = () => {
     const { options } = this.state
-    const { search: { minimumResults = 20 } } = this.props
+    const { search: { show, minimumResults = 20 } } = this.props
 
-    return !!options.length && (minimumResults <= options.length)
+    return show || (!!options.length && (minimumResults <= options.length))
   }
 
   _setContainerRef = (node) => {
@@ -558,7 +560,7 @@ export class Select extends Component {
   }
 
   render() {
-    const { optionRenderer, layout: { width }, placeholder } = this.props
+    const { optionRenderer, layout: { width }, placeholder, search: { status } } = this.props
     const { disabled, dropdownOpened, error, highlighted, searchTerm, value } = this.state
     const selectedOption = this._getOptionById(value)
 
@@ -579,6 +581,7 @@ export class Select extends Component {
       }}/>
         { dropdownOpened && (
           <SelectDropdown options={ this._getOptionsList() }
+                          status={ status }
                           showSearch={ this._isShowSearch() }
                           highlighted={ highlighted ? highlighted.id : null }
                           searchTerm={ searchTerm }
