@@ -110,13 +110,13 @@ export class Select extends Component {
     }
 
     this.setState({
-      options: this._setOptions(options),
+      options: this._setOptions(options, true),
       value: null,
     })
   }
 
   get selectNode() {
-    return this.refs.selectContainer
+    return this.selectContainer
   }
 
   get value() {
@@ -189,7 +189,7 @@ export class Select extends Component {
   })
 
   componentWillReceiveProps(newProps) {
-    const { disabled, error, options, children, value } = newProps
+    const { disabled, error, options, value } = newProps
     const isValueValid = this._isValidValue(value)
 
     if (isValueValid && typeof newProps.onSelect === 'undefined' && typeof this.props.onSelect === 'undefined') {
@@ -213,7 +213,7 @@ export class Select extends Component {
 
       return {
         disabled,
-        options: this._setOptions(options, children),
+        options: this._setOptions(options),
         value: newValue,
         error: typeof error !== 'undefined' ? error : state.error
       }
@@ -288,6 +288,8 @@ export class Select extends Component {
       dropdownOpened: false,
       highlighted: null,
     })
+
+    this._focusContainer()
   }
 
   _focusContainer = () => {
@@ -295,8 +297,8 @@ export class Select extends Component {
     const y = window.scrollY
 
     window.scrollTo(x, y)
-    if (this.refs.selectContainer) {
-      this.refs.selectContainer.focus()
+    if (this.selectContainer) {
+      this.selectContainer.focus()
     }
   }
 
@@ -318,7 +320,15 @@ export class Select extends Component {
     return { id: String(id), text }
   }
 
-  _setOptions = (options) => {
+  _setOptions = (options, isNotFromProps) => {
+    if (!isNotFromProps) {
+      if (options === this.initialOptions) {
+        return this.state.options
+      }
+
+      this.initialOptions = options
+    }
+
     let stateOptions = this.state.options || []
 
     if (Array.isArray(options) && options.length) {
@@ -412,7 +422,13 @@ export class Select extends Component {
     this._onSelect(selectedOption)
   }
 
-  static makeHighlightedObject = (index, options) => ({ id: options[index].id, index })
+  static makeHighlightedObject = (index, options) => {
+    if (!options.length) {
+      return null
+    }
+
+    return ({ id: options[index].id, index })
+  }
 
   _hasHighlighted = () => {
     const { highlighted } = this.state

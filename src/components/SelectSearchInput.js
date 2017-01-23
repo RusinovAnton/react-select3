@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react'
 import { stopPropagation } from '../utils/events'
 
-const allowedKeysArray = ['Escape']
+const allowedKeysArray = ['Escape', 'Enter', 'ArrowUp', 'ArrowDown']
 
 const SelectSearchInput = ({ onClick, onKeyDown, ...props }, // eslint-disable-line no-unused-vars
   { cssClassNameSelector }) => {
