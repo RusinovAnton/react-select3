@@ -71,8 +71,8 @@
     line-height: $select-height;
     @include select--box;
 
-    &.#{$selector}--clearable {
-        padding-right: ($select-padding-horizontal + 30);
+    &.#{$selector}__selection--clearable {
+        padding-right: ($select-padding-horizontal + 25);
     }
 }
 
