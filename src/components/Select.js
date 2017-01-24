@@ -17,10 +17,8 @@ import SelectSelection from './SelectSelection'
 // TODO: multiselect
 // TODO: label
 // TODO: optgroups
-// TODO: make separate modules for simple, fetch once, fetch on search, multiselect etc
 // TODO: make slim version
 // TODO: optimize isFunction calls
-
 export class Select extends Component {
   static childContextTypes = {
     cssClassNameSelector: PropTypes.string,
@@ -98,7 +96,7 @@ export class Select extends Component {
   static defaultProps = {
     allowClear: false,
     closeOnClickOutside: true,
-    cssClassNameSelector: 'PureReactSelect',
+    cssClassNameSelector: 'rs3',
     disabled: false,
     layout: { dropdownVerticalPosition: 'below', width: '245px' },
     name: uniqueId('reactSelect_'),
