@@ -19,7 +19,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## Changelog
 
-[Changelog](https://github.com/RusinovAnton/react-select3/blob/master/CHANGELOG.md)
+[Changelog](https://github.com/RusinovAnton/react-select3/releases)
 
 ### Credits
 
