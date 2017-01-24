@@ -73,7 +73,7 @@ class FetchSelect extends Component {
       this._fetchOptions = debounce(this._fetch, fetch.requestDelay)
     }
 
-    this.language = this._composeLanguageObject
+    this.language = this._composeLanguageObject()
   }
 
   componentDidMount = () => {
@@ -85,6 +85,10 @@ class FetchSelect extends Component {
   /**
    * Proxy interface methods of Select component
    */
+
+  get value() {
+    return this.selectRef.value
+  }
 
   clear() {
     this.selectRef.clear()
@@ -139,6 +143,7 @@ class FetchSelect extends Component {
 
   _setOptions = (options) => {
     this.selectRef.options = options
+    return options
   }
 
   _onSearchTermChange = (e) => {
@@ -188,10 +193,11 @@ class FetchSelect extends Component {
 
   render() {
     const { fetch: { once }, search, onSearchTermChange, ...props } = this.props // eslint-disable-line no-unused-vars
+    const status = this._getStatus()
 
     return (
       <Select ref={ this._getSelectRef }
-              search={ { show: !once, status: this._getStatus() } }
+              search={ { show: !once, status } }
               onSearchTermChange={ this._onSearchTermChange }
               {...props}/>
     )
