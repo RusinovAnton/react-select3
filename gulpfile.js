@@ -37,7 +37,7 @@ gulp.task('dist', (done) => {
 });
 
 gulp.task('watch', ['styles', 'transform'], () => {
-  gulp.watch('./src/styles/styles.scss', ['styles'])
+  gulp.watch('./src/styles/**/*.scss', ['styles'])
   gulp.watch('./src/**/*.js', ['transform'])
 })
 

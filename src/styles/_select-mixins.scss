@@ -3,6 +3,10 @@
     color: $color-selected;
 }
 
+@mixin select--focused {
+    outline: 2px solid #00a7ff;
+}
+
 @mixin select--box {
     border-radius: $select-border-radius;
     border: 1px solid $gray;
