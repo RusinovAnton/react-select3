@@ -52,7 +52,7 @@ describe('Mount <Select/>', () => {
     )
 
     component.setState({ dropdownOpened: true })
-    expect(component.find('.PureReactSelect__search-field').length).toBe(0)
+    expect(component.find(cssName + '__search-field').length).toBe(0)
   })
 
   it('should not render a Select clear button without choosen option and should render it on option select', () => {
@@ -63,10 +63,10 @@ describe('Mount <Select/>', () => {
               onSelect={ jest.fn() }/>
     )
 
-    expect(component.find('.PureReactSelect__clear-selection').length).toBe(1)
+    expect(component.find(cssName + '__clear-selection').length).toBe(1)
 
     component.setProps({ value: null })
-    expect(component.find('.PureReactSelect__clear-selection').length).toBe(0)
+    expect(component.find(cssName + '__clear-selection').length).toBe(0)
   })
 
   it('should open dropdown on when state.dropdownOpened = true', () => {
@@ -82,7 +82,7 @@ describe('Mount <Select/>', () => {
               options={ mock.options }/>
     )
 
-    const selection = component.find('.PureReactSelect__selection-text')
+    const selection = component.find(cssName + '__selection-text')
     expect(selection.text()).toBe('three')
 
     component.node._onClearSelection()
@@ -100,7 +100,7 @@ describe('Mount <Select/>', () => {
 
     expect(component).toMatchSnapshot()
 
-    component.find('.PureReactSelect__container').simulate('click')
+    component.find(cssName + '__container').simulate('click')
     expect(makeClick.calledOnce).toBe(false)
   })
 
@@ -143,18 +143,18 @@ describe('Mount <Select/>', () => {
     )
 
     component.setState({ dropdownOpened: true })
-    const searchField = component.find('.PureReactSelect__search-field')
+    const searchField = component.find(cssName + '__search-field')
 
     searchField.node.value = 't'
     searchField.simulate('change', searchField)
 
-    expect(component.find('.PureReactSelect__option').length).toBe(4)
+    expect(component.find(cssName + '__option').length).toBe(4)
   })
 })
 
 describe('Control <Select/> with keyboard', () => {
   const component = mount(<Select options={ mock.options }/>)
-  const selectContainer = component.find('.PureReactSelect__container')
+  const selectContainer = component.find(cssName + '__container')
 
   it('should open dropdown onKeyDown with key ArrowUp, ArrowDown, Space, Enter and close on Esc', () => {
     selectContainer.simulate('keyDown', { keyCode: 32 })
@@ -181,7 +181,7 @@ describe('Control <Select/> with keyboard', () => {
     selectContainer.simulate('keyDown', { keyCode: 40 })
     selectContainer.simulate('keyDown', { keyCode: 40 })
     selectContainer.simulate('keyDown', { keyCode: 38 })
-    expect(component.find('.PureReactSelect__option--highlighted').text()).toBe('four')
+    expect(component.find(cssName + '__option--highlighted').text()).toBe('four')
 
     selectContainer.simulate('keyDown', { keyCode: 13 })
     expect(component.state('value')).toBe('4')
@@ -191,7 +191,7 @@ describe('Control <Select/> with keyboard', () => {
     selectContainer.simulate('keyDown', { keyCode: 40 })
     selectContainer.simulate('keyDown', { keyCode: 40 })
     selectContainer.simulate('keyDown', { keyCode: 38 })
-    expect(component.find('.PureReactSelect__option--highlighted').text()).toBe('five')
+    expect(component.find(cssName + '__option--highlighted').text()).toBe('five')
 
     selectContainer.simulate('keyDown', { keyCode: 32 })
     expect(component.state('value')).toBe('5')
@@ -201,7 +201,7 @@ describe('Control <Select/> with keyboard', () => {
     selectContainer.simulate('keyDown', { keyCode: 40 })
     selectContainer.simulate('keyDown', { keyCode: 40 })
     selectContainer.simulate('keyDown', { keyCode: 38 })
-    expect(component.find('.PureReactSelect__option--highlighted').text()).toBe('eight')
+    expect(component.find(cssName + '__option--highlighted').text()).toBe('eight')
 
     selectContainer.simulate('keyDown', { keyCode: 13 })
     expect(component.state('value')).toBe('8')
@@ -211,7 +211,7 @@ describe('Control <Select/> with keyboard', () => {
     selectContainer.simulate('keyDown', { keyCode: 38 })
     selectContainer.simulate('keyDown', { keyCode: 38 })
     selectContainer.simulate('keyDown', { keyCode: 40 })
-    expect(component.find('.PureReactSelect__option--highlighted').text()).toBe('three')
+    expect(component.find(cssName + '__option--highlighted').text()).toBe('three')
 
     selectContainer.simulate('keyDown', { keyCode: 13 })
     expect(component.state('value')).toBe('3')
@@ -224,12 +224,12 @@ describe('Select error', () => {
   it('should render error node if error were passed with props', () => {
     component.setProps({ error: 'Test error' })
 
-    expect(component.find('.PureReactSelect__error').length).toBe(1)
+    expect(component.find(cssName + '__error').length).toBe(1)
   })
 
   it('should update error node - remove when null passed into error prop', () => {
     component.setProps({ error: null })
 
-    expect(component.find('.PureReactSelect__error').length).toBe(0)
+    expect(component.find(cssName + '__error').length).toBe(0)
   })
 })

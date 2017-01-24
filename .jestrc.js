@@ -9,10 +9,11 @@ global.mount = mount;
 global.render = render;
 global.shallow = shallow;
 global.sinon = sinon;
+global.cssName = '.rs3'
 
 global.selectComponentContext = {
   context: {
-    cssClassNameSelector: 'rs3'
+    cssClassNameSelector: global.cssName.slice(1)
   }
 }
 

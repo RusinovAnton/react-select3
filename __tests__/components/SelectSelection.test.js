@@ -13,6 +13,6 @@ describe('SelectSelection', () => {
     const component = shallow(<SelectSelection placeholder={ placeholder }/>, selectComponentContext)
 
     expect(component).toMatchSnapshot()
-    expect(component.find('.PureReactComponent__selection-text').text()).toBe(placeholder)
+    expect(component.find(`${cssName}__selection-text`).text()).toBe(placeholder)
   })
 })

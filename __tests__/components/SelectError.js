@@ -8,11 +8,11 @@ describe('SelectError', () => {
     expect(component).toMatchSnapshot()
   })
 
-  it('Should show placeholder when there is no selection provided', () => {
+  it('Should show error message when provided', () => {
     const error = 'Test error'
     const component = shallow(<SelectError error={ error }/>, selectComponentContext)
 
     expect(component).toMatchSnapshot()
-    expect(component.find('.PureReactComponent__error').text()).toBe(error)
+    expect(component.text()).toBe(error)
   })
 })
