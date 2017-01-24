@@ -12,7 +12,7 @@ const SelectSelection = ({ clearable, formatter, selection = null, placeholder =
   let selectionText = null
 
   if (selection) {
-    selectionText = isFunction(formatter) ? formatter(selection) : selection
+    selectionText = isFunction(formatter) ? formatter(selection) : selection.text
   } else if (placeholder) {
     selectionText = placeholder
   }
@@ -52,7 +52,10 @@ SelectSelection.propTypes = {
   clearable: PropTypes.bool,
   onClearSelection: PropTypes.func,
   placeholder: PropTypes.string,
-  selection: PropTypes.string,
+  selection: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    text: PropTypes.string.isRequired,
+  }),
   formatter: PropTypes.func,
 }
 
