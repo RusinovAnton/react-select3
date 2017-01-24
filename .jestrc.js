@@ -12,7 +12,7 @@ global.sinon = sinon;
 
 global.selectComponentContext = {
   context: {
-    cssClassNameSelector: 'PureReactComponent'
+    cssClassNameSelector: 'rs3'
   }
 }
 
