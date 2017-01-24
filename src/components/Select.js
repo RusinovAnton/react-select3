@@ -106,30 +106,6 @@ export class Select extends Component {
     search: { minimumResults: 20 },
   }
 
-  set options(options) {
-    if (!Array.isArray(options)) {
-      throw new Error('Invalid options were provided. Options must be an array.')
-    }
-
-    this.setState({
-      options: this._setOptions(options, true),
-      value: null,
-    })
-  }
-
-  get selectNode() {
-    return this.selectContainer
-  }
-
-  get value() {
-    const { selectedOption } = this.state
-
-    return selectedOption ? selectedOption.id : null
-  }
-
-  get options() {
-    return [].concat(this.state.options)
-  }
 
   static initialState = () => ({
     disabled: false,
@@ -141,9 +117,33 @@ export class Select extends Component {
     value: null,
   })
 
+
+  /**
+   * Interface methods
+   */
+  set options(options) {
+    if (!Array.isArray(options)) {
+      throw new Error('Invalid options were provided. Options must be an array.')
+    }
+
+    this.setState({
+      options: this._setOptions(options, true),
+      value: null,
+    })
+  }
+
+  get value() {
+    return this.state.value
+  }
+
+  get options() {
+    return [].concat(this.state.options)
+  }
+
   clear() {
     this._onClearSelection()
   }
+
 
   constructor(props) { // eslint-disable-line consistent-return
     super(props)
@@ -248,9 +248,7 @@ export class Select extends Component {
    * Close SelectDropdown on click outside
    */
   _handleClickOutside = (e) => {
-    const domNode = this.selectContainer
-
-    if ((!domNode || !domNode.contains(e.target))) {
+    if (this.state.dropdownOpened && !this.selectContainer.contains(e.target)) {
       this._closeDropdown()
     }
   }
