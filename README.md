@@ -1,10 +1,10 @@
 #REACT-SELECT3
-[![Build Status](https://travis-ci.org/RusinovAnton/pure-react-select3.svg?branch=master)](https://travis-ci.org/RusinovAnton/react-select3)  
+[![Build Status](https://travis-ci.org/RusinovAnton/react-select3.svg?branch=master)](https://travis-ci.org/RusinovAnton/react-select3)  
 
 This is `<select>` written with ReactJS
 
 ## API reference
-`// TODO`  
+`// TODO`
 Please watch propTypes for now ✨
 
 ## License
