@@ -16,7 +16,7 @@ function composeFetchPath(endpoint, params = {}, searchTerm, termQuery) {
   let fetchParams = Object.assign({}, params)
 
   if (searchTerm) {
-    if (!termQuery) throw new Error('Provide request.termQuery prop')
+    if (!termQuery) throw new Error('Provide fetch.termQuery prop')
 
     fetchParams = Object.assign(fetchParams, {
       [termQuery]: searchTerm
@@ -32,7 +32,7 @@ function composeFetchPath(endpoint, params = {}, searchTerm, termQuery) {
 
 class FetchSelect extends Component {
   static defaultProps = {
-    request: {
+    fetch: {
       once: false,
       requestDelay: 300,
       termMinLength: 3,
@@ -42,7 +42,7 @@ class FetchSelect extends Component {
   static propTypes = {
     error: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
     onSearchTermChange: PropTypes.func,
-    request: PropTypes.shape({
+    fetch: PropTypes.shape({
       ajaxClient: PropTypes.func,
       endpoint: PropTypes.string.isRequired,
       once: PropTypes.bool,
@@ -58,7 +58,7 @@ class FetchSelect extends Component {
   constructor(props) {
     super(props)
 
-    const { request } = props
+    const { fetch } = props
 
     this.state = {
       fetched: false,
@@ -67,17 +67,31 @@ class FetchSelect extends Component {
       options: [],
     }
 
-    if (!request.once) {
-      this._requestOptions = debounce(this._request, request.requestDelay)
+    if (fetch.once) {
+      this._fetchOptions = this._fetch
     } else {
-      this._requestOptions = this._request
+      this._fetchOptions = debounce(this._fetch, fetch.requestDelay)
     }
 
     this.language = this._composeLanguageObject
   }
 
+  componentDidMount = () => {
+    if (this.props.fetch.once) {
+      this._fetchOptions()
+    }
+  }
+
+  /**
+   * Proxy interface methods of Select component
+   */
+
+  clear() {
+    this.selectRef.clear()
+  }
+
   _composeLanguageObject = () => {
-    const { language, request: { termMinLength: minLength = 3 } } = this.props
+    const { language, fetch: { termMinLength: minLength = 3 } } = this.props
     const lang = Object.assign({}, DEFAULT_LANG, language)
 
     lang.minLength = lang.minLength.replace(/\$\{minLength\}/, minLength)
@@ -85,8 +99,8 @@ class FetchSelect extends Component {
     return lang
   }
 
-  _request = searchTerm => {
-    const { request: { ajaxClient, endpoint, params, responseDataFormatter, termQuery, } } = this.props
+  _fetch = searchTerm => {
+    const { fetch: { ajaxClient, endpoint, params, responseDataFormatter, termQuery, } } = this.props
 
     const fetchClient = ajaxClient || fetchJson
     const fetchPath = composeFetchPath(endpoint, params, searchTerm, termQuery)
@@ -110,7 +124,8 @@ class FetchSelect extends Component {
           isPending: false,
         })
       })
-      .catch(() => {
+      .catch((error) => {
+        console.warn(error) // eslint-disable-line no-console
         this.setState({
           error: true,
           isPending: false,
@@ -118,10 +133,8 @@ class FetchSelect extends Component {
       })
   }
 
-  componentDidMount = () => {
-    if (this.props.request.once) {
-      this._request()
-    }
+  _getSelectRef = (node) => {
+    this.selectRef = node
   }
 
   _setOptions = (options) => {
@@ -129,7 +142,7 @@ class FetchSelect extends Component {
   }
 
   _onSearchTermChange = (e) => {
-    const { request: { termMinLength }, onSearchTermChange } = this.props
+    const { fetch: { termMinLength = 3 }, onSearchTermChange } = this.props
     const { target: { value: term } } = e
 
     if (isFunction(onSearchTermChange)) {
@@ -137,13 +150,13 @@ class FetchSelect extends Component {
     }
 
     if (term.length >= termMinLength) {
-      this._requestOptions(term)
+      this._fetchOptions(term)
     }
   }
 
   _getStatus = () => {
     const { options, fetched, error, isPending } = this.state
-    const { request: { once } } = this.props
+    const { fetch: { once } } = this.props
     const {
       minLength,
       isPending: isPendingStatus,
@@ -174,10 +187,11 @@ class FetchSelect extends Component {
   }
 
   render() {
-    const { request: { once }, search, onSearchTermChange, ...props } = this.props // eslint-disable-line no-unused-vars
+    const { fetch: { once }, search, onSearchTermChange, ...props } = this.props // eslint-disable-line no-unused-vars
 
     return (
-      <Select search={ { show: !once, status: this._getStatus() } }
+      <Select ref={ this._getSelectRef }
+              search={ { show: !once, status: this._getStatus() } }
               onSearchTermChange={ this._onSearchTermChange }
               {...props}/>
     )

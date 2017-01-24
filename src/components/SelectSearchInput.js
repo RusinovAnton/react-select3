@@ -1,30 +1,28 @@
 import React, { PropTypes } from 'react'
 import { stopPropagation } from '../utils/events'
+import filterKeyDown from '../utils/filterKeyDown'
 
-const allowedKeysArray = ['Escape', 'Enter', 'ArrowUp', 'ArrowDown']
 
 const SelectSearchInput = ({ onClick, onKeyDown, ...props }, // eslint-disable-line no-unused-vars
-  { cssClassNameSelector }) => {
-  const filterKeyDown = (e) => {
-    if (allowedKeysArray.indexOf(e.key) !== -1) {
-      onKeyDown(e)
-    }
-  }
-
-  return (
-    <span className={`${cssClassNameSelector}__search`}>
+  { cssClassNameSelector }) => (
+  <span className={`${cssClassNameSelector}__search`}>
       <input className={`${cssClassNameSelector}__search-field`}
              autoFocus
              autoComplete='off'
              autoCorrect='off'
              autoCapitalize='off'
              spellCheck='false'
-             onKeyDown={ stopPropagation(filterKeyDown) }
+             onKeyDown={ stopPropagation(filterKeyDown([
+               {
+                 allowedKeys: ['Escape', 'Enter', 'ArrowUp', 'ArrowDown'],
+                 func: onKeyDown
+               },
+             ])) }
              onClick={ stopPropagation() }
              {...props}/>
     </span>
-  )
-}
+)
+
 
 SelectSearchInput.contextTypes = {
   cssClassNameSelector: PropTypes.string,

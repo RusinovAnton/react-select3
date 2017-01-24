@@ -7,14 +7,18 @@ import isNil from 'lodash/isNil'
 import { stopPropagation } from '../utils/events'
 
 
-const SelectOptionsList = ({ highlighted, selected, optionRenderer, options = [], onSelect }, { cssClassNameSelector }) => {
-  const optionsList = options.map(({ id, text, isHidden }) => {
-    let optionText = text
+const SelectOptionsList = ({ highlighted, selected, formatter, options = [], onSelect }, { cssClassNameSelector }) => {
+  const optionsList = options.map((option) => {
+    const { id, isHidden } = option
 
-    if (isFunction(optionRenderer)) {
-      optionText = optionRenderer({ id, text, isHidden })
-    } else if (isHidden) {
+    if (isHidden) {
       return null
+    }
+
+    let optionText = option.text
+
+    if (isFunction(formatter)) {
+      optionText = formatter(option)
     }
 
     const isSelected = !isNil(selected) && selected === id
@@ -49,7 +53,7 @@ SelectOptionsList.contextTypes = {
 SelectOptionsList.propTypes = {
   highlighted: PropTypes.string,
   onSelect: PropTypes.func.isRequired,
-  optionRenderer: PropTypes.func,
+  formatter: PropTypes.func,
   options: PropTypes.array.isRequired,
   selected: PropTypes.string,
 }

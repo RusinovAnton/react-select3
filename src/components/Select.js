@@ -575,14 +575,16 @@ export class Select extends Component {
       <SelectSelection clearable={ this._isClearable() }
                        onClearSelection={ this._onClearSelection }
                        placeholder={ placeholder }
-                       selection={ selectedOption && selectedOption.text }/>
+                       formatter={ optionRenderer }
+                       selection={ selectedOption }
+                       onKeyDown={ this._onContainerKeyDown }/>
         { dropdownOpened && (
           <SelectDropdown options={ this._getOptionsList() }
                           status={ status }
                           showSearch={ this._isShowSearch() }
                           highlighted={ highlighted ? highlighted.id : null }
                           searchTerm={ searchTerm }
-                          optionRenderer={ optionRenderer }
+                          formatter={ optionRenderer }
                           onSelect={ this._onSelectOption }
                           onSearchInputChange={ this._onSearchTermChange }
                           onSearchInputKeyDown={ this._onContainerKeyDown }
