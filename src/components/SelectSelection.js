@@ -14,6 +14,7 @@ const SelectSelection = ({ clearable, selection = null, placeholder = null, onCl
     { clearable && (
       <span className={`${cssClassNameSelector}__clear-selection`}
             role="presentation"
+            tabIndex="1"
             onClick={ stopPropagation(onClearSelection) }>
         &times;
       </span>

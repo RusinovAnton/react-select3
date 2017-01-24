@@ -10,7 +10,7 @@
         @include select--focused;
     }
 
-    > * {
+    * {
         box-sizing: border-box;
         outline: none;
     }
@@ -108,6 +108,11 @@
     line-height: 0;
     width: 10px;
     height: 10px;
+    border-radius: 50%;
+
+    &:focus {
+        color: $brand-primary;
+    }
 }
 
 .#{$selector}__dropdown {
