@@ -566,7 +566,7 @@ export class Select extends Component {
             className={ this._getSelectContainerClassName() }
             style={{ width }}
             disabled={ disabled }
-            tabIndex='1'
+            tabIndex='0'
             role='combobox'
             onClick={ this._onContainerClick }
             onKeyDown={ this._onContainerKeyDown }>

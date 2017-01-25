@@ -28,7 +28,7 @@ const SelectSelection = ({ clearable, formatter, selection = null, placeholder =
       { clearable && (
         <span className={`${cssClassNameSelector}__clear-selection`}
               role="presentation"
-              tabIndex="1"
+              tabIndex="0"
               onKeyDown={stopPropagation(filterKeyDown([
                 { allowedKeys: ['ArrowUp', 'ArrowDown', 'Escape'], func: onKeyDown },
                 { allowedKeys: ['Enter', ' '], func: onClearSelection },
