@@ -93,7 +93,6 @@ class FetchSelect extends Component {
   }
 
   get options() {
-    console.warn(this.selectRef.options || "NO OPTIONS OMG")
     return this.selectRef.options
   }
 
