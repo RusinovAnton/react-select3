@@ -45,7 +45,7 @@ class FetchSelect extends Component {
     onSearchTermChange: PropTypes.func,
     fetch: PropTypes.shape({
       ajaxClient: PropTypes.func,
-      endpoint: PropTypes.string.isRequired,
+      endpoint: PropTypes.string,
       minLength: PropTypes.number,
       once: PropTypes.bool,
       params: PropTypes.object,
