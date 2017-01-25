@@ -25,7 +25,8 @@ Props:
 - ***allowClear*** `<bool>` - whether to allow user to clear selected option *`// Default: false`*
 - ***cssClassNameSelector*** `<string>`
 - ***autoFocus*** `<bool>` - whether to focus Select on mount
-- ***closeOnClickOutside*** `<bool>` - whether to close dropdown on click outside Select component *`// Default: true`*
+- ***closeOnClickOutside*** `<bool>` - whether to close dropdown on click outside Select component  
+*`// Default: true`*
 - ***defaultValue*** `<string|number>` - provide id of the default selected option
 - ***disabled*** `<bool>` - disable select, reset
 - ***error*** `<bool|string>` - you can provide boolean to indicate Select's error, and string to show error message
@@ -57,7 +58,7 @@ const optionRenderer = (option) => (
 }
 ```
 - ***placeholder*** `<string>` - shows up when there is no selected option
-- ***search*** `<object>` - props related to SearchInput functionality
+- ***search*** `<object>` - props related to SearchInput, which used to filter options list, you can override its behaviour by providing `onSearchTermChange` prop.
   - ***search.minimumResults*** `<number>` - minimum number of results before show SearchInput
   - ***search.show*** `<bool>` - provide if you want to always show SearchInput
   - ***search.status*** `<string>` - provide status message, shows up only when there are no available options
@@ -114,7 +115,7 @@ There are a number of FetchSelect specific props:
   - ***fetch.minLength*** `<number>` - minimum characters length of SearchInput value to start fetching  
   *`// Default: 3`*
   - ***fetch.once*** `<bool>` - if true, options fetched once on FetchSelect mount, 
-    in this SearchInput change not triggers fetch again but filters existing options
+    in this case SearchInput change not triggers fetch again but filters existing options
   - ***fetch.params*** `<object>` - additional params that being merged with "termQuery" into endpoint.  
   e.g.
 ```javascript
