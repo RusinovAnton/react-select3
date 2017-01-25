@@ -109,7 +109,6 @@ export class Select extends Component {
     value: null,
   })
 
-
   /**
    * Ref Interface methods
    */
@@ -539,7 +538,7 @@ export class Select extends Component {
   }
 
   render() {
-    const { optionRenderer, layout: { width }, placeholder, search: { status } } = this.props
+    const { cssClassNamePrefix, optionRenderer, layout: { width }, placeholder, search: { status }, name } = this.props
     const { disabled, dropdownOpened, error, highlighted, searchTerm, value } = this.state
     const selectedOption = this._getOptionById(value)
 
@@ -552,6 +551,9 @@ export class Select extends Component {
             role='combobox'
             onClick={ this._onContainerClick }
             onKeyDown={ this._onContainerKeyDown }>
+      <select name={ name } value={ value } className={`${cssClassNamePrefix}__select-node`}>
+        { !isNil(value) && <option value={value}/> }
+      </select>
       <SelectSelection clearable={ this._isClearable() }
                        onClearSelection={ this._onClearSelection }
                        placeholder={ placeholder }
