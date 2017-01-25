@@ -25,7 +25,8 @@
   "keywords": [
     "select",
     "react-component",
-    "ajax"
+    "ajax",
+    "fetch"
   ],
   "author": "Rusinov Anton",
   "license": "MIT",
