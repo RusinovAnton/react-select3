@@ -20,7 +20,7 @@ import SelectSelection from './SelectSelection'
 // TODO: optimize isFunction calls
 export class Select extends Component {
   static childContextTypes = {
-    cssClassNameSelector: PropTypes.string,
+    cssClassNamePrefix: PropTypes.string,
   }
 
   static propTypes = {
@@ -28,7 +28,7 @@ export class Select extends Component {
      * Whether to allow user to reset selected option
      */
     allowClear: PropTypes.bool,
-    cssClassNameSelector: PropTypes.string,
+    cssClassNamePrefix: PropTypes.string,
     /**
      * Whether to focus itself on mount
      */
@@ -90,7 +90,7 @@ export class Select extends Component {
   static defaultProps = {
     allowClear: false,
     closeOnClickOutside: true,
-    cssClassNameSelector: 'rs3',
+    cssClassNamePrefix: 'rs3',
     disabled: false,
     layout: { dropdownVerticalPosition: 'below', width: '245px' },
     name: uniqueId('reactSelect_'),
@@ -111,7 +111,7 @@ export class Select extends Component {
 
 
   /**
-   * Interface methods
+   * Ref Interface methods
    */
   set options(options) {
     if (!Array.isArray(options)) {
@@ -178,7 +178,7 @@ export class Select extends Component {
   }
 
   getChildContext = () => ({
-    cssClassNameSelector: this.props.cssClassNameSelector,
+    cssClassNamePrefix: this.props.cssClassNamePrefix,
   })
 
   componentWillReceiveProps(newProps) {
@@ -476,20 +476,20 @@ export class Select extends Component {
   _getSelectContainerClassName = () => {
     const {
       className,
-      cssClassNameSelector,
+      cssClassNamePrefix,
       disabled,
       error,
       layout: { dropdownVerticalPosition },
     } = this.props
     const { dropdownOpened, value } = this.state
 
-    return classNames(`${cssClassNameSelector}__container ${className || ''}`, {
-      [`${cssClassNameSelector}--above`]: dropdownVerticalPosition === 'above',
-      [`${cssClassNameSelector}--below`]: dropdownVerticalPosition !== 'above',
-      [`${cssClassNameSelector}--disabled`]: disabled,
-      [`${cssClassNameSelector}--error`]: !!error || !!this.state.error,
-      [`${cssClassNameSelector}--open`]: dropdownOpened,
-      [`${cssClassNameSelector}--selected`]: !isNil(value),
+    return classNames(`${cssClassNamePrefix}__container ${className || ''}`, {
+      [`${cssClassNamePrefix}--above`]: dropdownVerticalPosition === 'above',
+      [`${cssClassNamePrefix}--below`]: dropdownVerticalPosition !== 'above',
+      [`${cssClassNamePrefix}--disabled`]: disabled,
+      [`${cssClassNamePrefix}--error`]: !!error || !!this.state.error,
+      [`${cssClassNamePrefix}--open`]: dropdownOpened,
+      [`${cssClassNamePrefix}--selected`]: !isNil(value),
     })
   }
 

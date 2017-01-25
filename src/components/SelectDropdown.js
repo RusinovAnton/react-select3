@@ -8,8 +8,8 @@ const SelectDropdown = ({
   highlighted, onSelect, formatter, options, searchTerm, showSearch, status, selected,
   onSearchInputChange, onSearchInputKeyDown
 },
-  { cssClassNameSelector }) => (
-  <span className={`${cssClassNameSelector}__dropdown`}>
+  { cssClassNamePrefix }) => (
+  <span className={`${cssClassNamePrefix}__dropdown`}>
     {
       showSearch &&
       (
@@ -28,14 +28,14 @@ const SelectDropdown = ({
           selected
         }}/>
         : (
-        <span className={`${cssClassNameSelector}__status`}>{ status || 'No options' }</span>
+        <span className={`${cssClassNamePrefix}__status`}>{ status || 'No options' }</span>
       )
     }
   </span>
 )
 
 SelectDropdown.contextTypes = {
-  cssClassNameSelector: PropTypes.string,
+  cssClassNamePrefix: PropTypes.string,
 }
 
 SelectDropdown.propTypes = {

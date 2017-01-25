@@ -4,9 +4,9 @@ import filterKeyDown from '../utils/filterKeyDown'
 
 
 const SelectSearchInput = ({ onClick, onKeyDown, ...props }, // eslint-disable-line no-unused-vars
-  { cssClassNameSelector }) => (
-  <span className={`${cssClassNameSelector}__search`}>
-      <input className={`${cssClassNameSelector}__search-field`}
+  { cssClassNamePrefix }) => (
+  <span className={`${cssClassNamePrefix}__search`}>
+      <input className={`${cssClassNamePrefix}__search-field`}
              autoFocus
              autoComplete='off'
              autoCorrect='off'
@@ -25,7 +25,7 @@ const SelectSearchInput = ({ onClick, onKeyDown, ...props }, // eslint-disable-l
 
 
 SelectSearchInput.contextTypes = {
-  cssClassNameSelector: PropTypes.string,
+  cssClassNamePrefix: PropTypes.string,
 }
 
 export default SelectSearchInput

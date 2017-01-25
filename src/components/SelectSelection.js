@@ -8,7 +8,7 @@ import { stopPropagation } from '../utils/events'
 
 
 const SelectSelection = ({ clearable, formatter, selection = null, placeholder = null, onClearSelection, onKeyDown },
-  { cssClassNameSelector }) => {
+  { cssClassNamePrefix }) => {
   let selectionText = null
 
   if (selection) {
@@ -18,15 +18,15 @@ const SelectSelection = ({ clearable, formatter, selection = null, placeholder =
   }
 
   return (
-    <span className={ classNames(`${cssClassNameSelector}__selection`, {
-      [`${cssClassNameSelector}__selection--placeholder`]: !selection,
-      [`${cssClassNameSelector}__selection--clearable`]: clearable,
+    <span className={ classNames(`${cssClassNamePrefix}__selection`, {
+      [`${cssClassNamePrefix}__selection--placeholder`]: !selection,
+      [`${cssClassNamePrefix}__selection--clearable`]: clearable,
     })}>
-    <span className={`${cssClassNameSelector}__selection-text`}>
+    <span className={`${cssClassNamePrefix}__selection-text`}>
       { selectionText }
     </span>
       { clearable && (
-        <span className={`${cssClassNameSelector}__clear-selection`}
+        <span className={`${cssClassNamePrefix}__clear-selection`}
               role="presentation"
               tabIndex="0"
               onKeyDown={stopPropagation(filterKeyDown([
@@ -37,7 +37,7 @@ const SelectSelection = ({ clearable, formatter, selection = null, placeholder =
         &times;
       </span>
       )}
-      <span className={`${cssClassNameSelector}__selection-arrow`} role="presentation">
+      <span className={`${cssClassNamePrefix}__selection-arrow`} role="presentation">
       <i/>
     </span>
   </span>
@@ -45,7 +45,7 @@ const SelectSelection = ({ clearable, formatter, selection = null, placeholder =
 }
 
 SelectSelection.contextTypes = {
-  cssClassNameSelector: PropTypes.string,
+  cssClassNamePrefix: PropTypes.string,
 }
 
 SelectSelection.propTypes = {

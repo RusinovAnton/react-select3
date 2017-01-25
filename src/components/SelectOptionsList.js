@@ -7,7 +7,7 @@ import isNil from 'lodash/isNil'
 import { stopPropagation } from '../utils/events'
 
 
-const SelectOptionsList = ({ highlighted, selected, formatter, options = [], onSelect }, { cssClassNameSelector }) => {
+const SelectOptionsList = ({ highlighted, selected, formatter, options = [], onSelect }, { cssClassNamePrefix }) => {
   const optionsList = options.map((option) => {
     const { id, isHidden } = option
 
@@ -22,9 +22,9 @@ const SelectOptionsList = ({ highlighted, selected, formatter, options = [], onS
     }
 
     const isSelected = !isNil(selected) && selected === id
-    const optionClassName = classNames(`${cssClassNameSelector}__option`, {
-      [`${cssClassNameSelector}__option--selected`]: isSelected,
-      [`${cssClassNameSelector}__option--highlighted`]: id === highlighted
+    const optionClassName = classNames(`${cssClassNamePrefix}__option`, {
+      [`${cssClassNamePrefix}__option--selected`]: isSelected,
+      [`${cssClassNamePrefix}__option--highlighted`]: id === highlighted
     })
 
     const onOptionSelect = isSelected ? null : onSelect.bind(null, id)
@@ -40,14 +40,14 @@ const SelectOptionsList = ({ highlighted, selected, formatter, options = [], onS
   })
 
   return (
-    <ul className={`${cssClassNameSelector}__options-list`}>
+    <ul className={`${cssClassNamePrefix}__options-list`}>
       { optionsList }
     </ul>
   )
 }
 
 SelectOptionsList.contextTypes = {
-  cssClassNameSelector: PropTypes.string,
+  cssClassNamePrefix: PropTypes.string,
 }
 
 SelectOptionsList.propTypes = {
