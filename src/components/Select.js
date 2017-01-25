@@ -551,7 +551,7 @@ export class Select extends Component {
             role='combobox'
             onClick={ this._onContainerClick }
             onKeyDown={ this._onContainerKeyDown }>
-      <select name={ name } value={ value } className={`${cssClassNamePrefix}__select-node`}>
+      <select name={ name } value={ !isNil(value) ? value : '' } readOnly className={`${cssClassNamePrefix}__select-node`}>
         { !isNil(value) && <option value={value}/> }
       </select>
       <SelectSelection clearable={ this._isClearable() }
