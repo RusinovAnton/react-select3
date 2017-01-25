@@ -92,6 +92,11 @@ class FetchSelect extends Component {
     return this.selectRef.value
   }
 
+  get options() {
+    console.warn(this.selectRef.options || "NO OPTIONS OMG")
+    return this.selectRef.options
+  }
+
   clear() {
     this.selectRef.clear()
   }
@@ -149,6 +154,7 @@ class FetchSelect extends Component {
 
   _setOptions = (options) => {
     this.selectRef.options = options
+
     return options
   }
 

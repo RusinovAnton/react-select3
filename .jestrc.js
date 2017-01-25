@@ -33,6 +33,7 @@ global.mock = {
   renderer({ text }) {
     return (<span>{ text }</span>)
   },
+  ajaxClient: (endpoint) => Promise.resolve(mock.options)
 }
 
 // Skip createElement warnings but fail tests on any other warning
