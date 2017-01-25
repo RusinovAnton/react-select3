@@ -23,7 +23,7 @@ const selectOptions = [
 
 Props:
 - ***allowClear*** `<bool>` - whether to allow user to clear selected option *`// Default: false`*
-- ***cssClassNameSelector*** `<string>`
+- ***cssClassNamePrefix*** `<string>` - you can provide custom prefix for Selects' classNames
 - ***autoFocus*** `<bool>` - whether to focus Select on mount
 - ***closeOnClickOutside*** `<bool>` - whether to close dropdown on click outside Select component  
 *`// Default: true`*
@@ -66,7 +66,36 @@ const optionRenderer = (option) => (
 - ***value*** `<number|string>` - you can provide option id to control selection
   
 ### Selects ref interface methods
-`// TODO`  
+Select component has number of handy public methods that you can use by saving its ref, e.g.:
+```javascript
+class MyMajesticComponent extends React.Component {
+    _selectRef = (node) => {
+        this.select = node
+    }
+    
+    _resetSelect = () => {
+        this.select.clear()
+    }
+    
+    render = () => {
+        return (
+            <div>
+                <Select ref={ this._selectRef }/>
+                <button onClick={ this._resetSelect }>Reset</button>
+            </div>
+        )
+    }
+}
+```
+Methods:  
+- ***clear*** - use it to clear selection programmaticaly
+- ***options*** `<setter>` - sets options for Select component.  
+`Select.options = [/* new options */]`
+This setter is used by `FetchSelect` to set fetched options to Select component without rerendering it.
+- ***options*** `<getter>` - returns array of actual options from Selects' state  
+`Select.options // options array`
+- ***value*** - returns id of currently selected option  
+`Select.value // selected option's id`
   
 ### FetchSelect
 This component is a wrapper for Select component  
@@ -145,6 +174,16 @@ fetch = {
   serverError: 'Server error.',
 }
 ```
+  
+### Styling
+You can style Select component in a several ways:
+
+- Use default Select component styles by importing them from dist folder(TODO: skins):  
+`import 'react-select3/dist/styles.css'`
+- Use scss source from `react-select3/src/styles/...`, override specific variables and mixins  
+and compile into custom style
+- Write your own styles from scratch, you can even provide custom cssClassNamePrefix by passing prop  
+into Select component and change variable in the scss source code
 
 ## License
 
@@ -162,5 +201,5 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ### Credits
 
-⭐️Thanks for help to: 
+⭐️ Thanks for help to: 
 - Artem Berdyshev 
