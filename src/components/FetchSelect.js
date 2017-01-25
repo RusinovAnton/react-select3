@@ -201,7 +201,7 @@ class FetchSelect extends Component {
 
     return (
       <Select ref={ this._getSelectRef }
-              search={ { show: !once, status } }
+              search={ { show: !once, status, minimumResults: search.minimumResults } }
               onSearchTermChange={ this._onSearchTermChange }
               {...props}/>
     )
