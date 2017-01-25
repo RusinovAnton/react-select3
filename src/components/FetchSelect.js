@@ -32,6 +32,7 @@ function composeFetchPath(endpoint, params = {}, searchTerm, termQuery) {
 
 class FetchSelect extends Component {
   static defaultProps = {
+    search: {},
     fetch: {
       once: false,
       requestDelay: 300,
