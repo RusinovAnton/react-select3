@@ -4,8 +4,79 @@
 This is `<select>` written with ReactJS
 
 ## API reference
+### Select
+Basic usage:
+```javascript
+import Select from 'react-select3'
+import 'react-select3/dist/styles.css'
+
+const selectOptions = [
+    { id: 1, text: 'Uno' },
+    { id: 2, text: 'Dos' },
+    { id: 3, text: 'Tres' },
+    { id: 4, text: 'Cuatro' },
+]
+
+<Select options={ selectOptions } placeholder={'Select option'}/>
+```
+
+Props:
+- ***allowClear***`<bool>` - whether to allow user to clear selected option *`// Default: false`*
+- ***cssClassNameSelector***`<string>`
+- ***autoFocus***`<bool>` - whether to focus Select on mount
+- ***closeOnClickOutside***`<bool>` - whether to close dropdown on click outside Select component *`// Default: true`*
+- ***defaultValue***`<string|number>` - provide id of the default selected option
+- ***disabled***`<bool>` - disable select, reset
+- ***error***`<bool|string>` - you can provide boolean to indicate Select's error, and string to show error message
+- ***language***`<object>` - pass language object to override default lang strings:
+```javascript
+{
+  isEmpty: 'No options.',
+  isPending: '...',
+  minLength: 'Minimum ${minLength} to search...',
+  responseEmpty: 'Cannot find anything.',
+  serverError: 'Server error.',
+}
+```
+- ***layout***`<object>` - props related to Select component view
+  - ***layout.width***`<string>` - width for Select container *`// Default: '245px'`*
+  - ***layout.dropdownVerticalPosition***`<'above'|'below'>` - whether to show dropdown above or below Select container *`// Default: 'below'`*
+- ***name***`<string>` - Selects name attribute
+- ***optionRenderer***`<function>` - function that transforms single option output, you can provide it if you want to change layout of options e.g.:
+```javascript
+const optionRenderer = (option) => (
+    <strong className='my-custom-option'>
+        <i className={`fa fa-${icons[option.id]}`}/>
+        { option.text }
+    </strong>
+)
+```
+- ***options***`<array>` - array with options object. they must have next format:  
+`{ id: <number|string>, text: <number|string>}`
+- ***onSelect***`<function>` - callback on options select event. event has next format:
+```javascript
+{
+  type: 'select',
+  isClear: <bool>, // indicates that value being cleared by onClearSelection
+  target: {
+    name: <string>, // Selects name attribute
+    option: <object>, // selected option object
+    value: <string>, // selected option id
+  }
+}
+```
+- ***placeholder***`<string>` - shows up when there is no selected option
+- ***search***`<object>` - props related to SearchInput functionality
+  - ***search.minimumResults***`<number>` - minimum number of results before show SearchInput
+  - ***search.show***`<bool>` - provide if you want to always show SearchInput
+  - ***search.status***`<string>` - provide status message, shows up only when there are no available options
+- ***onSearchTermChange***`<function>` - callback for SearchInput changes, takes input event as agrument
+- ***value***`<number|string>` - you can provide option id to control selection
+  
+### FetchSelect
 `// TODO`
-Please watch propTypes for now ✨
+### Selects ref interface
+`// TODO`
 
 ## License
 
