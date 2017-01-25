@@ -7,7 +7,6 @@ import isNil from 'lodash/isNil'
 import uniqueId from 'lodash/uniqueId'
 
 import makeString from '../utils/makeString'
-import { DEFAULT_LANG } from '../utils/consts'
 
 import SelectDropdown from './SelectDropdown'
 import SelectError from './SelectError'
@@ -22,7 +21,6 @@ import SelectSelection from './SelectSelection'
 export class Select extends Component {
   static childContextTypes = {
     cssClassNameSelector: PropTypes.string,
-    language: PropTypes.object,
   }
 
   static propTypes = {
@@ -42,10 +40,6 @@ export class Select extends Component {
      * Provide error message to display or just boolean to highlight select container with error styles
      */
     error: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
-    /**
-     * Provide custom messages
-     */
-    language: PropTypes.object,
     layout: PropTypes.shape({
       /**
        * Container's width
@@ -185,7 +179,6 @@ export class Select extends Component {
 
   getChildContext = () => ({
     cssClassNameSelector: this.props.cssClassNameSelector,
-    language: this._composeLanguageObject(),
   })
 
   componentWillReceiveProps(newProps) {
@@ -264,17 +257,6 @@ export class Select extends Component {
     }
 
     return isValid
-  }
-
-  _composeLanguageObject = () => {
-    const { language, search } = this.props
-    const minLength = (search && search.minLength) || 3
-
-    const lang = Object.assign({}, DEFAULT_LANG, language)
-
-    lang.minLength = lang.minLength.replace(/\$\{minLength\}/, minLength)
-
-    return lang
   }
 
   _openDropdown = () => {

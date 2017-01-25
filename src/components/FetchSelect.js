@@ -46,6 +46,7 @@ class FetchSelect extends Component {
     fetch: PropTypes.shape({
       ajaxClient: PropTypes.func,
       endpoint: PropTypes.string.isRequired,
+      minLength: PropTypes.number,
       once: PropTypes.bool,
       params: PropTypes.object,
       requestDelay: PropTypes.number, // default: 300 (ms)
@@ -202,7 +203,7 @@ class FetchSelect extends Component {
 
     return (
       <Select ref={ this._getSelectRef }
-              search={ { show: !once, status, minimumResults: search.minimumResults } }
+              search={ { show: !once, status, minimumResults: once ? search.minimumResults : undefined } }
               onSearchTermChange={ this._onSearchTermChange }
               {...props}/>
     )
