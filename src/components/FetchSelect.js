@@ -106,8 +106,12 @@ class FetchSelect extends Component {
   _fetch = searchTerm => {
     const { fetch: { ajaxClient, endpoint, params, responseDataFormatter, termQuery, } } = this.props
 
+    if (!ajaxClient || endpoint !== 'string') {
+      throw new Error('You must provide endpoint to fetch options.')
+    }
+
     const fetchClient = ajaxClient || fetchJson
-    const fetchPath = composeFetchPath(endpoint, params, searchTerm, termQuery)
+    const fetchPath = (endpoint && composeFetchPath(endpoint, params, searchTerm, termQuery)) || null
 
     this.setState({
       error: this.props.error || null,
