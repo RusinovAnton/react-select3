@@ -27,7 +27,7 @@ export class Select extends Component {
 
   static propTypes = {
     /**
-     * Whether to allow user to clear select
+     * Whether to allow user to reset selected option
      */
     allowClear: PropTypes.bool,
     cssClassNameSelector: PropTypes.string,
@@ -76,12 +76,12 @@ export class Select extends Component {
     onSelect: PropTypes.func,
     placeholder: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
     search: PropTypes.shape({
-      show: PropTypes.bool,
-      status: PropTypes.string,
       /**
        * Minimum results amount before showing search input
        */
       minimumResults: PropTypes.number,
+      show: PropTypes.bool,
+      status: PropTypes.string,
     }),
     /**
      * Search input change callback
@@ -392,7 +392,7 @@ export class Select extends Component {
     const value = option ? option.id : null
     const selectionEvent = {
       type: 'select',
-      isClear: option === null,
+      isClear: option === null,  // indicates that value being cleared by onClearSelection
       target: {
         name,
         option,
