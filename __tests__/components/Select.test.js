@@ -105,7 +105,7 @@ describe('Mount <Select/>', () => {
   })
 
   it('should change css class name if prop passed', () => {
-    const component = mount(<Select cssClassNameSelector={'TestSelector'}/>)
+    const component = mount(<Select cssClassNamePrefix={'TestSelector'}/>)
 
     expect(component).toMatchSnapshot()
     expect(component.find('.TestSelector__container').length).toBe(1)

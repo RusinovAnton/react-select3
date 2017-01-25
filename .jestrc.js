@@ -13,7 +13,7 @@ global.cssName = '.rs3'
 
 global.selectComponentContext = {
   context: {
-    cssClassNameSelector: global.cssName.slice(1)
+    cssClassNamePrefix: global.cssName.slice(1)
   }
 }
 
