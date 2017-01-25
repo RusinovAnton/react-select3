@@ -1,6 +1,6 @@
 {
   "name": "react-select3",
-  "version": "3.0.8",
+  "version": "3.0.9",
   "description": "<Select> component made with ReactJS",
   "main": "dist/index.js",
   "repository": "https://github.com/RusinovAnton/react-select3.git",
