@@ -106,7 +106,7 @@ class FetchSelect extends Component {
   _fetch = searchTerm => {
     const { fetch: { ajaxClient, endpoint, params, responseDataFormatter, termQuery, } } = this.props
 
-    if (!ajaxClient || endpoint !== 'string') {
+    if (!ajaxClient && endpoint !== 'string') {
       throw new Error('You must provide endpoint to fetch options.')
     }
 
