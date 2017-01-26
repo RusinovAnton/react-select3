@@ -33,7 +33,7 @@ Props:
 - ***closeOnClickOutside*** `<bool>` - whether to close dropdown on click outside Select component  
 *`// Default: true`*
 - ***defaultValue*** `<string|number>` - provide id of the default selected option
-- ***disabled*** `<bool>` - disable select, reset
+- ***disabled*** `<bool>` - disable selecting and reseting
 - ***error*** `<bool|string>` - you can provide boolean to indicate Select's error, and string to show error message
 - ***layout*** `<object>` - props related to Select component view
   - ***layout.width*** `<string>` - width for Select container *`// Default: '245px'`*
