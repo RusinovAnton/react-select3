@@ -228,10 +228,12 @@ export class Select extends Component {
 
     // Add listener for click outside if enabled
     if (closeOnClickOutside) document.addEventListener('click', this._handleClickOutside, true)
+    this.selectContainer.addEventListener('blur', this._handleContainerBlur, true)
   }
 
   componentWillUnmount() {
     document.removeEventListener('click', this._handleClickOutside, true);
+    this.selectContainer.removeEventListener('blur', this._handleContainerBlur, true);
   }
 
   /**
@@ -239,6 +241,12 @@ export class Select extends Component {
    */
   _handleClickOutside = (e) => {
     if (this.state.dropdownOpened && !this.selectContainer.contains(e.target)) {
+      this._closeDropdown(false)
+    }
+  }
+
+  _handleContainerBlur = (e) => {
+    if (!this.selectContainer.contains(e.relatedTarget)) {
       this._closeDropdown(false)
     }
   }
@@ -553,7 +561,11 @@ export class Select extends Component {
             role='combobox'
             onClick={ this._onContainerClick }
             onKeyDown={ this._onContainerKeyDown }>
-      <select name={ name } value={ !isNil(value) ? value : '' } readOnly className={`${cssClassNamePrefix}__select-node`}>
+      <select tabIndex='-1'
+              name={ name }
+              value={ !isNil(value) ? value : '' }
+              readOnly
+              className={`${cssClassNamePrefix}__select-node`}>
         { !isNil(value) && <option value={value}/> }
       </select>
       <SelectSelection clearable={ this._isClearable() }
