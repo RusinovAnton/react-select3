@@ -151,8 +151,8 @@ export class Select extends Component {
       13: this._selectHighlighted,
       ' ': this._selectHighlighted, // 'Space' key
       32: this._selectHighlighted, // 'Space' key
-      Escape: this._closeDropdown,
-      27: this._closeDropdown,
+      Escape: this._closeDropdown.bind(this, true),
+      27: this._closeDropdown.bind(this, true),
     }
 
     this.state = Select.initialState()
@@ -193,7 +193,7 @@ export class Select extends Component {
     }
 
     if (disabled) {
-      this._closeDropdown()
+      this._closeDropdown(true)
     }
 
     this.setState(state => {
@@ -239,7 +239,7 @@ export class Select extends Component {
    */
   _handleClickOutside = (e) => {
     if (this.state.dropdownOpened && !this.selectContainer.contains(e.target)) {
-      this._closeDropdown()
+      this._closeDropdown(false)
     }
   }
 
@@ -262,13 +262,15 @@ export class Select extends Component {
     this.setState({ dropdownOpened: true })
   }
 
-  _closeDropdown = () => {
+  _closeDropdown = (focus) => {
     this.setState({
       dropdownOpened: false,
       highlighted: null,
     })
 
-    this._focusContainer()
+    if (focus) {
+      this._focusContainer()
+    }
   }
 
   _focusContainer = () => {
@@ -333,7 +335,7 @@ export class Select extends Component {
     }
 
     if (this.state.dropdownOpened) {
-      this._closeDropdown()
+      this._closeDropdown(true)
     } else {
       this._openDropdown()
     }
@@ -387,7 +389,7 @@ export class Select extends Component {
       }
     })
 
-    this._closeDropdown()
+    this._closeDropdown(true)
     this._focusContainer()
   }
 
