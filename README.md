@@ -34,7 +34,7 @@ Props:
 *`// Default: true`*
 - ***defaultValue*** `<string|number>` - provide id of the default selected option
 - ***disabled*** `<bool>` - disable selecting and reseting
-- ***error*** `<bool|string>` - you can provide boolean to indicate Select's error, and string to show error message
+- ***error*** `<bool|string>` - you can provide boolean to indicate Select's error or string to show error message
 - ***layout*** `<object>` - props related to Select component view
   - ***layout.width*** `<string>` - width for Select container *`// Default: '245px'`*
   - ***layout.dropdownVerticalPosition*** `<'above'|'below'>` - whether to show dropdown above or below Select container *`// Default: 'below'`*
@@ -50,13 +50,13 @@ const optionRenderer = (option) => (
 ```
 - ***options*** `<array>` - array with options object. they must have next format:  
 `{ id: <number|string>, text: <number|string>}`
-- ***onSelect*** `<function>` - callback on options select event. event has next format:
+- ***onSelect*** `<function>` - callback on options select event. event object that passed into callback has next format:
 ```javascript
 {
   type: 'select',
   isClear: <bool>, // indicates that value being cleared by onClearSelection
   target: {
-    name: <string>, // Selects name attribute
+    name: <string>, // Selects' name attribute
     option: <object>, // selected option object
     value: <string>, // selected option id
   }
@@ -149,22 +149,22 @@ There are a number of FetchSelect specific props:
   - ***fetch.minLength*** `<number>` - minimum characters length of SearchInput value to start fetching  
   *`// Default: 3`*
   - ***fetch.once*** `<bool>` - if true, options fetched once on FetchSelect mount, 
-    in this case SearchInput change not triggers fetch again but filters existing options
+    in this case SearchInput change not triggers fetch again but filters options that are in state
   - ***fetch.params*** `<object>` - additional params that being merged with "termQuery" into endpoint.  
   e.g.
-```javascript
-SearchInput.value = 'John'
+    ```javascript
+    SearchInput.value = 'John'
 
-fetch = {
-    endpoint: '/api/users',
-    termQuery: 'filter',
-    params: {
-        emailVerified: 0,
-    },
-}
+    fetch = {
+        endpoint: '/api/users',
+        termQuery: 'filter',
+        params: {
+            emailVerified: 0,
+        },
+    }
 
-// fetch path: '/api/users?filter=John&emailVerified=0'
-```
+    // fetch path: '/api/users?filter=John&emailVerified=0'
+    ```
   - ***fetch.requestDelay*** `<number>` - delay between request on SearchInput change *`// Default: 300`*
   - ***fetch.responseDataFormatter*** `<function>` -  function that formats fetched objects into options. See example above
   - ***fetch.termQuery*** `<string>` - key for dynamic query param that takes SearchInput value on change.  
