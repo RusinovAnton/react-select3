@@ -8,6 +8,13 @@ describe('Shallow <Select/>', () => {
     expect(component.state('options')).toHaveLength(10)
   })
 
+  it('should save options\' object structure', () => {
+    const optionsList = mock.options.map(option => ({ additionalKey: true, ...option }))
+    const component = shallow(<Select options={ optionsList }/>)
+
+    expect(component.state('options').every(option => option.additionalKey)).toBe(true)
+  })
+
   it('should warn about bug possibility when setting value through props but not setting onSelect callback', () => {
     const component = shallow(
       <Select placeholder='Select something'
