@@ -1,4 +1,4 @@
-import SelectWrapped, { Select } from '../../src/components/Select'
+import Select from '../../src/components/Select'
 
 
 describe('Shallow <Select/>', () => {
@@ -39,12 +39,6 @@ describe('Shallow <Select/>', () => {
 })
 
 describe('Render <Select/>', () => {
-  it('should render Select with handleClickOutside wrapper', () => {
-    const component = render(<SelectWrapped/>)
-
-    expect(component).toMatchSnapshot()
-  })
-
   it('should render a Select with default props', () => {
     const component = render(<Select/>)
 
