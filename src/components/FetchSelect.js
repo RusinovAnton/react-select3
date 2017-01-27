@@ -84,12 +84,26 @@ class FetchSelect extends Component {
     }
   }
 
+  componentWillReceiveProps = ({ error }) => {
+    const { error: stateError } = this.state
+
+    if (typeof error === 'undefined') {
+      return stateError
+    } else if (error !== stateError) {
+      return error
+    }
+  }
+
   /**
    * Proxy interface methods of Select component
    */
 
   get value() {
     return this.selectRef.value
+  }
+
+  get valid() {
+    return this.selectRef.valid
   }
 
   get options() {

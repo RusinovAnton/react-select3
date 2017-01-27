@@ -69,6 +69,7 @@ export class Select extends Component {
     })),
     onSelect: PropTypes.func,
     placeholder: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
+    required: PropTypes.bool,
     search: PropTypes.shape({
       /**
        * Minimum results amount before showing search input
@@ -104,7 +105,6 @@ export class Select extends Component {
     },
   }
 
-
   static initialState = () => ({
     disabled: false,
     dropdownOpened: false,
@@ -131,6 +131,13 @@ export class Select extends Component {
 
   get value() {
     return this.state.value
+  }
+
+  get valid() {
+    const { error, value } = this.state
+    const { required } = this.props
+
+    return !!error || (required && !value)
   }
 
   get options() {
