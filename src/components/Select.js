@@ -77,6 +77,7 @@ export class Select extends Component {
       show: PropTypes.bool,
       status: PropTypes.string,
     }),
+    selectionRenderer: PropTypes.func,
     /**
      * Search input change callback
      */
@@ -548,7 +549,15 @@ export class Select extends Component {
   }
 
   render() {
-    const { cssClassNamePrefix, optionRenderer, layout: { width }, placeholder, search: { status }, name } = this.props
+    const {
+      cssClassNamePrefix,
+      layout: { width },
+      name,
+      optionRenderer,
+      placeholder,
+      search: { status },
+      selectionRenderer,
+    } = this.props
     const { disabled, dropdownOpened, error, highlighted, searchTerm, value } = this.state
     const selectedOption = this._getOptionById(value)
 
@@ -571,7 +580,7 @@ export class Select extends Component {
       <SelectSelection clearable={ this._isClearable() }
                        onClearSelection={ this._onClearSelection }
                        placeholder={ placeholder }
-                       formatter={ optionRenderer }
+                       formatter={ selectionRenderer || optionRenderer }
                        selection={ selectedOption }
                        onKeyDown={ this._onContainerKeyDown }/>
         { dropdownOpened && (
