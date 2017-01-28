@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
-import { stopPropagation } from '../utils/events'
+
 import filterKeyDown from '../utils/filterKeyDown'
+import { stopPropagation } from '../utils/events'
 
 
 const SelectSearchInput = ({ onClick, onKeyDown, ...props }, // eslint-disable-line no-unused-vars

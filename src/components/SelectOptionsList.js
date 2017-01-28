@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react'
 
 import classNames from 'classnames'
 import isFunction from 'lodash/isFunction'
-
 import isNil from 'lodash/isNil'
 import { stopPropagation } from '../utils/events'
 
@@ -26,13 +25,12 @@ const SelectOptionsList = ({ highlighted, selected, formatter, options = [], onS
       [`${cssClassNamePrefix}__option--selected`]: isSelected,
       [`${cssClassNamePrefix}__option--highlighted`]: id === highlighted
     })
-
     const onOptionSelect = isSelected ? null : onSelect.bind(null, id)
 
     return (
-      <li key={ id }
+      <li className={ optionClassName }
           data-id={ id }
-          className={ optionClassName }
+          key={ id }
           onClick={ stopPropagation(onOptionSelect) }>
         { optionText }
       </li>
@@ -51,9 +49,9 @@ SelectOptionsList.contextTypes = {
 }
 
 SelectOptionsList.propTypes = {
+  formatter: PropTypes.func,
   highlighted: PropTypes.string,
   onSelect: PropTypes.func.isRequired,
-  formatter: PropTypes.func,
   options: PropTypes.array.isRequired,
   selected: PropTypes.string,
 }

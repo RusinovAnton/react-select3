@@ -52,6 +52,7 @@
         "react/jsx-no-duplicate-props": 2,
         "react/jsx-no-bind": 2,
         "react/sort-comp": 0,
+        "no-confusing-arrow": 0,
         "react/prop-types": [
             2,
             {

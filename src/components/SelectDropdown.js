@@ -11,25 +11,14 @@ const SelectDropdown = ({
   { cssClassNamePrefix }) => (
   <span className={`${cssClassNamePrefix}__dropdown`}>
     {
-      showSearch &&
-      (
-        <SelectSearchInput value={ searchTerm }
-                           onKeyDown={ onSearchInputKeyDown }
-                           onChange={ onSearchInputChange }/>
-      )
+      showSearch && (<SelectSearchInput value={ searchTerm }
+                                        onKeyDown={ onSearchInputKeyDown }
+                                        onChange={ onSearchInputChange }/>)
     }
     {
       options.length ?
-        <SelectOptionsList {...{
-          highlighted,
-          onSelect,
-          formatter,
-          options,
-          selected
-        }}/>
-        : (
-        <span className={`${cssClassNamePrefix}__status`}>{ status || 'No options' }</span>
-      )
+        <SelectOptionsList {...{ formatter, highlighted, onSelect, options, selected }}/>
+        : <span className={`${cssClassNamePrefix}__status`}>{ status || 'No options' }</span>
     }
   </span>
 )
@@ -39,16 +28,16 @@ SelectDropdown.contextTypes = {
 }
 
 SelectDropdown.propTypes = {
+  formatter: PropTypes.func,
   highlighted: PropTypes.string,
   onSearchInputChange: PropTypes.func.isRequired,
   onSearchInputKeyDown: PropTypes.func.isRequired,
   onSelect: PropTypes.func.isRequired,
-  formatter: PropTypes.func,
   options: PropTypes.arrayOf(PropTypes.object),
   searchTerm: PropTypes.string,
-  status: PropTypes.string,
   selected: PropTypes.string,
   showSearch: PropTypes.bool,
+  status: PropTypes.string,
 }
 
 export default SelectDropdown

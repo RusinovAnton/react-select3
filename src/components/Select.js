@@ -19,6 +19,46 @@ import SelectSelection from './SelectSelection'
 // TODO: make slim version
 // TODO: optimize isFunction calls
 export class Select extends Component {
+  constructor(props) { // eslint-disable-line consistent-return
+    super(props)
+
+    const onArrowUp = this._setHighlightedOption.bind(null, -1)
+    const onArrowDown = this._setHighlightedOption.bind(null, 1)
+
+    this.KEY_FUNCTIONS = {
+      ArrowUp: onArrowUp,
+      38: onArrowUp,
+      ArrowDown: onArrowDown,
+      40: onArrowDown,
+      Enter: this._selectHighlighted,
+      13: this._selectHighlighted,
+      ' ': this._selectHighlighted, // 'Space' key
+      32: this._selectHighlighted, // 'Space' key
+      Escape: this._closeDropdown.bind(this, true),
+      27: this._closeDropdown.bind(this, true),
+    }
+
+    this.state = Select.initialState()
+    const { disabled, error, options } = props
+
+    /**
+     * @type {{
+     *  dropdownOpened: boolean,
+     *  error: string|boolean,
+     *  highlighted: {id, index},
+     *  options: array,
+     *  searchTerm: string,
+     *  value: string,
+     * }}
+     */
+    this.state = Object.assign(this.state, {
+      disabled,
+      error,
+      options: this._setOptions(options),
+      value: this._setValue(),
+    })
+  }
+
   static childContextTypes = {
     cssClassNamePrefix: PropTypes.string,
   }
@@ -118,6 +158,15 @@ export class Select extends Component {
   /**
    * Ref Interface methods
    */
+
+  clear() {
+    this._onClearSelection()
+  }
+
+  get options() {
+    return [].concat(this.state.options)
+  }
+
   set options(options) {
     if (!Array.isArray(options)) {
       throw new Error('Invalid options were provided. Options must be an array.')
@@ -129,10 +178,6 @@ export class Select extends Component {
     })
   }
 
-  get value() {
-    return this.state.value
-  }
-
   get valid() {
     const { error, value } = this.state
     const { required } = this.props
@@ -140,53 +185,8 @@ export class Select extends Component {
     return !!error || (required && !value)
   }
 
-  get options() {
-    return [].concat(this.state.options)
-  }
-
-  clear() {
-    this._onClearSelection()
-  }
-
-
-  constructor(props) { // eslint-disable-line consistent-return
-    super(props)
-
-    const onArrowUp = this._setHighlightedOption.bind(null, -1)
-    const onArrowDown = this._setHighlightedOption.bind(null, 1)
-
-    this.KEY_FUNCTIONS = {
-      ArrowUp: onArrowUp,
-      38: onArrowUp,
-      ArrowDown: onArrowDown,
-      40: onArrowDown,
-      Enter: this._selectHighlighted,
-      13: this._selectHighlighted,
-      ' ': this._selectHighlighted, // 'Space' key
-      32: this._selectHighlighted, // 'Space' key
-      Escape: this._closeDropdown.bind(this, true),
-      27: this._closeDropdown.bind(this, true),
-    }
-
-    this.state = Select.initialState()
-    const { disabled, error, options } = props
-
-    /**
-     * @type {{
-     *  dropdownOpened: boolean,
-     *  error: string|boolean,
-     *  highlighted: {id, index},
-     *  options: array,
-     *  searchTerm: string,
-     *  value: string,
-     * }}
-     */
-    this.state = Object.assign(this.state, {
-      disabled,
-      error,
-      options: this._setOptions(options),
-      value: this._setValue(),
-    })
+  get value() {
+    return this.state.value
   }
 
   getChildContext = () => ({
@@ -202,7 +202,7 @@ export class Select extends Component {
       console.warn(`Warning: You're setting value for Select component throught props
                 but not passing onSelect callback which can lead to unforeseen consequences(bugs).
                 Please consider using onSelect callback or defaultValue instead of value`)
-    /* eslint-enable */
+      /* eslint-enable */
     }
 
     if (disabled) {

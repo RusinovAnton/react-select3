@@ -31,6 +31,27 @@ function composeFetchPath(endpoint, params = {}, searchTerm, termQuery) {
 }
 
 class FetchSelect extends Component {
+  constructor(props) {
+    super(props)
+
+    const { fetch } = props
+
+    this.state = {
+      fetched: false,
+      error: false,
+      isPending: false,
+      options: [],
+    }
+
+    if (fetch.once) {
+      this._fetchOptions = this._fetch
+    } else {
+      this._fetchOptions = debounce(this._fetch, fetch.requestDelay)
+    }
+
+    this.language = this._composeLanguageObject()
+  }
+
   static defaultProps = {
     search: {},
     fetch: {
@@ -57,25 +78,23 @@ class FetchSelect extends Component {
     search: PropTypes.object,
   }
 
-  constructor(props) {
-    super(props)
+  /**
+   * Proxy interface methods of Select component
+   */
+  clear() {
+    this.selectRef.clear()
+  }
 
-    const { fetch } = props
+  get options() {
+    return this.selectRef.options
+  }
 
-    this.state = {
-      fetched: false,
-      error: false,
-      isPending: false,
-      options: [],
-    }
+  get valid() {
+    return this.selectRef.valid
+  }
 
-    if (fetch.once) {
-      this._fetchOptions = this._fetch
-    } else {
-      this._fetchOptions = debounce(this._fetch, fetch.requestDelay)
-    }
-
-    this.language = this._composeLanguageObject()
+  get value() {
+    return this.selectRef.value
   }
 
   componentDidMount = () => {
@@ -84,34 +103,14 @@ class FetchSelect extends Component {
     }
   }
 
-  componentWillReceiveProps = ({ error }) => {
+  componentWillReceiveProps({ error }) {
     const { error: stateError } = this.state
 
     if (typeof error === 'undefined') {
       return stateError
-    } else if (error !== stateError) {
-      return error
     }
-  }
 
-  /**
-   * Proxy interface methods of Select component
-   */
-
-  get value() {
-    return this.selectRef.value
-  }
-
-  get valid() {
-    return this.selectRef.valid
-  }
-
-  get options() {
-    return this.selectRef.options
-  }
-
-  clear() {
-    this.selectRef.clear()
+    return error
   }
 
   _composeLanguageObject = () => {
