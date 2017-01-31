@@ -155,21 +155,22 @@ PropName | PropType | Description
 ***fetch.endpoint*** | `<string>` | path to resource to fetch
 ***fetch.minLength*** | `<number>` | minimum characters length of SearchInput value to start fetching *`// Default: 3`*
 ***fetch.once*** | `<bool>` | if true, options fetched once on FetchSelect mount, in this case SearchInput change not triggers fetch again but filters options that are in state
-***fetch.params*** | `<object>` | additional params that being merged with "termQuery" into endpoint.  
-  e.g.
-    ```javascript
-    SearchInput.value = 'John'
+***fetch.params*** | `<object>` | additional params that being merged with "termQuery" into endpoint e.g.
+  
+```javascript
+SearchInput.value = 'John'
 
-    fetch = {
-        endpoint: '/api/users',
-        termQuery: 'filter',
-        params: {
-            emailVerified: 0,
-        },
-    }
+fetch = {
+    endpoint: '/api/users',
+    termQuery: 'filter',
+    params: {
+        emailVerified: 0,
+    },
+}
 
-    // fetch path: '/api/users?filter=John&emailVerified=0'
-    ```
+// fetch path: '/api/users?filter=John&emailVerified=0'
+```
+  
  | | |    
 --- | --- | ---    
 ***fetch.requestDelay*** | `<number>` | delay between request on SearchInput change *`// Default: 300`*
