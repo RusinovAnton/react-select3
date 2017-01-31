@@ -6,14 +6,18 @@ import SelectSearchInput from './SelectSearchInput'
 
 const SelectDropdown = ({
   highlighted, onSelect, formatter, options, searchTerm, showSearch, status, selected,
-  onSearchInputChange, onSearchInputKeyDown
+  onSearchInputChange, onSearchInputKeyDown,
 },
   { cssClassNamePrefix }) => (
   <span className={`${cssClassNamePrefix}__dropdown`}>
     {
-      showSearch && (<SelectSearchInput value={ searchTerm }
-                                        onKeyDown={ onSearchInputKeyDown }
-                                        onChange={ onSearchInputChange }/>)
+      showSearch && (
+        <SelectSearchInput
+          value={searchTerm}
+          onKeyDown={onSearchInputKeyDown}
+          onChange={onSearchInputChange}
+        />
+      )
     }
     {
       options.length ?

@@ -13,7 +13,7 @@ SelectError.propTypes = {
   error: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.string,
-  ])
+  ]),
 }
 
 export default SelectError

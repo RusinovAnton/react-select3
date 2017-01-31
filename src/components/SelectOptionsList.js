@@ -23,15 +23,17 @@ const SelectOptionsList = ({ highlighted, selected, formatter, options = [], onS
     const isSelected = !isNil(selected) && selected === id
     const optionClassName = classNames(`${cssClassNamePrefix}__option`, {
       [`${cssClassNamePrefix}__option--selected`]: isSelected,
-      [`${cssClassNamePrefix}__option--highlighted`]: id === highlighted
+      [`${cssClassNamePrefix}__option--highlighted`]: id === highlighted,
     })
     const onOptionSelect = isSelected ? null : onSelect.bind(null, id)
 
     return (
-      <li className={ optionClassName }
-          data-id={ id }
-          key={ id }
-          onClick={ stopPropagation(onOptionSelect) }>
+      <li
+        className={optionClassName}
+        data-id={id}
+        key={id}
+        onClick={stopPropagation(onOptionSelect)}
+      >
         { optionText }
       </li>
     )

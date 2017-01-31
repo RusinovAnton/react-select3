@@ -18,26 +18,31 @@ const SelectSelection = ({ clearable, formatter, selection = null, placeholder =
   }
 
   return (
-    <span className={ classNames(`${cssClassNamePrefix}__selection`, {
-      [`${cssClassNamePrefix}__selection--placeholder`]: !selection,
-      [`${cssClassNamePrefix}__selection--clearable`]: clearable,
-    })}>
-    <span className={`${cssClassNamePrefix}__selection-text`}>
-      { selectionText }
-    </span>
+    <span
+      className={classNames(`${cssClassNamePrefix}__selection`, {
+        [`${cssClassNamePrefix}__selection--placeholder`]: !selection,
+        [`${cssClassNamePrefix}__selection--clearable`]: clearable,
+      })}
+    >
+    <span className={`${cssClassNamePrefix}__selection-text`}>{ selectionText }</span>
       { clearable && (
-        <span className={`${cssClassNamePrefix}__clear-selection`}
-              role="presentation"
-              tabIndex="0"
-              onKeyDown={stopPropagation(filterKeyDown([
-                { allowedKeys: ['ArrowUp', 'ArrowDown', 'Escape'], func: onKeyDown },
-                { allowedKeys: ['Enter', ' '], func: onClearSelection },
-              ]))}
-              onClick={ stopPropagation(onClearSelection) }>
+        <span
+          className={`${cssClassNamePrefix}__clear-selection`}
+          role="presentation"
+          tabIndex="0"
+          onKeyDown={stopPropagation(filterKeyDown([
+            { allowedKeys: ['ArrowUp', 'ArrowDown', 'Escape'], func: onKeyDown },
+            { allowedKeys: ['Enter', ' '], func: onClearSelection },
+          ]))}
+          onClick={stopPropagation(onClearSelection)}
+        >
         &times;
       </span>
       )}
-      <span className={`${cssClassNamePrefix}__selection-arrow`} role="presentation">
+      <span
+        className={`${cssClassNamePrefix}__selection-arrow`}
+        role="presentation"
+      >
       <i/>
     </span>
   </span>

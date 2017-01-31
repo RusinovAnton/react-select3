@@ -19,7 +19,7 @@ function composeFetchPath(endpoint, params = {}, searchTerm, termQuery) {
     if (!termQuery) throw new Error('Provide fetch.termQuery prop')
 
     fetchParams = Object.assign(fetchParams, {
-      [termQuery]: searchTerm
+      [termQuery]: searchTerm,
     })
   }
 
@@ -58,7 +58,7 @@ class FetchSelect extends Component {
       once: false,
       requestDelay: 300,
       termMinLength: 3,
-    }
+    },
   }
 
   static propTypes = {
@@ -123,7 +123,7 @@ class FetchSelect extends Component {
   }
 
   fetch = searchTerm => {
-    const { fetch: { ajaxClient, endpoint, params, responseDataFormatter, termQuery, } } = this.props
+    const { fetch: { ajaxClient, endpoint, params, responseDataFormatter, termQuery } } = this.props
 
     if (!ajaxClient && typeof endpoint !== 'string') {
       throw new Error('You must provide endpoint to fetch options.')
@@ -187,11 +187,11 @@ class FetchSelect extends Component {
     const { options, fetched, error, isPending } = this.state
     const { fetch: { once } } = this.props
     const {
-      minLength,
+      isEmpty,
       isPending: isPendingStatus,
-      serverError,
+      minLength,
       responseEmpty,
-      isEmpty
+      serverError,
     } = this.language
 
     if (isPending) {
@@ -220,10 +220,12 @@ class FetchSelect extends Component {
     const status = this.getStatus()
 
     return (
-      <Select ref={ this.getSelectRef }
-              search={ { show: !once, status, minimumResults: once ? search.minimumResults : undefined } }
-              onSearchTermChange={ this.onSearchTermChange }
-              {...props}/>
+      <Select
+        ref={this.getSelectRef}
+        search={{ show: !once, status, minimumResults: once ? search.minimumResults : undefined }}
+        onSearchTermChange={this.onSearchTermChange}
+        {...props}
+      />
     )
   }
 }
