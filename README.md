@@ -27,19 +27,21 @@ const selectOptions = [
 ```
 
 Props:
-- ***allowClear*** `<bool>` - whether to allow user to clear selected option *`// Default: false`*
-- ***cssClassNamePrefix*** `<string>` - you can provide custom prefix for Selects' classNames
-- ***autoFocus*** `<bool>` - whether to focus Select on mount
-- ***closeOnClickOutside*** `<bool>` - whether to close dropdown on click outside Select component  
-*`// Default: true`*
-- ***defaultValue*** `<string|number>` - provide id of the default selected option
-- ***disabled*** `<bool>` - disable selecting and reseting
-- ***error*** `<bool|string>` - you can provide boolean to indicate Select's error or string to show error message
-- ***layout*** `<object>` - props related to Select component view
-  - ***layout.width*** `<string>` - width for Select container *`// Default: '245px'`*
-  - ***layout.dropdownVerticalPosition*** `<'above'|'below'>` - whether to show dropdown above or below Select container *`// Default: 'below'`*
-- ***name*** `<string>` - Selects name attribute
-- ***optionRenderer*** `<function>` - function that transforms single option output, you can provide it if you want to change layout of options e.g.:
+  
+PropName | PropType | Description
+--- | --- | ---
+***allowClear*** | `<bool>` | whether to allow user to clear selected option *`// Default: false`*
+***cssClassNamePrefix*** | `<string>` | you can provide custom prefix for Selects' classNames
+***autoFocus*** | `<bool>` | whether to focus Select on mount
+***closeOnClickOutside*** | `<bool>` | whether to close dropdown on click outside Select component *`// Default: true`*  
+***defaultValue*** | `<string|number>` | provide id of the default selected option
+***disabled*** | `<bool>` | disable selecting and reseting
+***error*** | `<bool|string>` | you can provide boolean to indicate Select's error or string to show error message
+***layout*** | `<object>` | props related to Select component view
+***layout.width*** | `<string>` | width for Select container *`// Default: '245px'`*
+***layout.dropdownVerticalPosition*** | `<'above'|'below'>` | whether to show dropdown above or below Select container *`// Default: 'below'`*
+***name*** | `<string>` | Selects name attribute
+***optionRenderer*** | `<function>` | function that transforms single option output, you can provide it if you want to change layout of options e.g.:
 ```javascript
 const optionRenderer = (option) => (
     <strong className='my-custom-option'>
@@ -48,9 +50,9 @@ const optionRenderer = (option) => (
     </strong>
 )
 ```
-- ***options*** `<array>` - array with options object. they must have next format:  
+***options*** | `<array>` | array with options object. they must have next format:  
 `{ id: <number|string>, text: <number|string>}`
-- ***onSelect*** `<function>` - callback on options select event. event object that passed into callback has next format:
+***onSelect*** | `<function>` | callback on options select event. event object that passed into callback has next format:
 ```javascript
 {
   type: 'select',
@@ -62,13 +64,13 @@ const optionRenderer = (option) => (
   }
 }
 ```
-- ***placeholder*** `<string>` - shows up when there is no selected option
-- ***search*** `<object>` - props related to SearchInput, which used to filter options list, you can override its behaviour by providing `onSearchTermChange` prop.
-  - ***search.minimumResults*** `<number>` - minimum number of results before show SearchInput
-  - ***search.show*** `<bool>` - provide if you want to always show SearchInput
-  - ***search.status*** `<string>` - provide status message, shows up only when there are no available options
-- ***onSearchTermChange*** `<function>` - callback for SearchInput changes, takes input event as agrument
-- ***value*** `<number|string>` - you can provide option id to control selection
+***placeholder*** | `<string>` | shows up when there is no selected option
+***search*** | `<object>` | props related to SearchInput, which used to filter options list, you can override its behaviour by providing `onSearchTermChange` prop.
+***search.minimumResults*** | `<number>` | minimum number of results before show SearchInput
+***search.show*** | `<bool>` | provide if you want to always show SearchInput
+***search.status*** | `<string>` | provide status message, shows up only when there are no available options
+***onSearchTermChange*** | `<function>` | callback for SearchInput changes, takes input event as agrument
+***value*** | `<number|string>` | you can provide option id to control selection
   
 ### Selects ref interface methods
 Select component has number of handy public methods that you can use by saving its ref, e.g.:
@@ -93,13 +95,13 @@ class MyMajesticComponent extends React.Component {
 }
 ```
 Methods:  
-- ***clear*** - use it to clear selection programmaticaly
-- ***options*** `<setter>` - sets options for Select component.  
+***clear*** | | use it to clear selection programmaticaly
+***options*** | `<setter>` | sets options for Select component.  
 `Select.options = [/* new options */]`
 This setter is used by `FetchSelect` to set fetched options to Select component without rerendering it.
-- ***options*** `<getter>` - returns array of actual options from Selects' state  
+***options*** | `<getter>` | returns array of actual options from Selects' state  
 `Select.options // options array`
-- ***value*** - returns id of currently selected option  
+***value*** - returns id of currently selected option  
 `Select.value // selected option's id`
   
 ### FetchSelect
@@ -143,14 +145,12 @@ All ref interface methods and props except of
 are being proxied onto Select component.  
   
 There are a number of FetchSelect specific props: 
-- ***fetch*** `<object>` - props that related to fetching options from server
-  - ***fetch.ajaxClient*** `<function>` - custom client to fetch options, it must return `<Promise>`
-  - ***fetch.endpoint*** `<string>` - path to resource to fetch
-  - ***fetch.minLength*** `<number>` - minimum characters length of SearchInput value to start fetching  
-  *`// Default: 3`*
-  - ***fetch.once*** `<bool>` - if true, options fetched once on FetchSelect mount, 
-    in this case SearchInput change not triggers fetch again but filters options that are in state
-  - ***fetch.params*** `<object>` - additional params that being merged with "termQuery" into endpoint.  
+***fetch*** | `<object>` | props that related to fetching options from server
+***fetch.ajaxClient*** | `<function>` | custom client to fetch options, it must return `<Promise>`
+***fetch.endpoint*** | `<string>` | path to resource to fetch
+***fetch.minLength*** | `<number>` | minimum characters length of SearchInput value to start fetching *`// Default: 3`*
+***fetch.once*** | `<bool>` | if true, options fetched once on FetchSelect mount, in this case SearchInput change not triggers fetch again but filters options that are in state
+***fetch.params*** | `<object>` | additional params that being merged with "termQuery" into endpoint.  
   e.g.
     ```javascript
     SearchInput.value = 'John'
@@ -165,11 +165,11 @@ There are a number of FetchSelect specific props:
 
     // fetch path: '/api/users?filter=John&emailVerified=0'
     ```
-  - ***fetch.requestDelay*** `<number>` - delay between request on SearchInput change *`// Default: 300`*
-  - ***fetch.responseDataFormatter*** `<function>` -  function that formats fetched objects into options. See example above
-  - ***fetch.termQuery*** `<string>` - key for dynamic query param that takes SearchInput value on change.  
+***fetch.requestDelay*** | `<number>` | delay between request on SearchInput change *`// Default: 300`*
+***fetch.responseDataFormatter*** | `<function>` |  function that formats fetched objects into options. See example above
+***fetch.termQuery*** | `<string>` | key for dynamic query param that takes SearchInput value on change.  
   See example above
-- ***language*** `<object>` - pass language object to override default status labels:
+***language*** | `<object>` | pass language object to override default status labels:
 ```javascript
 {
   isEmpty: 'No options.',
