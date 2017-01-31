@@ -44,12 +44,12 @@ class FetchSelect extends Component {
     }
 
     if (fetch.once) {
-      this._fetchOptions = this._fetch
+      this.fetchOptions = this.fetch
     } else {
-      this._fetchOptions = debounce(this._fetch, fetch.requestDelay)
+      this.fetchOptions = debounce(this.fetch, fetch.requestDelay)
     }
 
-    this.language = this._composeLanguageObject()
+    this.language = this.composeLanguageObject()
   }
 
   static defaultProps = {
@@ -99,7 +99,7 @@ class FetchSelect extends Component {
 
   componentDidMount = () => {
     if (this.props.fetch.once) {
-      this._fetchOptions()
+      this.fetchOptions()
     }
   }
 
@@ -113,7 +113,7 @@ class FetchSelect extends Component {
     return error
   }
 
-  _composeLanguageObject = () => {
+  composeLanguageObject = () => {
     const { language, fetch: { termMinLength: minLength = 3 } } = this.props
     const lang = Object.assign({}, DEFAULT_LANG, language)
 
@@ -122,7 +122,7 @@ class FetchSelect extends Component {
     return lang
   }
 
-  _fetch = searchTerm => {
+  fetch = searchTerm => {
     const { fetch: { ajaxClient, endpoint, params, responseDataFormatter, termQuery, } } = this.props
 
     if (!ajaxClient && typeof endpoint !== 'string') {
@@ -146,7 +146,7 @@ class FetchSelect extends Component {
         }
 
         this.setState({
-          options: this._setOptions(options),
+          options: this.setOptions(options),
           error: false,
           isPending: false,
         })
@@ -160,17 +160,17 @@ class FetchSelect extends Component {
       })
   }
 
-  _getSelectRef = (node) => {
+  getSelectRef = (node) => {
     this.selectRef = node
   }
 
-  _setOptions = (options) => {
+  setOptions = (options) => {
     this.selectRef.options = options
 
     return options
   }
 
-  _onSearchTermChange = (e) => {
+  onSearchTermChange = (e) => {
     const { fetch: { termMinLength = 3 }, onSearchTermChange } = this.props
     const { target: { value: term } } = e
 
@@ -179,11 +179,11 @@ class FetchSelect extends Component {
     }
 
     if (term.length >= termMinLength) {
-      this._fetchOptions(term)
+      this.fetchOptions(term)
     }
   }
 
-  _getStatus = () => {
+  getStatus = () => {
     const { options, fetched, error, isPending } = this.state
     const { fetch: { once } } = this.props
     const {
@@ -217,12 +217,12 @@ class FetchSelect extends Component {
 
   render() {
     const { fetch: { once }, search, onSearchTermChange, ...props } = this.props // eslint-disable-line no-unused-vars
-    const status = this._getStatus()
+    const status = this.getStatus()
 
     return (
-      <Select ref={ this._getSelectRef }
+      <Select ref={ this.getSelectRef }
               search={ { show: !once, status, minimumResults: once ? search.minimumResults : undefined } }
-              onSearchTermChange={ this._onSearchTermChange }
+              onSearchTermChange={ this.onSearchTermChange }
               {...props}/>
     )
   }

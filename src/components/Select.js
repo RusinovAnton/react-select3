@@ -22,20 +22,20 @@ export class Select extends Component {
   constructor(props) { // eslint-disable-line consistent-return
     super(props)
 
-    const onArrowUp = this._setHighlightedOption.bind(null, -1)
-    const onArrowDown = this._setHighlightedOption.bind(null, 1)
+    const onArrowUp = this.setHighlightedOption.bind(null, -1)
+    const onArrowDown = this.setHighlightedOption.bind(null, 1)
 
     this.KEY_FUNCTIONS = {
       ArrowUp: onArrowUp,
       38: onArrowUp,
       ArrowDown: onArrowDown,
       40: onArrowDown,
-      Enter: this._selectHighlighted,
-      13: this._selectHighlighted,
-      ' ': this._selectHighlighted, // 'Space' key
-      32: this._selectHighlighted, // 'Space' key
-      Escape: this._closeDropdown.bind(this, true),
-      27: this._closeDropdown.bind(this, true),
+      Enter: this.selectHighlighted,
+      13: this.selectHighlighted,
+      ' ': this.selectHighlighted, // 'Space' key
+      32: this.selectHighlighted, // 'Space' key
+      Escape: this.closeDropdown.bind(this, true),
+      27: this.closeDropdown.bind(this, true),
     }
 
     this.state = Select.initialState()
@@ -54,8 +54,8 @@ export class Select extends Component {
     this.state = Object.assign(this.state, {
       disabled,
       error,
-      options: this._setOptions(options),
-      value: this._setValue(),
+      options: this.setOptions(options),
+      value: this.setValue(),
     })
   }
 
@@ -160,7 +160,7 @@ export class Select extends Component {
    */
 
   clear() {
-    this._onClearSelection()
+    this.onClearSelection()
   }
 
   get options() {
@@ -173,7 +173,7 @@ export class Select extends Component {
     }
 
     this.setState({
-      options: this._setOptions(options, true),
+      options: this.setOptions(options, true),
       value: null,
     })
   }
@@ -195,7 +195,7 @@ export class Select extends Component {
 
   componentWillReceiveProps(newProps) {
     const { disabled, error, options, value } = newProps
-    const isValueValid = this._isValidValue(value)
+    const isValueValid = this.isValidValue(value)
 
     if (isValueValid && typeof newProps.onSelect === 'undefined' && typeof this.props.onSelect === 'undefined') {
       /* eslint-disable */
@@ -206,7 +206,7 @@ export class Select extends Component {
     }
 
     if (disabled) {
-      this._closeDropdown(true)
+      this.closeDropdown(true)
     }
 
     this.setState(state => {
@@ -218,7 +218,7 @@ export class Select extends Component {
 
       return {
         disabled,
-        options: this._setOptions(options),
+        options: this.setOptions(options),
         value: newValue,
         error: typeof error !== 'undefined' ?
           error
@@ -239,34 +239,34 @@ export class Select extends Component {
     const { autoFocus, closeOnClickOutside } = this.props
 
     // Autofocus on mount if enabled
-    if (autoFocus) this._focusContainer()
+    if (autoFocus) this.focusContainer()
 
     // Add listener for click outside if enabled
-    if (closeOnClickOutside) document.addEventListener('click', this._handleClickOutside, true)
-    this.selectContainer.addEventListener('blur', this._handleContainerBlur, true)
+    if (closeOnClickOutside) document.addEventListener('click', this.handleClickOutside, true)
+    this.selectContainer.addEventListener('blur', this.handleContainerBlur, true)
   }
 
   componentWillUnmount() {
-    document.removeEventListener('click', this._handleClickOutside, true);
-    this.selectContainer.removeEventListener('blur', this._handleContainerBlur, true);
+    document.removeEventListener('click', this.handleClickOutside, true);
+    this.selectContainer.removeEventListener('blur', this.handleContainerBlur, true);
   }
 
   /**
    * Close SelectDropdown on click outside
    */
-  _handleClickOutside = (e) => {
+  handleClickOutside = (e) => {
     if (this.state.dropdownOpened && !this.selectContainer.contains(e.target)) {
-      this._closeDropdown(false)
+      this.closeDropdown(false)
     }
   }
 
-  _handleContainerBlur = (e) => {
+  handleContainerBlur = (e) => {
     if (!this.selectContainer.contains(e.relatedTarget)) {
-      this._closeDropdown(false)
+      this.closeDropdown(false)
     }
   }
 
-  _isValidValue = value => {
+  isValidValue = value => {
     const { options } = this.state
     let isValid = false
 
@@ -281,22 +281,22 @@ export class Select extends Component {
     return isValid
   }
 
-  _openDropdown = () => {
+  openDropdown = () => {
     this.setState({ dropdownOpened: true })
   }
 
-  _closeDropdown = (focus) => {
+  closeDropdown = (focus) => {
     this.setState({
       dropdownOpened: false,
       highlighted: null,
     })
 
     if (focus) {
-      this._focusContainer()
+      this.focusContainer()
     }
   }
 
-  _focusContainer = () => {
+  focusContainer = () => {
     const x = window.scrollX
     const y = window.scrollY
 
@@ -306,7 +306,7 @@ export class Select extends Component {
     }
   }
 
-  _setValue = () => {
+  setValue = () => {
     const { value, defaultValue } = this.props
 
     if (value === null) {
@@ -316,7 +316,7 @@ export class Select extends Component {
     return makeString(value || defaultValue)
   }
 
-  _makeOption = ({ id, text, ...rest }) => {
+  makeOption = ({ id, text, ...rest }) => {
     // validate option object
     if (!((typeof id === 'string' || typeof id === 'number')
       && (typeof text === 'string' || typeof text === 'number'))) {
@@ -330,7 +330,7 @@ export class Select extends Component {
     }
   }
 
-  _setOptions = (options, isNotFromProps) => {
+  setOptions = (options, isNotFromProps) => {
     if (!isNotFromProps) {
       if (options === this.initialOptions) {
         return this.state.options
@@ -343,13 +343,13 @@ export class Select extends Component {
 
     if (Array.isArray(options) && options.length) {
       stateOptions = options
-        .map((option) => this._makeOption(option))
+        .map((option) => this.makeOption(option))
     }
 
     return stateOptions
   }
 
-  _getOptionById = value => {
+  getOptionById = value => {
     const { options } = this.state
 
     if (options && options.length) {
@@ -359,15 +359,15 @@ export class Select extends Component {
     return null
   }
 
-  _onContainerClick = () => {
+  onContainerClick = () => {
     if (this.state.disabled) {
       return
     }
 
     if (this.state.dropdownOpened) {
-      this._closeDropdown(true)
+      this.closeDropdown(true)
     } else {
-      this._openDropdown()
+      this.openDropdown()
     }
   }
 
@@ -375,7 +375,7 @@ export class Select extends Component {
    * Handle keyboard controls
    * @param {object} event
    */
-  _onContainerKeyDown = event => {
+  onContainerKeyDown = event => {
     if (this.props.disabled) return
 
     const key = event.key || event.keyCode
@@ -386,12 +386,12 @@ export class Select extends Component {
     this.KEY_FUNCTIONS[key]()
   }
 
-  _onClearSelection = () => {
+  onClearSelection = () => {
     const { disabled, value } = this.state
 
     // Dont clear when disabled && dont fire extra event when value is already cleared
     if (!disabled && value) {
-      this._onSelect(null)
+      this.onSelect(null)
     }
   }
 
@@ -399,7 +399,7 @@ export class Select extends Component {
    * Setting selected value
    * @param {object} option - option object from data array
    */
-  _onSelect = option => {
+  onSelect = option => {
     const { name, onSelect } = this.props
     // Setup structure of selection event
     const value = option ? option.id : null
@@ -422,19 +422,19 @@ export class Select extends Component {
       }
     })
 
-    this._closeDropdown(true)
-    this._focusContainer()
+    this.closeDropdown(true)
+    this.focusContainer()
   }
 
   /**
    * Handle option selection via user click
    * @param {number} id - options id
    */
-  _onSelectOption = id => {
+  onSelectOption = id => {
     // Get selected option and pass it into onSelect method for further processing
-    const selectedOption = this._getOptionById(id)
+    const selectedOption = this.getOptionById(id)
 
-    this._onSelect(selectedOption)
+    this.onSelect(selectedOption)
   }
 
   static makeHighlightedObject = (index, options) => {
@@ -448,7 +448,7 @@ export class Select extends Component {
     })
   }
 
-  _hasHighlighted = () => {
+  hasHighlighted = () => {
     const { highlighted } = this.state
 
     return !!highlighted && typeof highlighted.index !== 'undefined'
@@ -457,15 +457,15 @@ export class Select extends Component {
    * Set next highlighted option via 'ArrowUp' or 'ArrowDown' key
    * @param {number} direction (can be -1 or 1)
    */
-  _setHighlightedOption = direction => {
+  setHighlightedOption = direction => {
     this.setState(({ disabled, highlighted, dropdownOpened }) => {
-      const options = this._getOptionsList()
+      const options = this.getOptionsList()
 
       // do nothing if disabled or there are no options
       if (disabled || !options || !options.length) return
 
       const optionsLength = options.length - 1
-      const hasHighlighted = this._hasHighlighted()
+      const hasHighlighted = this.hasHighlighted()
       const nextHighlighted = hasHighlighted ? highlighted.index + direction : 0
       let highlightIndex
 
@@ -494,23 +494,23 @@ export class Select extends Component {
    * Select current highlighted option
    */
   // @fixme: selects invalid option when options list filtered by searchTerm
-  _selectHighlighted = () => {
+  selectHighlighted = () => {
     const { options, highlighted, dropdownOpened } = this.state
 
     // If dropdown not opened or there is no highlighted item yet
-    if (!dropdownOpened || !this._hasHighlighted()) {
+    if (!dropdownOpened || !this.hasHighlighted()) {
       // Open dropdown and hightlight first item
       this.setState({
         dropdownOpened: true,
-        highlighted: Select.makeHighlightedObject(0, this._getOptionsList()),
+        highlighted: Select.makeHighlightedObject(0, this.getOptionsList()),
       })
     } else {
       // Select highlighted item
-      this._onSelect(options.find(({ id }) => id === highlighted.id))
+      this.onSelect(options.find(({ id }) => id === highlighted.id))
     }
   }
 
-  _getSelectContainerClassName = () => {
+  getSelectContainerClassName = () => {
     const {
       className,
       cssClassNamePrefix,
@@ -532,14 +532,14 @@ export class Select extends Component {
     })
   }
 
-  _isClearable = () => {
+  isClearable = () => {
     const { allowClear } = this.props
     const { value, disabled } = this.state
 
     return allowClear && !disabled && !isNil(value)
   }
 
-  _getOptionsList = () => {
+  getOptionsList = () => {
     const { options, searchTerm } = this.state
     let optionsList = options || []
 
@@ -550,7 +550,7 @@ export class Select extends Component {
     return optionsList
   }
 
-  _onSearchTermChange = e => {
+  onSearchTermChange = e => {
     const { target: { value: term } } = e
     const { onSearchTermChange } = this.props
 
@@ -568,14 +568,14 @@ export class Select extends Component {
     })
   }
 
-  _isShowSearch = () => {
+  isShowSearch = () => {
     const { options } = this.state
     const { search: { show, minimumResults = 20 } } = this.props
 
     return show || (!!options.length && (minimumResults <= options.length))
   }
 
-  _setContainerRef = (node) => {
+  setContainerRef = (node) => {
     this.selectContainer = node
   }
 
@@ -590,17 +590,17 @@ export class Select extends Component {
       selectionRenderer,
     } = this.props
     const { disabled, dropdownOpened, error, highlighted, searchTerm, value } = this.state
-    const selectedOption = this._getOptionById(value)
+    const selectedOption = this.getOptionById(value)
 
     return (
-      <span ref={ this._setContainerRef }
-            className={ this._getSelectContainerClassName() }
+      <span ref={ this.setContainerRef }
+            className={ this.getSelectContainerClassName() }
             style={ { width } }
             disabled={ disabled }
             tabIndex='0'
             role='combobox'
-            onClick={ this._onContainerClick }
-            onKeyDown={ this._onContainerKeyDown }>
+            onClick={ this.onContainerClick }
+            onKeyDown={ this.onContainerKeyDown }>
         <select tabIndex='-1'
                 name={ name }
                 value={ !isNil(value) ? value : '' }
@@ -608,22 +608,22 @@ export class Select extends Component {
                 className={ `${cssClassNamePrefix}__select-node` }>
           { !isNil(value) && <option value={ value } /> }
         </select>
-        <SelectSelection clearable={ this._isClearable() }
-                         onClearSelection={ this._onClearSelection }
+        <SelectSelection clearable={ this.isClearable() }
+                         onClearSelection={ this.onClearSelection }
                          placeholder={ placeholder }
                          formatter={ selectionRenderer || optionRenderer }
                          selection={ selectedOption }
-                         onKeyDown={ this._onContainerKeyDown }/>
+                         onKeyDown={ this.onContainerKeyDown }/>
           { dropdownOpened && (
-            <SelectDropdown options={ this._getOptionsList() }
+            <SelectDropdown options={ this.getOptionsList() }
                             status={ status }
-                            showSearch={ this._isShowSearch() }
+                            showSearch={ this.isShowSearch() }
                             highlighted={ highlighted ? highlighted.id : null }
                             searchTerm={ searchTerm }
                             formatter={ optionRenderer }
-                            onSelect={ this._onSelectOption }
-                            onSearchInputChange={ this._onSearchTermChange }
-                            onSearchInputKeyDown={ this._onContainerKeyDown }
+                            onSelect={ this.onSelectOption }
+                            onSearchInputChange={ this.onSearchTermChange }
+                            onSearchInputKeyDown={ this.onContainerKeyDown }
                             selected={ value } />)}
         <SelectError error={ error }/>
       </span>

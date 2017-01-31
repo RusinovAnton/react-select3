@@ -86,7 +86,7 @@ describe('Mount <Select/>', () => {
     const selection = component.find(cssName + '__selection-text')
     expect(selection.text()).toBe('three')
 
-    component.node._onClearSelection()
+    component.node.onClearSelection()
     expect(selection.text()).toBe('Select something');
   })
 
