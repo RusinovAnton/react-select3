@@ -17,7 +17,7 @@ const SelectSearchInput = ({ onClick, onKeyDown, ...props }, // eslint-disable-l
         onKeyDown={stopPropagation(filterKeyDown([
           {
             allowedKeys: ['Escape', 'Enter', 'ArrowUp', 'ArrowDown'],
-            func: onKeyDown
+            func: onKeyDown,
           },
         ]))}
         onClick={stopPropagation()}
