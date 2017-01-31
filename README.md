@@ -50,8 +50,9 @@ const optionRenderer = (option) => (
     </strong>
 )
 ```
-***options*** | `<array>` | array with options object. they must have next format:  
-`{ id: <number|string>, text: <number|string>}`
+ | | |
+--- | --- | ---  
+***options*** | `<array>` | array with options object. they must have next format: `{ id: <number|string>, text: <number|string>}`
 ***onSelect*** | `<function>` | callback on options select event. event object that passed into callback has next format:
 ```javascript
 {
@@ -64,6 +65,8 @@ const optionRenderer = (option) => (
   }
 }
 ```
+ | | |
+--- | --- | ---  
 ***placeholder*** | `<string>` | shows up when there is no selected option
 ***search*** | `<object>` | props related to SearchInput, which used to filter options list, you can override its behaviour by providing `onSearchTermChange` prop.
 ***search.minimumResults*** | `<number>` | minimum number of results before show SearchInput
@@ -95,14 +98,13 @@ class MyMajesticComponent extends React.Component {
 }
 ```
 Methods:  
+  
+Method name | Method type | Description
+--- | --- | ---
 ***clear*** | | use it to clear selection programmaticaly
-***options*** | `<setter>` | sets options for Select component.  
-`Select.options = [/* new options */]`
-This setter is used by `FetchSelect` to set fetched options to Select component without rerendering it.
-***options*** | `<getter>` | returns array of actual options from Selects' state  
-`Select.options // options array`
-***value*** - returns id of currently selected option  
-`Select.value // selected option's id`
+***options*** | `<setter>` | sets options for Select component. `Select.options = [/* new options */]`. This setter is used by `FetchSelect` to set fetched options to Select component without rerendering it.
+***options*** | `<getter>` | returns array of actual options from Selects' state `Select.options // options array`
+***value*** | | returns id of currently selected option `Select.value // selected option's id`
   
 ### FetchSelect
 This component is a wrapper for Select component  
@@ -145,6 +147,9 @@ All ref interface methods and props except of
 are being proxied onto Select component.  
   
 There are a number of FetchSelect specific props: 
+  
+PropName | PropType | Description
+--- | --- | ---
 ***fetch*** | `<object>` | props that related to fetching options from server
 ***fetch.ajaxClient*** | `<function>` | custom client to fetch options, it must return `<Promise>`
 ***fetch.endpoint*** | `<string>` | path to resource to fetch
@@ -165,10 +170,11 @@ There are a number of FetchSelect specific props:
 
     // fetch path: '/api/users?filter=John&emailVerified=0'
     ```
+ | | |    
+--- | --- | ---    
 ***fetch.requestDelay*** | `<number>` | delay between request on SearchInput change *`// Default: 300`*
 ***fetch.responseDataFormatter*** | `<function>` |  function that formats fetched objects into options. See example above
-***fetch.termQuery*** | `<string>` | key for dynamic query param that takes SearchInput value on change.  
-  See example above
+***fetch.termQuery*** | `<string>` | key for dynamic query param that takes SearchInput value on change. See example above
 ***language*** | `<object>` | pass language object to override default status labels:
 ```javascript
 {
