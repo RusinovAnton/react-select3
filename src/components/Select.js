@@ -91,7 +91,7 @@ export class Select extends Component {
        */
       // TODO: define position automatically depends on SelectContainer position in the viewport
       dropdownVerticalPosition: PropTypes.oneOf(['above', 'below']),
-      emptyStatusLabel: PropTypes.string,
+      emptyOptionsLabel: PropTypes.string,
     }),
     name: PropTypes.string,
     /**
@@ -584,7 +584,7 @@ export class Select extends Component {
   render() {
     const {
       cssClassNamePrefix,
-      layout: { width, emptyStatusLabel },
+      layout: { width, emptyOptionsLabel },
       name,
       optionRenderer,
       placeholder,
@@ -626,7 +626,7 @@ export class Select extends Component {
           <SelectDropdown
             options={this.getOptionsList()}
             status={status}
-            emptyStatusLabel={emptyStatusLabel}
+            emptyOptionsLabel={emptyOptionsLabel}
             showSearch={this.isShowSearch()}
             highlighted={highlighted ? highlighted.id : null}
             searchTerm={searchTerm}
