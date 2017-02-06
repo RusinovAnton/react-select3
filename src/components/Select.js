@@ -341,9 +341,12 @@ export class Select extends Component {
 
     let stateOptions = this.state.options || []
 
-    if (Array.isArray(options) && options.length) {
-      stateOptions = options
-        .map((option) => this.makeOption(option))
+    if (Array.isArray(options)) {
+      if (options.length) {
+        stateOptions = options.map((option) => this.makeOption(option))
+      } else {
+        stateOptions = []
+      }
     }
 
     return stateOptions
