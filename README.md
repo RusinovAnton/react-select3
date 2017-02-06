@@ -40,6 +40,7 @@ PropName | PropType | Description
 ***layout*** | `<object>` | props related to Select component view
 ***layout.width*** | `<string>` | width for Select container *`// Default: '245px'`*
 ***layout.dropdownVerticalPosition*** | `<'above'|'below'>` | whether to show dropdown above or below Select container *`// Default: 'below'`*
+***layout.emptyOptionsLabel*** | `<string>` | label that shows up when there is no options left
 ***name*** | `<string>` | Selects name attribute
 ***optionRenderer*** | `<function>` | function that transforms single option output, you can provide it if you want to change layout of options e.g.:
 ```javascript
