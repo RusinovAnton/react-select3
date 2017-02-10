@@ -12,7 +12,7 @@ import SelectDropdown from './SelectDropdown'
 import SelectError from './SelectError'
 import SelectSelection from './SelectSelection'
 
-
+// TODO: isPending prop that renders loader
 // TODO: multiselect
 // TODO: label
 // TODO: optgroups
