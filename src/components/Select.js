@@ -21,10 +21,10 @@ import SelectSelection from './SelectSelection'
 // TODO: optimize isFunction calls
 export class Select extends Component {
   constructor(props) { // eslint-disable-line consistent-return
-    super(props)
+    super(props);
 
-    const onArrowUp = this.setHighlightedOption.bind(null, -1)
-    const onArrowDown = this.setHighlightedOption.bind(null, 1)
+    const onArrowUp = this.setHighlightedOption.bind(null, -1);
+    const onArrowDown = this.setHighlightedOption.bind(null, 1);
 
     this.KEY_FUNCTIONS = {
       ArrowUp: onArrowUp,
@@ -37,10 +37,10 @@ export class Select extends Component {
       32: this.selectHighlighted, // 'Space' key
       Escape: this.closeDropdown.bind(this, true),
       27: this.closeDropdown.bind(this, true),
-    }
+    };
 
-    this.state = Select.initialState()
-    const { disabled, error, options } = props
+    this.state = Select.initialState();
+    const { disabled, error, options } = props;
 
     /**
      * @type {{
@@ -62,7 +62,7 @@ export class Select extends Component {
 
   static childContextTypes = {
     cssClassNamePrefix: PropTypes.string,
-  }
+  };
 
   static propTypes = {
     /**
@@ -129,7 +129,7 @@ export class Select extends Component {
      * Value can be set by providing option id
      */
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  }
+  };
 
   static defaultProps = {
     allowClear: false,
@@ -145,7 +145,7 @@ export class Select extends Component {
     search: {
       minimumResults: 20,
     },
-  }
+  };
 
   static initialState = () => ({
     disabled: false,
@@ -155,7 +155,7 @@ export class Select extends Component {
     options: [],
     searchTerm: '',
     value: null,
-  })
+  });
 
   /**
    * Ref Interface methods
@@ -181,8 +181,8 @@ export class Select extends Component {
   }
 
   get valid() {
-    const { error, value } = this.state
-    const { required } = this.props
+    const { error, value } = this.state;
+    const { required } = this.props;
 
     return !!error || (required && !value)
   }
@@ -193,17 +193,17 @@ export class Select extends Component {
 
   getChildContext = () => ({
     cssClassNamePrefix: this.props.cssClassNamePrefix,
-  })
+  });
 
   componentWillReceiveProps(newProps) {
-    const { disabled, error, options, value } = newProps
-    const isValueValid = this.isValidValue(value)
+    const { disabled, error, options, value } = newProps;
+    const isValueValid = this.isValidValue(value);
 
     if (isValueValid && typeof newProps.onSelect === 'undefined' && typeof this.props.onSelect === 'undefined') {
       /* eslint-disable */
       console.warn(`Warning: You're setting value for Select component throught props
                 but not passing onSelect callback which can lead to unforeseen consequences(bugs).
-                Please consider using onSelect callback or defaultValue instead of value`)
+                Please consider using onSelect callback or defaultValue instead of value`);
       /* eslint-enable */
     }
 
@@ -212,7 +212,7 @@ export class Select extends Component {
     }
 
     this.setState(state => {
-      let newValue = state.value
+      let newValue = state.value;
 
       if (isValueValid) {
         newValue = makeString(value)
@@ -235,18 +235,18 @@ export class Select extends Component {
     || value !== this.state.value
     || !isEqual(children, this.props.children)
     || !isEqual(nextState, this.state)
-  )
+  );
 
   componentDidMount = () => {
-    const { autoFocus, closeOnClickOutside } = this.props
+    const { autoFocus, closeOnClickOutside } = this.props;
 
     // Autofocus on mount if enabled
-    if (autoFocus) this.focusContainer()
+    if (autoFocus) this.focusContainer();
 
     // Add listener for click outside if enabled
-    if (closeOnClickOutside) document.addEventListener('click', this.handleClickOutside, true)
+    if (closeOnClickOutside) document.addEventListener('click', this.handleClickOutside, true);
     this.selectContainer.addEventListener('blur', this.handleContainerBlur, true)
-  }
+  };
 
   componentWillUnmount() {
     document.removeEventListener('click', this.handleClickOutside, true);
@@ -260,17 +260,17 @@ export class Select extends Component {
     if (this.state.dropdownOpened && !this.selectContainer.contains(e.target)) {
       this.closeDropdown(false)
     }
-  }
+  };
 
   handleContainerBlur = (e) => {
     if (!this.selectContainer.contains(e.relatedTarget)) {
       this.closeDropdown(false)
     }
-  }
+  };
 
   isValidValue = value => {
-    const { options } = this.state
-    let isValid = false
+    const { options } = this.state;
+    let isValid = false;
 
     if (typeof value === 'undefined') {
       isValid = false
@@ -281,48 +281,48 @@ export class Select extends Component {
     }
 
     return isValid
-  }
+  };
 
   openDropdown = () => {
     this.setState({ dropdownOpened: true })
-  }
+  };
 
   closeDropdown = (focus) => {
     this.setState({
       dropdownOpened: false,
       highlighted: null,
-    })
+    });
 
     if (focus) {
       this.focusContainer()
     }
-  }
+  };
 
   focusContainer = () => {
-    const x = window.scrollX
-    const y = window.scrollY
+    const x = window.scrollX;
+    const y = window.scrollY;
 
-    window.scrollTo(x, y)
+    window.scrollTo(x, y);
     if (this.selectContainer) {
       this.selectContainer.focus()
     }
-  }
+  };
 
   setValue = () => {
-    const { value, defaultValue } = this.props
+    const { value, defaultValue } = this.props;
 
     if (value === null) {
       return null
     }
 
     return makeString(value || defaultValue)
-  }
+  };
 
   makeOption = ({ id, text, ...rest }) => {
     // validate option object
     if (!((typeof id === 'string' || typeof id === 'number')
       && (typeof text === 'string' || typeof text === 'number'))) {
-      throw new Error('Options array is not formatted properly, option object must have "id" and "text"') // eslint-disable-line max-len
+      throw new Error('Options array is not formatted properly, option object must have "id" and "text"'); // eslint-disable-line max-len
     }
 
     return {
@@ -330,7 +330,7 @@ export class Select extends Component {
       text,
       ...rest,
     }
-  }
+  };
 
   setOptions = (options, isNotFromProps) => {
     if (!isNotFromProps) {
@@ -341,7 +341,7 @@ export class Select extends Component {
       this.initialOptions = options
     }
 
-    let stateOptions = this.state.options || []
+    let stateOptions = this.state.options || [];
 
     if (Array.isArray(options)) {
       if (options.length) {
@@ -352,17 +352,17 @@ export class Select extends Component {
     }
 
     return stateOptions
-  }
+  };
 
   getOptionById = value => {
-    const { options } = this.state
+    const { options } = this.state;
 
     if (options && options.length) {
-      return options.find(({ id }) => id === value) // eslint-disable-line eqeqeq
+      return options.find(({ id }) => id === value); // eslint-disable-line eqeqeq
     }
 
     return null
-  }
+  };
 
   onContainerClick = () => {
     if (this.state.disabled) {
@@ -374,40 +374,40 @@ export class Select extends Component {
     } else {
       this.openDropdown()
     }
-  }
+  };
 
   /**
    * Handle keyboard controls
    * @param {object} event
    */
   onContainerKeyDown = event => {
-    if (this.props.disabled) return
+    if (this.props.disabled) return;
 
-    const key = event.key || event.keyCode
-    if (!this.KEY_FUNCTIONS[key]) return
+    const key = event.key || event.keyCode;
+    if (!this.KEY_FUNCTIONS[key]) return;
 
-    event.preventDefault()
+    event.preventDefault();
     // Handle key click
     this.KEY_FUNCTIONS[key]()
-  }
+  };
 
   onClearSelection = () => {
-    const { disabled, value } = this.state
+    const { disabled, value } = this.state;
 
     // Dont clear when disabled && dont fire extra event when value is already cleared
     if (!disabled && value) {
       this.onSelect(null)
     }
-  }
+  };
 
   /**
    * Setting selected value
    * @param {object} option - option object from data array
    */
   onSelect = option => {
-    const { name, onSelect } = this.props
+    const { name, onSelect } = this.props;
     // Setup structure of selection event
-    const value = option ? option.id : null
+    const value = option ? option.id : null;
     const selectionEvent = {
       type: 'select',
       isClear: option === null, // indicates that value being cleared by onClearSelection
@@ -416,7 +416,7 @@ export class Select extends Component {
         option,
         value,
       },
-    }
+    };
 
     this.setState({
       value,
@@ -425,11 +425,11 @@ export class Select extends Component {
       if (isFunction(onSelect)) {
         onSelect(selectionEvent)
       }
-    })
+    });
 
-    this.closeDropdown(true)
+    this.closeDropdown(true);
     this.focusContainer()
-  }
+  };
 
   /**
    * Handle option selection via user click
@@ -437,10 +437,10 @@ export class Select extends Component {
    */
   onSelectOption = id => {
     // Get selected option and pass it into onSelect method for further processing
-    const selectedOption = this.getOptionById(id)
+    const selectedOption = this.getOptionById(id);
 
     this.onSelect(selectedOption)
-  }
+  };
 
   static makeHighlightedObject = (index, options) => {
     if (!options.length) {
@@ -451,28 +451,28 @@ export class Select extends Component {
       id: options[index].id,
       index,
     })
-  }
+  };
 
   hasHighlighted = () => {
-    const { highlighted } = this.state
+    const { highlighted } = this.state;
 
     return !!highlighted && typeof highlighted.index !== 'undefined'
-  }
+  };
   /**
    * Set next highlighted option via 'ArrowUp' or 'ArrowDown' key
    * @param {number} direction (can be -1 or 1)
    */
   setHighlightedOption = direction => {
     this.setState(({ disabled, highlighted, dropdownOpened }) => {
-      const options = this.getOptionsList()
+      const options = this.getOptionsList();
 
       // do nothing if disabled or there are no options
-      if (disabled || !options || !options.length) return
+      if (disabled || !options || !options.length) return;
 
-      const optionsLength = options.length - 1
-      const hasHighlighted = this.hasHighlighted()
-      const nextHighlighted = hasHighlighted ? highlighted.index + direction : 0
-      let highlightIndex
+      const optionsLength = options.length - 1;
+      const hasHighlighted = this.hasHighlighted();
+      const nextHighlighted = hasHighlighted ? highlighted.index + direction : 0;
+      let highlightIndex;
 
       // TODO: scroll SelectDropdown block to show highlighted item when overflows
       // If dropdown not opened or there is no highlighted item yet
@@ -493,14 +493,14 @@ export class Select extends Component {
         highlighted: Select.makeHighlightedObject(highlightIndex, options),
       })
     })
-  }
+  };
 
   /**
    * Select current highlighted option
    */
     // @fixme: selects invalid option when options list filtered by searchTerm
   selectHighlighted = () => {
-    const { options, highlighted, dropdownOpened } = this.state
+    const { options, highlighted, dropdownOpened } = this.state;
 
     // If dropdown not opened or there is no highlighted item yet
     if (!dropdownOpened || !this.hasHighlighted()) {
@@ -513,7 +513,7 @@ export class Select extends Component {
       // Select highlighted item
       this.onSelect(options.find(({ id }) => id === highlighted.id))
     }
-  }
+  };
 
   getSelectContainerClassName = () => {
     const {
@@ -524,8 +524,8 @@ export class Select extends Component {
       layout: {
         dropdownVerticalPosition,
       },
-    } = this.props
-    const { dropdownOpened, value } = this.state
+    } = this.props;
+    const { dropdownOpened, value } = this.state;
 
     return classNames(`${cssClassNamePrefix}__container ${className || ''}`, {
       [`${cssClassNamePrefix}--above`]: dropdownVerticalPosition === 'above',
@@ -535,33 +535,33 @@ export class Select extends Component {
       [`${cssClassNamePrefix}--open`]: dropdownOpened,
       [`${cssClassNamePrefix}--selected`]: !isNil(value),
     })
-  }
+  };
 
   isClearable = () => {
-    const { allowClear } = this.props
-    const { value, disabled } = this.state
+    const { allowClear } = this.props;
+    const { value, disabled } = this.state;
 
     return allowClear && !disabled && !isNil(value)
-  }
+  };
 
   getOptionsList = () => {
-    const { options, searchTerm } = this.state
-    let optionsList = options || []
+    const { options, searchTerm } = this.state;
+    let optionsList = options || [];
 
     if (searchTerm && optionsList.length) {
       optionsList = options.filter(({ text }) => new RegExp(searchTerm, 'gi').test(text))
     }
 
     return optionsList
-  }
+  };
 
   onSearchTermChange = e => {
-    const { target: { value: term } } = e
-    const { onSearchTermChange } = this.props
+    const { target: { value: term } } = e;
+    const { onSearchTermChange } = this.props;
 
     // If size of text is increases
     // const isTextIncreasing = term && (!stateSearchTerm || term.length > stateSearchTerm.length)
-    const searchTerm = term || ''
+    const searchTerm = term || '';
 
     // if callback were passed in props
     if (isFunction(onSearchTermChange)) {
@@ -569,18 +569,18 @@ export class Select extends Component {
     }
 
     this.setState({ searchTerm })
-  }
+  };
 
   isShowSearch = () => {
-    const { options } = this.state
-    const { search: { show, minimumResults = 20 } } = this.props
+    const { options } = this.state;
+    const { search: { show, minimumResults = 20 } } = this.props;
 
     return show || (!!options.length && (minimumResults <= options.length))
-  }
+  };
 
   setContainerRef = (node) => {
     this.selectContainer = node
-  }
+  };
 
   render() {
     const {
@@ -591,9 +591,9 @@ export class Select extends Component {
       placeholder,
       search: { status },
       selectionRenderer,
-    } = this.props
-    const { disabled, dropdownOpened, error, highlighted, searchTerm, value } = this.state
-    const selectedOption = this.getOptionById(value)
+    } = this.props;
+    const { disabled, dropdownOpened, error, highlighted, searchTerm, value } = this.state;
+    const selectedOption = this.getOptionById(value);
 
     return (
       <span

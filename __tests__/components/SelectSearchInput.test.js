@@ -6,8 +6,8 @@ describe('SelectSearchInput', () => {
     const component = shallow(
       <SelectSearchInput isPending/>,
       selectComponentContext
-    )
+    );
 
     expect(component).toMatchSnapshot()
   })
-})
+});

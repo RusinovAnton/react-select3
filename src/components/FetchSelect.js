@@ -60,7 +60,7 @@ class FetchSelect extends Component {
       requestDelay: 300,
       termMinLength: 3,
     },
-  }
+  };
 
   static propTypes = {
     error: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),

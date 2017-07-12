@@ -6,8 +6,8 @@ describe('SelectOptionsList', () => {
     const component = shallow(
       <SelectOptionsList options={ mock.options } onSelect={ jest.fn() }/>,
       selectComponentContext
-    )
+    );
 
     expect(component).toMatchSnapshot()
   })
-})
+});

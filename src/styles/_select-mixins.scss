@@ -1,6 +1,6 @@
 @mixin select--selected {
-    background: $bg-selected;
-    color: $color-selected;
+    background: $select__bg-selected;
+    color: $select__color-selected;
 }
 
 @mixin select--focused {
@@ -8,7 +8,7 @@
 }
 
 @mixin select--box {
-    border-radius: $select-border-radius;
+    border-radius: $select__border-radius;
     border: 1px solid $gray;
     box-shadow: 1px 1px 1px 0 $gray-lighter;
 }
@@ -26,8 +26,8 @@
 @mixin select--arrow {
     display: block;
     position: absolute;
-    right: $select-padding-horizontal;
-    top: ($select-height / 2) - 2.5;
+    right: $select__padding-horizontal;
+    top: ($select__height / 2) - 2.5;
     height: 5px;
     width: 5px;
 

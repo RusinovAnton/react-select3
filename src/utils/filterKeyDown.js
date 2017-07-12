@@ -1,10 +1,10 @@
 
 export default (filters) => (e) => {
-  const BreakException = 'BreakForEach'
+  const BreakException = 'BreakForEach';
   try {
     filters.forEach(({ allowedKeys, func }) => {
       if (allowedKeys.indexOf(e.key) !== -1) {
-        func(e)
+        func(e);
         throw BreakException
       }
     })

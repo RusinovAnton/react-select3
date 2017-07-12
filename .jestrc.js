@@ -3,19 +3,19 @@ import React from 'react'
 import { shallow, render, mount } from 'enzyme';
 import sinon from 'sinon'
 
-global.React = React
+global.React = React;
 
 global.mount = mount;
 global.render = render;
 global.shallow = shallow;
 global.sinon = sinon;
-global.cssName = '.rs3'
+global.cssName = '.rs3';
 
 global.selectComponentContext = {
   context: {
     cssClassNamePrefix: global.cssName.slice(1)
   }
-}
+};
 
 global.mock = {
   options: [
@@ -34,7 +34,7 @@ global.mock = {
     return (<span>{ text }</span>)
   },
   ajaxClient: (endpoint) => Promise.resolve(mock.options)
-}
+};
 
 // Skip createElement warnings but fail tests on any other warning
 console.error = message => {

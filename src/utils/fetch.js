@@ -8,13 +8,13 @@ export default (endpoint) => {
     credentials: 'same-origin',
   })
     .then(response => {
-      let data = []
+      let data = [];
 
       if (response.ok) {
         try {
           data = response.json()
         } catch (err) {
-          console.warn(err) // eslint-disable-line no-console
+          console.warn(err); // eslint-disable-line no-console
         }
       } else if (response.status === 404) {
         return []
@@ -25,6 +25,6 @@ export default (endpoint) => {
       return data
     },
     err => {
-      console.warn(err) // eslint-disable-line no-console
+      console.warn(err); // eslint-disable-line no-console
     })
 }
