@@ -1,0 +1,202 @@
+// TODO simplify
+// TODO more mixins for elements
+
+.#{$selector}__container {
+    display: inline-block;
+    position: relative;
+    background: $select__bg;
+    cursor: default;
+    user-select: none;
+    outline: none;
+
+    &:focus {
+        @include select--focused;
+    }
+
+    * {
+        box-sizing: border-box;
+        outline: none;
+    }
+}
+
+.#{$selector}__select-node {
+    border: 0 !important;
+    clip: rect(0 0 0 0) !important;
+    height: 1px !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    position: absolute !important;
+    width: 1px !important;
+}
+
+.#{$selector}--open {
+    &.#{$selector}--below {
+        .#{$selector}__error {
+            // hide error block if dropdown opened below select__container
+            display: none;
+        }
+        .#{$selector}__selection {
+            border-radius: $select__border-radius $select__border-radius 0 0;
+            border-bottom: 0;
+        }
+        .#{$selector}__dropdown {
+            top: 100%;
+            border-radius: 0 0 $select__border-radius $select__border-radius;
+        }
+    }
+    &.#{$selector}--above {
+        .#{$selector}__selection {
+            border-radius: 0 0 $select__border-radius $select__border-radius;
+            border-top: 0;
+        }
+        .#{$selector}__dropdown {
+            bottom: 100%;
+            border-radius: $select__border-radius $select__border-radius 0 0;
+        }
+    }
+}
+
+.#{$selector}--disabled {
+    @include select--disabled;
+}
+
+.#{$selector}--error {
+    .#{$selector}__selection {
+        @include select--error;
+    }
+}
+
+.#{$selector}__error {
+    font-size: 12px;
+    color: #f00;
+}
+
+.#{$selector}--pending {
+    cursor: progress;
+}
+
+.#{$selector}__selection {
+    white-space: nowrap;
+    overflow: hidden;
+    display: block;
+    height: $select__height;
+    padding: 0 ($select__padding-horizontal + 10) 0 $select__padding-horizontal;
+    line-height: $select__height;
+    @include select--box;
+
+    &.#{$selector}__selection--clearable {
+        padding-right: ($select__padding-horizontal + 25);
+    }
+}
+
+.#{$selector}__selection--placeholder {
+    .#{$selector}__selection-text {
+        color: $select__color-placeholder;
+    }
+}
+
+.#{$selector}__selection-arrow {
+   @include select--arrow();
+}
+
+.#{$selector}__clear-selection {
+    display: block;
+    position: absolute;
+    right: $select__padding-horizontal + 10;
+    top: ($select__height / 2) - 2;
+    line-height: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+
+    &:focus {
+        color: $brand-primary;
+    }
+}
+
+.#{$selector}__dropdown {
+    display: block;
+    position: absolute;
+    z-index: 5;
+    width: 100%;
+    background-color: $select__bg;
+    @include select--box;
+}
+
+.#{$selector}__options-list {
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 170px;
+    overflow: auto;
+
+    li {
+        line-height: $select__height;
+        white-space: nowrap;
+        overflow: hidden;
+        padding: 0 $select__padding-horizontal;
+    }
+}
+
+.#{$selector}__option--highlighted {
+    background-color: $select__color-highlighted;
+}
+
+.#{$selector}__option--selected {
+    @include select--selected;
+}
+
+.#{$selector}__search {
+    display: block;
+    padding: 0 $select__padding-horizontal;
+}
+
+.#{$selector}__search-field {
+    display: block;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 31px;
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid $select__border-color;
+    margin: 0 auto 5px;
+    outline: none;
+}
+
+.#{$selector}__status {
+    display: block;
+    padding: $padding-base*0.3 $select__padding-horizontal;
+    color: $select__color-placeholder;
+}
+
+@keyframes loader {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.15;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.#{$selector}__status {
+    font-size: .8em;
+}
+
+.#{$selector}__loader {
+    display: inline-block;
+    position: relative;
+    font-size: 50px;
+    color: $gray-dark;
+    animation: loader 2s linear infinite;
+    line-height: 0;
+
+    &:before {
+        content: '·';
+        line-height: 0;
+    }
+}
