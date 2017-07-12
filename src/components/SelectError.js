@@ -1,19 +1,20 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 
 
 const SelectError = ({ error }, { cssClassNamePrefix }) => (typeof error === 'string') ?
   (<span className={`${cssClassNamePrefix}__error`}>{ error }</span>)
-  : null
+  : null;
 
 SelectError.contextTypes = {
   cssClassNamePrefix: PropTypes.string,
-}
+};
 
 SelectError.propTypes = {
   error: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.string,
   ]),
-}
+};
 
 export default SelectError

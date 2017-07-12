@@ -1,5 +1,5 @@
-import React, { PropTypes } from 'react'
-
+import React from 'react'
+import PropTypes from 'prop-types'
 import filterKeyDown from '../utils/filterKeyDown'
 import { stopPropagation } from '../utils/events'
 
@@ -24,11 +24,11 @@ const SelectSearchInput = ({ onClick, onKeyDown, ...props }, // eslint-disable-l
         {...props}
       />
     </span>
-)
+);
 
 
 SelectSearchInput.contextTypes = {
   cssClassNamePrefix: PropTypes.string,
-}
+};
 
 export default SelectSearchInput

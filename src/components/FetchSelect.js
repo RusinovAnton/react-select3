@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 
 import debounce from 'lodash/debounce'
 import isFunction from 'lodash/isFunction'
@@ -12,11 +13,11 @@ import Select from './Select'
 import fetchJson from '../utils/fetch'
 
 function composeFetchPath(endpoint, params = {}, searchTerm, termQuery) {
-  let fetchPath
-  let fetchParams = Object.assign({}, params)
+  let fetchPath;
+  let fetchParams = Object.assign({}, params);
 
   if (searchTerm) {
-    if (!termQuery) throw new Error('Provide fetch.termQuery prop')
+    if (!termQuery) throw new Error('Provide fetch.termQuery prop');
 
     fetchParams = Object.assign(fetchParams, {
       [termQuery]: searchTerm,
@@ -32,16 +33,16 @@ function composeFetchPath(endpoint, params = {}, searchTerm, termQuery) {
 
 class FetchSelect extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
-    const { fetch } = props
+    const { fetch } = props;
 
     this.state = {
       fetched: false,
       error: false,
       isPending: false,
       options: [],
-    }
+    };
 
     if (fetch.once) {
       this.fetchOptions = this.fetch
@@ -76,7 +77,7 @@ class FetchSelect extends Component {
     }).isRequired,
     language: PropTypes.object,
     search: PropTypes.object,
-  }
+  };
 
   /**
    * Proxy interface methods of Select component
@@ -101,10 +102,10 @@ class FetchSelect extends Component {
     if (this.props.fetch.once) {
       this.fetchOptions()
     }
-  }
+  };
 
   componentWillReceiveProps({ error }) {
-    const { error: stateError } = this.state
+    const { error: stateError } = this.state;
 
     if (typeof error === 'undefined') {
       return stateError
@@ -114,33 +115,34 @@ class FetchSelect extends Component {
   }
 
   composeLanguageObject = () => {
-    const { language, fetch: { termMinLength: minLength = 3 } } = this.props
-    const lang = Object.assign({}, DEFAULT_LANG, language)
+    const { language, fetch: { termMinLength: minLength = 3 } } = this.props;
+    const lang = Object.assign({}, DEFAULT_LANG, language);
 
-    lang.minLength = lang.minLength.replace(/\$\{minLength\}/, minLength)
+    lang.minLength = lang.minLength.replace(/\$\{minLength\}/, minLength);
 
     return lang
-  }
+  };
 
   fetch = searchTerm => {
-    const { fetch: { ajaxClient, endpoint, params, responseDataFormatter, termQuery } } = this.props
+    const { fetch: { ajaxClient, endpoint, params, responseDataFormatter, termQuery } } = this.props;
 
     if (!ajaxClient && typeof endpoint !== 'string') {
       throw new Error('You must provide endpoint to fetch options.')
     }
 
-    const fetchClient = ajaxClient || fetchJson
-    const fetchPath = (endpoint && composeFetchPath(endpoint, params, searchTerm, termQuery)) || null
+    const fetchClient = ajaxClient || fetchJson;
+    const fetchPath = (endpoint && composeFetchPath(endpoint, params, searchTerm, termQuery)) || null;
 
     this.setState({
       error: this.props.error || null,
       fetched: true,
       isPending: true,
-    })
+    });
 
     fetchClient(fetchPath)
       .then(data => {
-        let options = data
+        let options = data;
+
         if (isFunction(responseDataFormatter)) {
           options = data.map(responseDataFormatter)
         }
@@ -152,27 +154,27 @@ class FetchSelect extends Component {
         })
       })
       .catch((error) => {
-        console.warn(error) // eslint-disable-line no-console
+        console.warn(error); // eslint-disable-line no-console
         this.setState({
           error: true,
           isPending: false,
         })
       })
-  }
+  };
 
   getSelectRef = (node) => {
     this.selectRef = node
-  }
+  };
 
   setOptions = (options) => {
-    this.selectRef.options = options
+    this.selectRef.options = options;
 
     return options
-  }
+  };
 
   onSearchTermChange = (e) => {
-    const { fetch: { termMinLength = 3 }, onSearchTermChange } = this.props
-    const { target: { value: term } } = e
+    const { fetch: { termMinLength = 3 }, onSearchTermChange } = this.props;
+    const { target: { value: term } } = e;
 
     if (isFunction(onSearchTermChange)) {
       onSearchTermChange(e)
@@ -181,18 +183,18 @@ class FetchSelect extends Component {
     if (term.length >= termMinLength) {
       this.fetchOptions(term)
     }
-  }
+  };
 
   getStatus = () => {
-    const { options, fetched, error, isPending } = this.state
-    const { fetch: { once } } = this.props
+    const { options, fetched, error, isPending } = this.state;
+    const { fetch: { once } } = this.props;
     const {
       isEmpty,
       isPending: isPendingStatus,
       minLength,
       responseEmpty,
       serverError,
-    } = this.language
+    } = this.language;
 
     if (isPending) {
       return isPendingStatus
@@ -213,11 +215,11 @@ class FetchSelect extends Component {
     }
 
     return null
-  }
+  };
 
   render() {
-    const { fetch: { once }, search, onSearchTermChange, ...props } = this.props // eslint-disable-line no-unused-vars
-    const status = this.getStatus()
+    const { fetch: { once }, search, onSearchTermChange, ...props } = this.props; // eslint-disable-line no-unused-vars
+    const status = this.getStatus();
 
     return (
       <Select

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 
 import classNames from 'classnames'
 import isFunction from 'lodash/isFunction'
@@ -9,7 +10,7 @@ import { stopPropagation } from '../utils/events'
 
 const SelectSelection = ({ clearable, formatter, selection = null, placeholder = null, onClearSelection, onKeyDown },
   { cssClassNamePrefix }) => {
-  let selectionText = null
+  let selectionText = null;
 
   if (selection) {
     selectionText = isFunction(formatter) ? formatter(selection) : selection.text
@@ -47,11 +48,11 @@ const SelectSelection = ({ clearable, formatter, selection = null, placeholder =
     </span>
   </span>
   )
-}
+};
 
 SelectSelection.contextTypes = {
   cssClassNamePrefix: PropTypes.string,
-}
+};
 
 SelectSelection.propTypes = {
   clearable: PropTypes.bool,
@@ -62,6 +63,6 @@ SelectSelection.propTypes = {
     text: PropTypes.string.isRequired,
   }),
   formatter: PropTypes.func,
-}
+};
 
 export default SelectSelection
