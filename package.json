@@ -1,6 +1,6 @@
 {
   "name": "react-select3",
-  "version": "3.3.13",
+  "version": "3.3.14",
   "description": "<Select> component made with ReactJS",
   "main": "dist/index.js",
   "repository": "https://github.com/RusinovAnton/react-select3.git",
@@ -115,6 +115,7 @@
   "dependencies": {
     "classnames": "^2.2.5",
     "lodash": "^4.17.2",
+    "prop-types": "^15.5.10",
     "qs": "^6.3.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1"
@@ -147,7 +148,6 @@
     "gulp-sass": "^3.0.0",
     "gulp-uglify": "^2.0.0",
     "jest": "^18.1.0",
-    "prop-types": "^15.5.10",
     "react-addons-test-utils": "^15.4.1",
     "react-stub-context": "^0.7.0",
     "react-test-renderer": "^15.4.1",
