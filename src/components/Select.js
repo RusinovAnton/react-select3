@@ -498,7 +498,7 @@ export class Select extends Component {
   /**
    * Select current highlighted option
    */
-    // @fixme: selects invalid option when options list filtered by searchTerm
+  // @fixme: selects invalid option when options list filtered by searchTerm
   selectHighlighted = () => {
     const { options, highlighted, dropdownOpened } = this.state;
 

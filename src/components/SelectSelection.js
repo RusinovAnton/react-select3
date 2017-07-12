@@ -1,9 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-
 import classNames from 'classnames'
 import isFunction from 'lodash/isFunction'
-
 import filterKeyDown from '../utils/filterKeyDown'
 import { stopPropagation } from '../utils/events'
 
@@ -25,7 +23,7 @@ const SelectSelection = ({ clearable, formatter, selection = null, placeholder =
         [`${cssClassNamePrefix}__selection--clearable`]: clearable,
       })}
     >
-    <span className={`${cssClassNamePrefix}__selection-text`}>{ selectionText }</span>
+      <span className={`${cssClassNamePrefix}__selection-text`}>{ selectionText }</span>
       { clearable && (
         <span
           className={`${cssClassNamePrefix}__clear-selection`}
@@ -37,16 +35,16 @@ const SelectSelection = ({ clearable, formatter, selection = null, placeholder =
           ]))}
           onClick={stopPropagation(onClearSelection)}
         >
-        &times;
-      </span>
+          &times;
+        </span>
       )}
       <span
         className={`${cssClassNamePrefix}__selection-arrow`}
         role="presentation"
       >
-      <i/>
+        <i/>
+      </span>
     </span>
-  </span>
   )
 };
 
