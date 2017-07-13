@@ -1,42 +1,77 @@
-@mixin select--selected {
-    background: $select__bg-selected;
-    color: $select__color-selected;
-}
-
-@mixin select--focused {
-    outline: 2px solid #00a7ff;
-}
-
-@mixin select--box {
-    border-radius: $select__border-radius;
-    border: 1px solid $gray;
-    box-shadow: 1px 1px 1px 0 $gray-lighter;
-}
-
-@mixin select--disabled {
+@mixin rs--disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-@mixin select--error {
-    border-color: transparentize(#f00, 0.4);
-    box-shadow: 0 0 4px 0 transparentize(#f00, 0.4);
+@mixin rs--error {
+    border-color: transparentize($rs__danger-color, 0.4);
+    box-shadow: 0 0 4px 0 transparentize($rs__danger-color, 0.4);
 }
 
-@mixin select--arrow {
+@mixin rs--focused {
+    @if $rs-outline-enable {
+        outline: 2px solid $rs__outline-color;
+    }
+}
+
+@mixin rs--option-selected {
+    background: $rs__bg-selected;
+    color: $rs__color-selected;
+}
+
+@mixin rs__box {
+    @if $rs-border-radius-enable {
+        border-radius: $rs__border-radius;
+    }
+    @if $rs-box-shadow-enable {
+        box-shadow: 1px 1px 1px 0 $gray-lighter;
+    }
+    border: 1px solid $rs__border-color;
+}
+
+@mixin rs__arrow {
+    display: block;
+    border-color: currentColor rgba(255, 255, 255, 0) rgba(255, 255, 255, 0) rgba(255, 255, 255, 0);
+    border-style: solid;
+    border-width: 5px 4px 0 4px;
+    height: 0;
+    width: 0;
+}
+
+@mixin rs__arrow-wrapper {
     display: block;
     position: absolute;
-    right: $select__padding-horizontal;
-    top: ($select__height / 2) - 2.5;
+    right: $rs__padding-horizontal;
+    top: ($rs__height / 2) - 2.5;
     height: 5px;
     width: 5px;
 
     i {
-        display: block;
-        border-color: currentColor rgba(255, 255, 255, 0) rgba(255, 255, 255, 0) rgba(255, 255, 255, 0);
-        border-style: solid;
-        border-width: 5px 4px 0 4px;
-        height: 0;
-        width: 0;
+        @include rs__arrow;
     }
+}
+
+@mixin rs__loader {
+    display: inline-block;
+    position: relative;
+    font-size: 50px;
+    color: $rs__color-loader;
+    animation: loader 2s linear infinite;
+    line-height: 0;
+
+    &:before {
+        content: '·';
+        line-height: 0;
+    }
+}
+
+@mixin hidden {
+    border: 0 !important;
+    clip: rect(0 0 0 0) !important;
+    height: 1px !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    position: absolute !important;
+    width: 1px !important;
 }
