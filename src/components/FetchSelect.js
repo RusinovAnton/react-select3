@@ -4,7 +4,6 @@ import PropTypes from 'prop-types'
 import debounce from 'lodash/debounce'
 import isFunction from 'lodash/isFunction'
 import keys from 'lodash/keys'
-import path from 'path'
 import qs from 'qs'
 
 import { DEFAULT_LANG } from '../utils/consts'
@@ -25,7 +24,7 @@ function composeFetchPath(endpoint, params = {}, searchTerm, termQuery) {
   }
 
   if (keys(fetchParams)) {
-    fetchPath = path.join(endpoint, `?${qs.stringify(fetchParams)}`)
+    fetchPath = `${endpoint}?${qs.stringify(fetchParams)}`
   }
 
   return fetchPath
