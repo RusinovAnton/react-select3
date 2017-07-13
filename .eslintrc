@@ -1,80 +1,87 @@
 {
-    "env": {
-        "browser": true,
-        "es6": true
-    },
-    "parser": "babel-eslint",
-    "extends": [
-        "eslint:recommended",
-        "plugin:react/recommended",
-        "airbnb-base"
-    ],
-    "plugins": [
-        "react"
-    ],
-    "rules": {
-        "indent": [
-            "error",
-            2
-        ],
-        "import/no-named-as-default": 0,
-        "semi": 0,
-        "arrow-parens": 0,
-        "no-shadow": 2,
-        "func-names": 2,
-        "no-console": 2,
-        "vars-on-top": 2,
-        "comma-dangle": 2,
-        "padded-blocks": 2,
-        "no-multi-spaces": 2,
-        "prefer-const": 2,
-        "import/no-unresolved": 0,
-        "max-len": [
-            "error",
-            128
-        ],
-        "no-underscore-dangle": 2,
-        "object-curly-spacing": 2,
-        "no-useless-constructor": 2,
-        "react/display-name": 2,
-        "react/jsx-no-undef": 2,
-        "react/jsx-sort-props": 0,
-        "react/jsx-uses-react": 2,
-        "react/jsx-uses-vars": 2,
-        "react/no-did-mount-set-state": 2,
-        "react/no-did-update-set-state": 2,
-        "react/no-multi-comp": 1,
-        "react/no-unknown-property": 2,
-        "react/react-in-jsx-scope": 2,
-        "react/self-closing-comp": 2,
-        "react/jsx-wrap-multilines": 2,
-        "react/jsx-boolean-value": 2,
-        "react/jsx-no-duplicate-props": 2,
-        "react/jsx-no-bind": 2,
-        "react/sort-comp": 0,
-        "no-confusing-arrow": 0,
-        "react/prefer-es6-class": 2,
-        "react/prefer-stateless-function": 2,
-        "react/jsx-pascal-case": 2,
-        "react/jsx-closing-bracket-location": 2,
-//        "react/jsx-space-before-closing": 2,
-        "react/jsx-curly-spacing": 2,
-        "react/no-string-refs": 2,
-        "react/no-is-mounted": 2,
-        "react/require-render-return": 2,
-        "react/prop-types": [
-            2,
-            {
-                "ignore": [
-                    "children",
-                    "className",
-                    "style",
-                    "params",
-                    "dispatch",
-                    "onClick",
-                    "onKeyDown"
-                ]
-            }
-        ]
+  "parser": "babel-eslint",
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
     }
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "airbnb-base"
+  ],
+  "plugins": [
+    "react",
+    "import",
+    "jsx-a11y"
+  ],
+  "rules": {
+    "indent": [
+      "error",
+      2
+    ],
+    "import/no-named-as-default": 0,
+    "semi": 0,
+    "arrow-parens": 0,
+    "arrow-body-style": 0,
+    "no-shadow": 2,
+    "func-names": 2,
+    "no-console": 2,
+    "vars-on-top": 2,
+    "comma-dangle": 2,
+    "padded-blocks": 2,
+    "no-multi-spaces": 2,
+    "prefer-const": 2,
+    "import/no-unresolved": 0,
+    "max-len": [
+      "error",
+      120
+    ],
+    "no-underscore-dangle": 2,
+    "object-curly-spacing": 2,
+    "no-useless-constructor": 2,
+    "react/display-name": 2,
+    "react/jsx-no-undef": 2,
+    "react/jsx-sort-props": 0,
+    "react/jsx-uses-react": 2,
+    "react/jsx-uses-vars": 2,
+    "react/no-did-mount-set-state": 2,
+    "react/no-did-update-set-state": 2,
+    "react/no-multi-comp": 1,
+    "react/no-unknown-property": 2,
+    "react/react-in-jsx-scope": 2,
+    "react/self-closing-comp": 2,
+    "react/jsx-wrap-multilines": 2,
+    "react/jsx-boolean-value": 2,
+    "react/jsx-no-duplicate-props": 2,
+    "react/jsx-no-bind": 2,
+    "react/sort-comp": 0,
+    "no-confusing-arrow": 2,
+    "react/prefer-es6-class": 2,
+    "react/prefer-stateless-function": 2,
+    "react/jsx-pascal-case": 2,
+    "react/jsx-closing-bracket-location": 2,
+    "react/jsx-curly-spacing": 2,
+    "react/no-string-refs": 2,
+    "react/no-is-mounted": 2,
+    "react/require-render-return": 2,
+    "react/prop-types": [
+      2,
+      {
+        "ignore": [
+          "children",
+          "className",
+          "style",
+          "params",
+          "dispatch",
+          "onClick",
+          "onKeyDown"
+        ]
+      }
+    ]
+  }
 }

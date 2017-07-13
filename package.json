@@ -52,67 +52,6 @@
       }
     }
   },
-  "eslint": {
-    "env": {
-      "browser": true,
-      "es6": true
-    },
-    "parser": "babel-eslint",
-    "extends": [
-      "eslint:recommended",
-      "plugin:react/recommended",
-      "airbnb-base/legacy"
-    ],
-    "plugins": [
-      "react"
-    ],
-    "rules": {
-      "semi": 0,
-      "no-shadow": 0,
-      "func-names": 0,
-      "no-console": 1,
-      "vars-on-top": 0,
-      "comma-dangle": 0,
-      "padded-blocks": 0,
-      "no-multi-spaces": 0,
-      "prefer-const": 2,
-      "max-len": [
-        "error",
-        128
-      ],
-      "no-underscore-dangle": 0,
-      "object-curly-spacing": 2,
-      "no-useless-constructor": 2,
-      "react/display-name": 0,
-      "react/jsx-no-undef": 2,
-      "react/jsx-sort-props": 0,
-      "react/jsx-uses-react": 2,
-      "react/jsx-uses-vars": 2,
-      "react/no-did-mount-set-state": 2,
-      "react/no-did-update-set-state": 2,
-      "react/no-multi-comp": 1,
-      "react/no-unknown-property": 2,
-      "react/react-in-jsx-scope": 2,
-      "react/self-closing-comp": 2,
-      "react/jsx-wrap-multilines": 2,
-      "react/jsx-boolean-value": 2,
-      "react/jsx-no-duplicate-props": 2,
-      "react/jsx-no-bind": 2,
-      "react/sort-comp": 0,
-      "react/prop-types": [
-        2,
-        {
-          "ignore": [
-            "children",
-            "className",
-            "style",
-            "params",
-            "dispatch"
-          ]
-        }
-      ]
-    }
-  },
   "dependencies": {
     "classnames": "^2.2.5",
     "lodash": "^4.17.2",
@@ -134,7 +73,7 @@
     "del": "^2.2.2",
     "enzyme": "^2.9.1",
     "enzyme-to-json": "^1.4.5",
-    "eslint": "^4.2.0",
+    "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.2",
     "eslint-config-airbnb-base": "^11.0.1",
     "eslint-loader": "^1.5.0",
