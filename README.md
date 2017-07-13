@@ -7,8 +7,9 @@ Motivation:
 - Easy styling
 - Easy control
 - Easy fetching  
-`// TODO: live example`
 
+## [Demo](https://rusinovanton.github.io/react-select3/)
+  
 ## API reference
   
 ### Select
