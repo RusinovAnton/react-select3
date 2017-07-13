@@ -1,44 +1,75 @@
-const babel = require('gulp-babel');
-const del = require('del');
-const eslint = require('gulp-eslint');
 const gulp = require('gulp');
-const react = require('gulp-react');
+
+const del = require('del');
+const path = require('path');
 const runSequence = require('run-sequence');
+
+const babel = require('gulp-babel');
+const eslint = require('gulp-eslint');
+const react = require('gulp-react');
+
+const autoprefixer = require('gulp-autoprefixer');
 const sass = require('gulp-sass');
-const uglify = require('gulp-uglify');
+const sassLint = require('gulp-sass-lint');
+
+/**
+ * Resolve resources absolute path
+ *
+ * @param {string} relativePath - resources' relative path
+ * @return {string} - resolved path
+ */
+const pathResolve = relativePath => path.resolve(path.join(__dirname, relativePath));
+
+/** Define package resources paths **/
+const paths = {
+  dest: pathResolve('./dist'),
+  css: pathResolve('./src/styles/**/*.scss'),
+  js: pathResolve('./src/**/*.js'),
+};
+
+/** Define tasks **/
+const cleanTask = () => {
+  del.sync(paths.dest)
+};
+
+const distTask = () => (done) => {
+  runSequence('js', 'css', done)
+};
+
+const cssTask = () => gulp.src(paths.css)
+  .pipe(sass())
+  .pipe(autoprefixer())
+  .pipe(gulp.dest(paths.dest));
+
+const cssLintTask = () => gulp.src(paths.css)
+  .pipe(sassLint({ options: { configFile: '.sasslintrc' } }))
+  .pipe(sassLint.format())
+  .pipe(sassLint.failOnError());
+
+const jsTask = () => gulp.src(paths.js)
+  .pipe(babel())
+  .pipe(react({ harmony: false, es6module: true }))
+  .pipe(gulp.dest(paths.dest));
+
+const jsLintTask = () => gulp.src([paths.js, '!node_modules/**'])
+  .pipe(eslint())
+  .pipe(eslint.format())
+  .pipe(eslint.failAfterError());
 
 
-gulp.task('styles', () => {
-  return gulp.src('./src/styles/styles.scss')
-    .pipe(sass())
-    .pipe(gulp.dest('./dist/'))
-})
+/** Register tasks **/
+gulp.task('clean', cleanTask);
+gulp.task('dist', ['clean', 'js:lint', 'css:lint'], distTask);
 
-gulp.task('transform', () => {
-  return gulp.src('./src/**/*.js')
-    .pipe(babel())
-    .pipe(react({ harmony: false, es6module: true }))
-    .pipe(gulp.dest('dist/'));
+gulp.task('css', cssTask);
+gulp.task('css:lint', cssLintTask);
+
+gulp.task('js', jsTask);
+gulp.task('js:lint', jsLintTask);
+
+gulp.task('watch', ['css', 'js'], () => {
+  gulp.watch('./src/styles/**/*.scss', ['css']);
+  gulp.watch('./src/**/*.js', ['js'])
 });
-
-gulp.task('lint', () => {
-  gulp.src(['./src/**/*.js', '!node_modules/**'])
-    .pipe(eslint())
-    .pipe(eslint.format())
-    .pipe(eslint.failAfterError());
-});
-
-gulp.task('clean', () => {
-  del.sync('./dist')
-})
-
-gulp.task('dist', (done) => {
-  runSequence('clean', 'transform', 'styles', 'lint', done)
-});
-
-gulp.task('watch', ['styles', 'transform'], () => {
-  gulp.watch('./src/styles/**/*.scss', ['styles'])
-  gulp.watch('./src/**/*.js', ['transform'])
-})
 
 gulp.task('default', ['dist']);
