@@ -1,4 +1,5 @@
-#REACT-SELECT3
+# REACT-SELECT3
+
 [![Build Status](https://travis-ci.org/RusinovAnton/react-select3.svg?branch=master)](https://travis-ci.org/RusinovAnton/react-select3)  
 
 This is `<select>` written with ReactJS.  
@@ -43,6 +44,7 @@ PropName | PropType | Description
 ***layout.emptyOptionsLabel*** | `<string>` | label that shows up when there is no options left
 ***name*** | `<string>` | Selects name attribute
 ***optionRenderer*** | `<function>` | function that transforms single option output, you can provide it if you want to change layout of options e.g.:
+ |  | 
 ```javascript
 const optionRenderer = (option) => (
     <strong className='my-custom-option'>
@@ -50,8 +52,9 @@ const optionRenderer = (option) => (
         { option.text }
     </strong>
 )
-```
- | | |
+```  
+  
+PropName | PropType | Description
 --- | --- | ---  
 ***options*** | `<array>` | array with options object. they must have next format: `{ id: <number|string>, text: <number|string>}`
 ***onSelect*** | `<function>` | callback on options select event. event object that passed into callback has next format:
@@ -65,8 +68,9 @@ const optionRenderer = (option) => (
     value: <string>, // selected option id
   }
 }
-```
- | | |
+```  
+  
+PropName | PropType | Description
 --- | --- | ---  
 ***placeholder*** | `<string>` | shows up when there is no selected option
 ***search*** | `<object>` | props related to SearchInput, which used to filter options list, you can override its behaviour by providing `onSearchTermChange` prop.
@@ -74,7 +78,7 @@ const optionRenderer = (option) => (
 ***search.show*** | `<bool>` | provide if you want to always show SearchInput
 ***search.status*** | `<string>` | provide status message, shows up only when there are no available options
 ***onSearchTermChange*** | `<function>` | callback for SearchInput changes, takes input event as agrument
-***value*** | `<number|string>` | you can provide option id to control selection
+***value*** | `<number>`/`<string>` | you can provide option id to control selection
   
 ### Selects ref interface methods
 Select component has number of handy public methods that you can use by saving its ref, e.g.:
@@ -172,8 +176,8 @@ fetch = {
 // fetch path: '/api/users?filter=John&emailVerified=0'
 ```
   
- | | |    
---- | --- | ---    
+PropName | PropType | Description
+--- | --- | ---
 ***fetch.requestDelay*** | `<number>` | delay between request on SearchInput change *`// Default: 300`*
 ***fetch.responseDataFormatter*** | `<function>` |  function that formats fetched objects into options. See example above
 ***fetch.termQuery*** | `<string>` | key for dynamic query param that takes SearchInput value on change. See example above
