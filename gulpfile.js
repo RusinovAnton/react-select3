@@ -25,6 +25,7 @@ const pathResolve = relativePath => path.resolve(path.join(__dirname, relativePa
 const paths = {
   dest: pathResolve('./dist'),
   css: pathResolve('./src/styles/**/*.scss'),
+  cssLintConfig: pathResolve('.sasslintrc.yml'),
   js: pathResolve('./src/**/*.js'),
 };
 
@@ -44,7 +45,7 @@ const cssTask = () => gulp.src(paths.css)
   .pipe(gulp.dest(paths.dest));
 
 const cssLintTask = () => gulp.src(paths.css)
-  .pipe(sassLint({ options: { configFile: '.sasslintrc' } }))
+  .pipe(sassLint())
   .pipe(sassLint.format())
   .pipe(sassLint.failOnError());
 

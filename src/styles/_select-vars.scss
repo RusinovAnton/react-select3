@@ -13,29 +13,30 @@ $rs-border-radius-enable: true !default;
 $rs-outline-enable: true !default;
 $rs-box-shadow-enable: true !default;
 
-/** Colors **/
+// Colors
 $rs__bg-selected: $brand-primary !default;
 $rs__danger-color: $brand-danger !default;
 $rs__shadow-color: $gray-light !default;
+$rs__transparent: rgba(255, 255, 255, 0) !default;
 
-/** Background **/
+// Background
 $rs__bg: #fff !default;
 $rs__bg-dropdown: #fff !default;
 $rs__bg-highlighted: $gray-light !default;
 
-/** Border **/
+// Border
 $rs__border-radius: $border-radius-base !default;
 $rs__border-color: $gray !default;
 $rs__outline-color: $brand-primary !default;
 
-/** Text **/
+// Text
 $rs__color-highlighted: $gray-light !default;
 $rs__color-placeholder: $gray !default;
 $rs__color-selected: #fff !default;
 $rs__color-loader: $gray-dark !default;
 $rs__color: inherit !default;
 
-/** Size **/
+// Size
 $rs__height: 31px !default;
 $rs__options-list-max-height: 170px !default;
 $rs__padding-base: $padding-base !default;

@@ -1,11 +1,11 @@
 @mixin rs--disabled {
-  opacity: 0.5;
+  opacity: .5;
   cursor: not-allowed;
 }
 
 @mixin rs--error {
-  border-color: transparentize($rs__danger-color, 0.4);
-  box-shadow: 0 0 4px 0 transparentize($rs__danger-color, 0.3);
+  border-color: transparentize($rs__danger-color, .4);
+  box-shadow: 0 0 4px 0 transparentize($rs__danger-color, .3);
 }
 
 @mixin rs--focused {
@@ -31,7 +31,7 @@
 
 @mixin rs__arrow {
   display: block;
-  border-color: currentColor rgba(255, 255, 255, 0) rgba(255, 255, 255, 0) rgba(255, 255, 255, 0);
+  border-color: currentColor $rs__transparent $rs__transparent $rs__transparent;
   border-style: solid;
   border-width: 5px 4px 0 4px;
   height: 0;
@@ -51,15 +51,19 @@
   }
 }
 
-@mixin rs__loader-animation {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.15;
-  }
-  100% {
-    opacity: 1;
+@mixin rs__loader-animation-keyframes {
+  @keyframes loader {
+    0% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: .15;
+    }
+
+    100% {
+      opacity: 1;
+    }
   }
 }
 
@@ -71,7 +75,7 @@
   animation: loader 2s linear infinite;
   line-height: 0;
 
-  &:before {
+  &::before {
     content: '·';
     line-height: 0;
   }

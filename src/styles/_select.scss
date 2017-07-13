@@ -1,6 +1,4 @@
-@keyframes loader {
-  @include rs__loader-animation;
-}
+@include rs__loader-animation-keyframes;
 
 .#{$selector-prefix} {
   &__select-node {
@@ -106,7 +104,7 @@
     color: $rs__color-placeholder;
     display: block;
     font-size: .8em;
-    padding: $rs__padding-base*0.3 $rs__padding-horizontal;
+    padding: ($rs__padding-base * .3) $rs__padding-horizontal;
   }
 
   &__search {
@@ -115,7 +113,7 @@
   }
 
   &__search-field {
-    -webkit-appearance: none;
+    appearance: none;
     border: 0;
     border-bottom: 1px solid $rs__border-color;
     display: block;
@@ -129,7 +127,7 @@
     @include rs__loader;
   }
 
-  /** Modifiers **/
+  // Modifiers
   &--open {
     &.#{$selector-prefix}--below {
       .#{$selector-prefix}__error {
@@ -137,12 +135,14 @@
         // to prevent dropdown from being detached
         display: none;
       }
+
       .#{$selector-prefix}__selection {
         border-bottom: 0;
         @if $rs-border-radius-enable {
           border-radius: $rs__border-radius $rs__border-radius 0 0;
         }
       }
+
       .#{$selector-prefix}__dropdown {
         top: 100%;
         @if $rs-border-radius-enable {
@@ -150,6 +150,7 @@
         }
       }
     }
+
     &.#{$selector-prefix}--above {
       .#{$selector-prefix}__selection {
         border-top: 0;
@@ -157,6 +158,7 @@
           border-radius: 0 0 $rs__border-radius $rs__border-radius;
         }
       }
+
       .#{$selector-prefix}__dropdown {
         bottom: 100%;
         @if $rs-border-radius-enable {

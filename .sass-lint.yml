@@ -29,7 +29,7 @@ rules:
   no-empty-rulesets: 1
   no-extends: 0
   no-ids: 1
-  no-important: 1
+  no-important: 0
   no-invalid-hex: 1
   no-mergeable-selectors: 1
   no-misspelled-properties: 1
@@ -51,12 +51,21 @@ rules:
   force-pseudo-nesting: 1
 
   # Name Formats
-  class-name-format: 1
+  class-name-format:
+    - 1
+    -
+      convention: hyphenatedbem
   function-name-format: 1
   id-name-format: 0
-  mixin-name-format: 1
+  mixin-name-format:
+    - 1
+    -
+      convention: hyphenatedbem
   placeholder-name-format: 1
-  variable-name-format: 1
+  variable-name-format:
+    - 1
+    -
+      convention: hyphenatedbem
 
   # Style Guide
   attribute-quotes: 1
@@ -72,10 +81,10 @@ rules:
   max-line-length: 0
   max-file-line-count: 0
   nesting-depth: 1
-  property-sort-order: 1
+  property-sort-order: 0
   pseudo-element: 1
   quotes: 1
-  shorthand-values: 1
+  shorthand-values: 0
   url-quotes: 1
   variable-for-property: 1
   zero-unit: 1
