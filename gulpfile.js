@@ -9,6 +9,7 @@ const eslint = require('gulp-eslint');
 const react = require('gulp-react');
 
 const autoprefixer = require('gulp-autoprefixer');
+const cssnano = require('gulp-cssnano');
 const sass = require('gulp-sass');
 const sassLint = require('gulp-sass-lint');
 
@@ -32,12 +33,13 @@ const cleanTask = () => {
   del.sync(paths.dest)
 };
 
-const distTask = () => (done) => {
-  runSequence('js', 'css', done)
+const buildTask = (done) => {
+  runSequence('clean', 'js', 'css', done)
 };
 
 const cssTask = () => gulp.src(paths.css)
   .pipe(sass())
+  .pipe(cssnano())
   .pipe(autoprefixer())
   .pipe(gulp.dest(paths.dest));
 
@@ -58,18 +60,20 @@ const jsLintTask = () => gulp.src([paths.js, '!node_modules/**'])
 
 
 /** Register tasks **/
-gulp.task('clean', cleanTask);
-gulp.task('dist', ['clean', 'js:lint', 'css:lint'], distTask);
-
 gulp.task('css', cssTask);
 gulp.task('css:lint', cssLintTask);
 
 gulp.task('js', jsTask);
 gulp.task('js:lint', jsLintTask);
 
+gulp.task('lint', ['css:lint', 'js:lint']);
+
+gulp.task('clean', cleanTask);
+gulp.task('build', buildTask);
+
 gulp.task('watch', ['css', 'js'], () => {
   gulp.watch('./src/styles/**/*.scss', ['css']);
   gulp.watch('./src/**/*.js', ['js'])
 });
 
-gulp.task('default', ['dist']);
+gulp.task('default', ['build']);

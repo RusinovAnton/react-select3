@@ -7,7 +7,7 @@
   "scripts": {
     "build": "gulp",
     "lint": "gulp lint",
-    "prepublish": "npm run test && npm run build --production",
+    "prepublish": "npm run test && npm run lint && npm run build",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
@@ -145,6 +145,7 @@
     "gulp-autoprefixer": "^4.0.0",
     "gulp-babel": "^6.1.2",
     "gulp-browserify": "^0.5.1",
+    "gulp-cssnano": "^2.1.2",
     "gulp-eslint": "^4.0.0",
     "gulp-react": "^3.1.0",
     "gulp-sass": "^3.0.0",
