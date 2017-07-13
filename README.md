@@ -35,12 +35,12 @@ PropName | PropType | Description
 ***cssClassNamePrefix*** | `<string>` | you can provide custom prefix for Selects' classNames
 ***autoFocus*** | `<bool>` | whether to focus Select on mount
 ***closeOnClickOutside*** | `<bool>` | whether to close dropdown on click outside Select component *`// Default: true`*  
-***defaultValue*** | `<string|number>` | provide id of the default selected option
+***defaultValue*** | `<string>`/`<number>` | provide id of the default selected option
 ***disabled*** | `<bool>` | disable selecting and reseting
-***error*** | `<bool|string>` | you can provide boolean to indicate Select's error or string to show error message
+***error*** | `<bool>`/`<string>` | you can provide boolean to indicate Select's error or string to show error message
 ***layout*** | `<object>` | props related to Select component view
 ***layout.width*** | `<string>` | width for Select container *`// Default: '245px'`*
-***layout.dropdownVerticalPosition*** | `<'above'|'below'>` | whether to show dropdown above or below Select container *`// Default: 'below'`*
+***layout.dropdownVerticalPosition*** | 'above'/ 'below' | whether to show dropdown above or below Select container *`// Default: 'below'`*
 ***layout.emptyOptionsLabel*** | `<string>` | label that shows up when there is no options left
 ***name*** | `<string>` | Selects name attribute
 ***optionRenderer*** | `<function>` | function that transforms single option output, you can provide it if you want to change layout of options e.g.:
