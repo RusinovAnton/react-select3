@@ -2,6 +2,5 @@
 .DS_Store
 .idea
 node_modules/
-__snapshots__/
 coverage/
 dist/

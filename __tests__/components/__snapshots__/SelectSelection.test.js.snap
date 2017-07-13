@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SelectSelection Should render 1`] = `
+<span
+  className="rs3__selection rs3__selection--placeholder"
+>
+  <span
+    className="rs3__selection-text"
+  />
+  <span
+    className="rs3__selection-arrow"
+    role="presentation"
+  >
+    <i />
+  </span>
+</span>
+`;
+
+exports[`SelectSelection Should show placeholder when there is no selection provided 1`] = `
+<span
+  className="rs3__selection rs3__selection--placeholder"
+>
+  <span
+    className="rs3__selection-text"
+  >
+    Test placeholder
+  </span>
+  <span
+    className="rs3__selection-arrow"
+    role="presentation"
+  >
+    <i />
+  </span>
+</span>
+`;

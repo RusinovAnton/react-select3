@@ -1,0 +1,78 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SelectOptionsList Should render 1`] = `
+<ul
+  className="rs3__options-list"
+>
+  <li
+    className="rs3__option"
+    data-id={3}
+    onClick={[Function]}
+  >
+    three
+  </li>
+  <li
+    className="rs3__option"
+    data-id={4}
+    onClick={[Function]}
+  >
+    four
+  </li>
+  <li
+    className="rs3__option"
+    data-id={5}
+    onClick={[Function]}
+  >
+    five
+  </li>
+  <li
+    className="rs3__option"
+    data-id={6}
+    onClick={[Function]}
+  >
+    six
+  </li>
+  <li
+    className="rs3__option"
+    data-id={7}
+    onClick={[Function]}
+  >
+    seven
+  </li>
+  <li
+    className="rs3__option"
+    data-id={8}
+    onClick={[Function]}
+  >
+    eight
+  </li>
+  <li
+    className="rs3__option"
+    data-id={9}
+    onClick={[Function]}
+  >
+    nine
+  </li>
+  <li
+    className="rs3__option"
+    data-id={10}
+    onClick={[Function]}
+  >
+    ten
+  </li>
+  <li
+    className="rs3__option"
+    data-id={11}
+    onClick={[Function]}
+  >
+    eleven
+  </li>
+  <li
+    className="rs3__option"
+    data-id={12}
+    onClick={[Function]}
+  >
+    twelve
+  </li>
+</ul>
+`;
