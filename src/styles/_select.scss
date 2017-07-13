@@ -1,190 +1,182 @@
 @keyframes loader {
-    0% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.15;
-    }
-    100% {
-        opacity: 1;
-    }
+  @include rs__loader-animation;
 }
 
 .#{$selector-prefix} {
-    &__select-node {
-        @include hidden;
+  &__select-node {
+    @include hidden;
+  }
+
+  &__container {
+    background: $rs__bg;
+    cursor: default;
+    display: inline-block;
+    outline: none;
+    position: relative;
+    user-select: none;
+
+    &:focus {
+      @include rs--focused;
     }
 
-    &__container {
-        background: $rs__bg;
-        cursor: default;
-        display: inline-block;
-        outline: none;
-        position: relative;
-        user-select: none;
+    * {
+      box-sizing: border-box;
+      outline: none;
+    }
+  }
 
-        &:focus {
-            @include rs--focused;
+  &__selection {
+    @include rs__box;
+    display: block;
+    height: $rs__height;
+    line-height: $rs__height;
+    overflow: hidden;
+    padding: 0 ($rs__padding-horizontal + 10) 0 $rs__padding-horizontal;
+    white-space: nowrap;
+
+    &.#{$selector-prefix}__selection--clearable {
+      padding-right: ($rs__padding-horizontal + 25);
+    }
+  }
+
+  &__option--selected {
+    @include rs--option-selected;
+  }
+
+  &__selection--placeholder {
+    .#{$selector-prefix}__selection-text {
+      color: $rs__color-placeholder;
+    }
+  }
+
+  &__error {
+    color: $rs__danger-color;
+    font-size: 12px;
+  }
+
+  &__selection-arrow {
+    @include rs__arrow-wrapper;
+  }
+
+  &__clear-selection {
+    border-radius: 50%;
+    display: block;
+    height: 10px;
+    line-height: 0;
+    position: absolute;
+    right: $rs__padding-horizontal + 10;
+    top: ($rs__height / 2) - 2;
+    width: 10px;
+
+    &:focus {
+      color: $brand-primary;
+    }
+  }
+
+  &__dropdown {
+    @include rs__box;
+    background-color: $rs__bg-dropdown;
+    display: block;
+    position: absolute;
+    width: 100%;
+    z-index: $rs__dropdown-z-index;
+  }
+
+  &__options-list {
+    display: block;
+    list-style: none;
+    margin: 0;
+    max-height: $rs__options-list-max-height;
+    overflow: auto;
+    padding: 0;
+
+    li {
+      line-height: $rs__height;
+      overflow: hidden;
+      padding: 0 $rs__padding-horizontal;
+      white-space: nowrap;
+    }
+  }
+
+  &__option--highlighted {
+    background-color: $rs__bg-highlighted;
+  }
+
+  &__status {
+    color: $rs__color-placeholder;
+    display: block;
+    font-size: .8em;
+    padding: $rs__padding-base*0.3 $rs__padding-horizontal;
+  }
+
+  &__search {
+    display: block;
+    padding: 0 $rs__padding-horizontal;
+  }
+
+  &__search-field {
+    -webkit-appearance: none;
+    border: 0;
+    border-bottom: 1px solid $rs__border-color;
+    display: block;
+    height: 31px;
+    margin: 0 auto 5px;
+    outline: none;
+    width: 100%;
+  }
+
+  &__loader {
+    @include rs__loader;
+  }
+
+  /** Modifiers **/
+  &--open {
+    &.#{$selector-prefix}--below {
+      .#{$selector-prefix}__error {
+        // hide error block if dropdown opened below select__container
+        // to prevent dropdown from being detached
+        display: none;
+      }
+      .#{$selector-prefix}__selection {
+        border-bottom: 0;
+        @if $rs-border-radius-enable {
+          border-radius: $rs__border-radius $rs__border-radius 0 0;
         }
-
-        * {
-            box-sizing: border-box;
-            outline: none;
+      }
+      .#{$selector-prefix}__dropdown {
+        top: 100%;
+        @if $rs-border-radius-enable {
+          border-radius: 0 0 $rs__border-radius $rs__border-radius;
         }
+      }
     }
-
-    &__selection {
-        @include rs__box;
-        display: block;
-        height: $rs__height;
-        line-height: $rs__height;
-        overflow: hidden;
-        padding: 0 ($rs__padding-horizontal + 10) 0 $rs__padding-horizontal;
-        white-space: nowrap;
-
-        &.#{$selector-prefix}__selection--clearable {
-            padding-right: ($rs__padding-horizontal + 25);
+    &.#{$selector-prefix}--above {
+      .#{$selector-prefix}__selection {
+        border-top: 0;
+        @if $rs-border-radius-enable {
+          border-radius: 0 0 $rs__border-radius $rs__border-radius;
         }
-    }
-
-    &__option--selected {
-        @include rs--option-selected;
-    }
-
-    &__selection--placeholder {
-        .#{$selector-prefix}__selection-text {
-            color: $rs__color-placeholder;
+      }
+      .#{$selector-prefix}__dropdown {
+        bottom: 100%;
+        @if $rs-border-radius-enable {
+          border-radius: $rs__border-radius $rs__border-radius 0 0;
         }
+      }
     }
+  }
 
-    &__error {
-        color: $rs__danger-color;
-        font-size: 12px;
+  &--disabled {
+    @include rs--disabled;
+  }
+
+  &--error {
+    .#{$selector-prefix}__selection {
+      @include rs--error;
     }
+  }
 
-    &__selection-arrow {
-        @include rs__arrow-wrapper;
-    }
-
-    &__clear-selection {
-        border-radius: 50%;
-        display: block;
-        height: 10px;
-        line-height: 0;
-        position: absolute;
-        right: $rs__padding-horizontal + 10;
-        top: ($rs__height / 2) - 2;
-        width: 10px;
-
-        &:focus {
-            color: $brand-primary;
-        }
-    }
-
-    &__dropdown {
-        @include rs__box;
-        background-color: $rs__bg-dropdown;
-        display: block;
-        position: absolute;
-        width: 100%;
-        z-index: $rs__dropdown-z-index;
-    }
-
-    &__options-list {
-        display: block;
-        list-style: none;
-        margin: 0;
-        max-height: $rs__options-list-max-height;
-        overflow: auto;
-        padding: 0;
-
-        li {
-            line-height: $rs__height;
-            overflow: hidden;
-            padding: 0 $rs__padding-horizontal;
-            white-space: nowrap;
-        }
-    }
-
-    &__option--highlighted {
-        background-color: $rs__bg-highlighted;
-    }
-
-    &__status {
-        color: $rs__color-placeholder;
-        display: block;
-        font-size: .8em;
-        padding: $rs__padding-base*0.3 $rs__padding-horizontal;
-    }
-
-    &__search {
-        display: block;
-        padding: 0 $rs__padding-horizontal;
-    }
-
-    &__search-field {
-        -webkit-appearance: none;
-        border: 0;
-        border-bottom: 1px solid $rs__border-color;
-        display: block;
-        height: 31px;
-        margin: 0 auto 5px;
-        outline: none;
-        width: 100%;
-    }
-
-    &__loader {
-        @include rs__loader;
-    }
-
-    /** Modifiers **/
-    &--open {
-        &.#{$selector-prefix}--below {
-            .#{$selector-prefix}__error {
-                // hide error block if dropdown opened below select__container
-                // to prevent dropdown from being detached
-                display: none;
-            }
-            .#{$selector-prefix}__selection {
-                border-bottom: 0;
-                @if $rs-border-radius-enable {
-                    border-radius: $rs__border-radius $rs__border-radius 0 0;
-                }
-            }
-            .#{$selector-prefix}__dropdown {
-                top: 100%;
-                @if $rs-border-radius-enable {
-                    border-radius: 0 0 $rs__border-radius $rs__border-radius;
-                }
-            }
-        }
-        &.#{$selector-prefix}--above {
-            .#{$selector-prefix}__selection {
-                border-top: 0;
-                @if $rs-border-radius-enable {
-                    border-radius: 0 0 $rs__border-radius $rs__border-radius;
-                }
-            }
-            .#{$selector-prefix}__dropdown {
-                bottom: 100%;
-                @if $rs-border-radius-enable {
-                    border-radius: $rs__border-radius $rs__border-radius 0 0;
-                }
-            }
-        }
-    }
-
-    &--disabled {
-        @include rs--disabled;
-    }
-
-    &--error {
-        .#{$selector-prefix}__selection {
-            @include rs--error;
-        }
-    }
-
-    &--pending {
-        cursor: progress;
-    }
+  &--pending {
+    cursor: progress;
+  }
 }

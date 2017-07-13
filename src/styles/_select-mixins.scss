@@ -1,77 +1,89 @@
 @mixin rs--disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 @mixin rs--error {
-    border-color: transparentize($rs__danger-color, 0.4);
-    box-shadow: 0 0 4px 0 transparentize($rs__danger-color, 0.4);
+  border-color: transparentize($rs__danger-color, 0.4);
+  box-shadow: 0 0 4px 0 transparentize($rs__danger-color, 0.3);
 }
 
 @mixin rs--focused {
-    @if $rs-outline-enable {
-        outline: 2px solid $rs__outline-color;
-    }
+  @if $rs-outline-enable {
+    outline: 2px solid $rs__outline-color;
+  }
 }
 
 @mixin rs--option-selected {
-    background: $rs__bg-selected;
-    color: $rs__color-selected;
+  background: $rs__bg-selected;
+  color: $rs__color-selected;
 }
 
 @mixin rs__box {
-    @if $rs-border-radius-enable {
-        border-radius: $rs__border-radius;
-    }
-    @if $rs-box-shadow-enable {
-        box-shadow: 1px 1px 1px 0 $gray-lighter;
-    }
-    border: 1px solid $rs__border-color;
+  @if $rs-border-radius-enable {
+    border-radius: $rs__border-radius;
+  }
+  @if $rs-box-shadow-enable {
+    box-shadow: 1px 1px 1px 0 $rs__shadow-color;
+  }
+  border: 1px solid $rs__border-color;
 }
 
 @mixin rs__arrow {
-    display: block;
-    border-color: currentColor rgba(255, 255, 255, 0) rgba(255, 255, 255, 0) rgba(255, 255, 255, 0);
-    border-style: solid;
-    border-width: 5px 4px 0 4px;
-    height: 0;
-    width: 0;
+  display: block;
+  border-color: currentColor rgba(255, 255, 255, 0) rgba(255, 255, 255, 0) rgba(255, 255, 255, 0);
+  border-style: solid;
+  border-width: 5px 4px 0 4px;
+  height: 0;
+  width: 0;
 }
 
 @mixin rs__arrow-wrapper {
-    display: block;
-    position: absolute;
-    right: $rs__padding-horizontal;
-    top: ($rs__height / 2) - 2.5;
-    height: 5px;
-    width: 5px;
+  display: block;
+  position: absolute;
+  right: $rs__padding-horizontal;
+  top: ($rs__height / 2) - 2.5;
+  height: 5px;
+  width: 5px;
 
-    i {
-        @include rs__arrow;
-    }
+  i {
+    @include rs__arrow;
+  }
+}
+
+@mixin rs__loader-animation {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.15;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @mixin rs__loader {
-    display: inline-block;
-    position: relative;
-    font-size: 50px;
-    color: $rs__color-loader;
-    animation: loader 2s linear infinite;
-    line-height: 0;
+  display: inline-block;
+  position: relative;
+  font-size: 50px;
+  color: $rs__color-loader;
+  animation: loader 2s linear infinite;
+  line-height: 0;
 
-    &:before {
-        content: '·';
-        line-height: 0;
-    }
+  &:before {
+    content: '·';
+    line-height: 0;
+  }
 }
 
 @mixin hidden {
-    border: 0 !important;
-    clip: rect(0 0 0 0) !important;
-    height: 1px !important;
-    margin: -1px !important;
-    overflow: hidden !important;
-    padding: 0 !important;
-    position: absolute !important;
-    width: 1px !important;
+  border: 0 !important;
+  clip: rect(0 0 0 0) !important;
+  height: 1px !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  position: absolute !important;
+  width: 1px !important;
 }
