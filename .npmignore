@@ -1,10 +1,11 @@
+*.lock
 __tests__/
-docs/
 coverage/
-gulpfile.js
+
 .babelrc
 .editorconfig
 .eslintrc
-.jsdoc
 .jestrc.js
-*.lock
+.sass-lint.yml
+.travis.yml
+rollup.config.js

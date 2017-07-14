@@ -3,3 +3,11 @@ node_js:
     - 8.1.3
 
 script: npm run prepublish
+
+deploy:
+  provider: npm
+  email: "rusinovantondev@gmail.com"
+  api_key: "Dxhn+f/ko1fBZ2rgKBKjTCXb3MOgZX4m+kXrAUtpBrAr+FN66v39YkyLZbHxvbtEkVadnMx1PcKqv8zpOmEVsOs3nY5GptErox08jgi32t4oGk7ed+lN6tcU848dGJimfy32wV5vQ5lggNBk9sbOVPhoIhSd+C42/5QfXCYiA8XKd19Aj0ESa8tAzSpTEmb9J1ycGahv+pMH8myouXpjzee5PEKH5EAzBmxqp1O33qlDRogJxUvtI50qzvF4tbUjj7hGUlG0V75fXC0DanvdqH4lnsV0gdR7wN8UoGnU8MMKPfOPStjbyQwxK8WEflqFI1omoVLqFck40OyO4JwD0QIQIu2yHdDOmGx7pU4xhQ9uIwuMdybeZwbgMsVMr0nzpCbP3YQCKRdtw5bJEu93XaGx3SpFIWsJa9oP3or+YUeBBQjWGgxI+f7tMajjqNSqPzuNPFtlu8POr5RsGv/I4/NOlkpQWuRVV1y3eRFWdBiL56RgNxphGppPbVStdrPiprbE17sJG2lPMrgHxrRXzkwgvdggyy6xQrCugWxNB9ZJtas5aDAKuBUqs1/1SHetCH0Pbf/ZSbgYHMnW/VHFxbdW+hVbhKnqg7FWvY84KWc7paUIhQjwYTEa/7GWcIRcP1+G4YarUvy4LZcadz9wWye6vT5Re4kvLyv2zv7rsY8="
+  on:
+    branch: master
+    tags: true
