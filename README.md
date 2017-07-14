@@ -2,8 +2,9 @@
 
 [![Build Status](https://travis-ci.org/RusinovAnton/react-select3.svg?branch=master)](https://travis-ci.org/RusinovAnton/react-select3)  
 
-This is `<select>` written with ReactJS.  
-Motivation:  
+This is `<select>` written with ReactJS.
+  
+## Motivation:  
 - Easy styling
 - Easy control
 - Easy fetching  
