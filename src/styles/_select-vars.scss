@@ -1,27 +1,45 @@
-$gray-dark: #444;
-$gray: #cecece !default;
+$border-radius-base: 0 !default;
+$brand-danger: #f00 !default;
+$brand-primary: #00a7ff !default;
+$gray-dark: #444 !default;
 $gray-light: #efefef !default;
 $gray-lighter: #f0f0f0 !default;
-$brand-primary: #00a7ff !default;
-$border-radius-base: 0 !default;
+$gray: #cecece !default;
 $padding-base: 10px !default;
 
-$selector: 'rs3' !default;
+$selector-prefix: 'rs3' !default;
 
-$select__border-radius-enable: true !default;
-$select__box-shadow-enable: true !default;
+$rs-border-radius-enable: true !default;
+$rs-outline-enable: true !default;
+$rs-box-shadow-enable: true !default;
 
-$select__bg-dropdown: #fff!default;
-$select__bg-selected: $brand-primary !default;
-$select__bg: #fff !default;
-$select__border-radius: $border-radius-base !default;
+// Colors
+$rs__bg-selected: $brand-primary !default;
+$rs__danger-color: $brand-danger !default;
+$rs__shadow-color: $gray-light !default;
+$rs__transparent: rgba(255, 255, 255, 0) !default;
 
-$select__border-color: $gray !default;
-$select__color-highlighted: $gray-light !default;
-$select__color-placeholder: $gray !default;
-$select__color-selected: #fff !default;
-$select__color: inherit !default;
+// Background
+$rs__bg: #fff !default;
+$rs__bg-dropdown: #fff !default;
+$rs__bg-highlighted: $gray-light !default;
 
-$select__height: 31px !default;
-$select__padding-base: $padding-base !default;
-$select__padding-horizontal: $select__padding-base !default;
+// Border
+$rs__border-radius: $border-radius-base !default;
+$rs__border-color: $gray !default;
+$rs__outline-color: $brand-primary !default;
+
+// Text
+$rs__color-highlighted: $gray-light !default;
+$rs__color-placeholder: $gray !default;
+$rs__color-selected: #fff !default;
+$rs__color-loader: $gray-dark !default;
+$rs__color: inherit !default;
+
+// Size
+$rs__height: 31px !default;
+$rs__options-list-max-height: 170px !default;
+$rs__padding-base: $padding-base !default;
+$rs__padding-horizontal: $rs__padding-base !default;
+
+$rs__dropdown-z-index: 5 !default;

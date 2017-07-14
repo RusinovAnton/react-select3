@@ -1,16 +1,27 @@
 {
   "name": "react-select3",
-  "version": "3.3.19",
+  "version": "3.4.0",
   "description": "<Select> component made with ReactJS",
-  "main": "dist/index.js",
+  "browser": "dist/react-select3.umd.js",
+  "main": "dist/react-select3.cjs.js",
+  "module": "dist/react-select3.esm.js",
   "repository": "https://github.com/RusinovAnton/react-select3.git",
   "scripts": {
-    "build": "gulp",
-    "lint": "gulp lint",
-    "prepublish": "npm run test && npm run build --production",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "start": "npm run dev",
+    "prepublish": "npm run test && npm run lint && npm run build",
+    "build": "npm-run-all -p build:*",
+    "build:css": "npm-run-all css:scss-compile css:postcss",
+    "build:js": "NODE_ENV=production rollup -c",
+    "css:postcss": "npx postcss dist/*.css --dir dist --use autoprefixer cssnano --map dist",
+    "css:scss-compile": "npx node-sass --include-path ./src/styles ./src/styles -o dist",
+    "dev": "npm-run-all -p dev:*",
+    "dev:css": "npm run css:scss-compile -- --w",
+    "dev:js": "NODE_ENV=development rollup -c -w",
+    "lint": "npm-run-all -p lint:*",
+    "lint:css": "npx sass-lint -v -q --max-warnings 10",
+    "lint:js": "NODE_ENV=test npx eslint --fix ./src/**/*.js",
+    "test": "npm-run-all -p test:*",
+    "test:js": "NODE_ENV=test jest"
   },
   "jest": {
     "moduleNameMapper": {
@@ -31,88 +42,6 @@
   ],
   "author": "Rusinov Anton",
   "license": "MIT",
-  "babel": {
-    "presets": [
-      "react",
-      "es2015",
-      "stage-0"
-    ],
-    "plugins": [
-      "transform-function-bind"
-    ],
-    "env": {
-      "production": {
-        "presets": [
-          "react-optimize"
-        ],
-        "plugins": [
-          "transform-react-constant-elements",
-          "transform-react-inline-elements"
-        ]
-      }
-    }
-  },
-  "eslint": {
-    "env": {
-      "browser": true,
-      "es6": true
-    },
-    "parser": "babel-eslint",
-    "extends": [
-      "eslint:recommended",
-      "plugin:react/recommended",
-      "airbnb-base/legacy"
-    ],
-    "plugins": [
-      "react"
-    ],
-    "rules": {
-      "semi": 0,
-      "no-shadow": 0,
-      "func-names": 0,
-      "no-console": 1,
-      "vars-on-top": 0,
-      "comma-dangle": 0,
-      "padded-blocks": 0,
-      "no-multi-spaces": 0,
-      "prefer-const": 2,
-      "max-len": [
-        "error",
-        128
-      ],
-      "no-underscore-dangle": 0,
-      "object-curly-spacing": 2,
-      "no-useless-constructor": 2,
-      "react/display-name": 0,
-      "react/jsx-no-undef": 2,
-      "react/jsx-sort-props": 0,
-      "react/jsx-uses-react": 2,
-      "react/jsx-uses-vars": 2,
-      "react/no-did-mount-set-state": 2,
-      "react/no-did-update-set-state": 2,
-      "react/no-multi-comp": 1,
-      "react/no-unknown-property": 2,
-      "react/react-in-jsx-scope": 2,
-      "react/self-closing-comp": 2,
-      "react/jsx-wrap-multilines": 2,
-      "react/jsx-boolean-value": 2,
-      "react/jsx-no-duplicate-props": 2,
-      "react/jsx-no-bind": 2,
-      "react/sort-comp": 0,
-      "react/prop-types": [
-        2,
-        {
-          "ignore": [
-            "children",
-            "className",
-            "style",
-            "params",
-            "dispatch"
-          ]
-        }
-      ]
-    }
-  },
   "dependencies": {
     "classnames": "^2.2.5",
     "lodash": "^4.17.2",
@@ -122,37 +51,42 @@
     "react-dom": "^15.6.1"
   },
   "devDependencies": {
+    "autoprefixer": "^7.1.2",
     "babel-eslint": "^7.1.1",
     "babel-jest": "^20.0.3",
+    "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-function-bind": "^6.8.0",
     "babel-plugin-transform-react-constant-elements": "^6.9.1",
     "babel-plugin-transform-react-inline-elements": "^6.8.0",
     "babel-preset-es2015": "^6.16.0",
+    "babel-preset-latest": "^6.24.1",
     "babel-preset-react": "^6.16.0",
     "babel-preset-react-optimize": "^1.0.1",
     "babel-preset-stage-0": "^6.16.0",
+    "cssnano": "^3.10.0",
     "del": "^2.2.2",
     "enzyme": "^2.9.1",
     "enzyme-to-json": "^1.4.5",
-    "eslint": "^4.2.0",
+    "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.2",
     "eslint-config-airbnb-base": "^11.0.1",
     "eslint-loader": "^1.5.0",
     "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-jsx-a11y": "^3.0.2",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
     "eslint-plugin-react": "^7.1.0",
-    "gulp": "^3.9.1",
-    "gulp-babel": "^6.1.2",
-    "gulp-browserify": "^0.5.1",
-    "gulp-eslint": "^4.0.0",
-    "gulp-react": "^3.1.0",
-    "gulp-sass": "^3.0.0",
-    "gulp-uglify": "^3.0.0",
     "jest": "^20.0.4",
+    "node-sass": "^4.5.3",
+    "npm-run-all": "^4.0.2",
+    "npx": "^9.1.0",
+    "postcss-cli": "^4.1.0",
     "react-addons-test-utils": "^15.4.1",
     "react-stub-context": "^0.7.0",
     "react-test-renderer": "^15.4.1",
-    "run-sequence": "^1.2.2",
+    "rollup": "^0.45.2",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-watch": "^4.3.1",
     "sinon": "^2.3.7"
   }
 }

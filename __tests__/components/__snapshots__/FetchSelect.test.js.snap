@@ -1,0 +1,104 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<FetchSelect> should be rendered 1`] = `
+<Select
+  allowClear={false}
+  closeOnClickOutside={true}
+  cssClassNamePrefix="rs3"
+  disabled={false}
+  layout={
+    Object {
+      "dropdownVerticalPosition": "below",
+      "width": "245px",
+    }
+  }
+  name="reactSelect_1"
+  onSearchTermChange={[Function]}
+  options={null}
+  search={
+    Object {
+      "minimumResults": undefined,
+      "show": true,
+      "status": "Minimum 3 to search...",
+    }
+  }
+/>
+`;
+
+exports[`<FetchSelect> should fetch options once on mount 1`] = `
+<FetchSelect
+  fetch={
+    Object {
+      "ajaxClient": [Function],
+      "once": true,
+    }
+  }
+  search={Object {}}
+>
+  <Select
+    allowClear={false}
+    closeOnClickOutside={true}
+    cssClassNamePrefix="rs3"
+    disabled={false}
+    layout={
+      Object {
+        "dropdownVerticalPosition": "below",
+        "width": "245px",
+      }
+    }
+    name="reactSelect_1"
+    onSearchTermChange={[Function]}
+    options={null}
+    search={
+      Object {
+        "minimumResults": undefined,
+        "show": false,
+        "status": "...",
+      }
+    }
+  >
+    <span
+      className="rs3__container  rs3--below"
+      disabled={false}
+      onClick={[Function]}
+      onKeyDown={[Function]}
+      role="combobox"
+      style={
+        Object {
+          "width": "245px",
+        }
+      }
+      tabIndex="0"
+    >
+      <select
+        className="rs3__select-node"
+        name="reactSelect_1"
+        readOnly={true}
+        tabIndex="-1"
+        value=""
+      />
+      <SelectSelection
+        clearable={false}
+        onClearSelection={[Function]}
+        onKeyDown={[Function]}
+        selection={null}
+      >
+        <span
+          className="rs3__selection rs3__selection--placeholder"
+        >
+          <span
+            className="rs3__selection-text"
+          />
+          <span
+            className="rs3__selection-arrow"
+            role="presentation"
+          >
+            <i />
+          </span>
+        </span>
+      </SelectSelection>
+      <SelectError />
+    </span>
+  </Select>
+</FetchSelect>
+`;

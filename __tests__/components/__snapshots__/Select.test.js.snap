@@ -1,0 +1,835 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Mount <Select/> should change css class name if prop passed 1`] = `
+<Select
+  allowClear={false}
+  closeOnClickOutside={true}
+  cssClassNamePrefix="TestSelector"
+  disabled={false}
+  layout={
+    Object {
+      "dropdownVerticalPosition": "below",
+      "width": "245px",
+    }
+  }
+  name="reactSelect_1"
+  options={null}
+  search={
+    Object {
+      "minimumResults": 20,
+    }
+  }
+>
+  <span
+    className="TestSelector__container  TestSelector--below"
+    disabled={false}
+    onClick={[Function]}
+    onKeyDown={[Function]}
+    role="combobox"
+    style={
+      Object {
+        "width": "245px",
+      }
+    }
+    tabIndex="0"
+  >
+    <select
+      className="TestSelector__select-node"
+      name="reactSelect_1"
+      readOnly={true}
+      tabIndex="-1"
+      value=""
+    />
+    <SelectSelection
+      clearable={false}
+      onClearSelection={[Function]}
+      onKeyDown={[Function]}
+      selection={null}
+    >
+      <span
+        className="TestSelector__selection TestSelector__selection--placeholder"
+      >
+        <span
+          className="TestSelector__selection-text"
+        />
+        <span
+          className="TestSelector__selection-arrow"
+          role="presentation"
+        >
+          <i />
+        </span>
+      </span>
+    </SelectSelection>
+    <SelectError />
+  </span>
+</Select>
+`;
+
+exports[`Mount <Select/> should open dropdown on when state.dropdownOpened = true 1`] = `
+<Select
+  allowClear={false}
+  closeOnClickOutside={true}
+  cssClassNamePrefix="rs3"
+  disabled={false}
+  layout={
+    Object {
+      "dropdownVerticalPosition": "below",
+      "width": "245px",
+    }
+  }
+  name="reactSelect_1"
+  options={
+    Array [
+      Object {
+        "id": 3,
+        "text": "three",
+      },
+      Object {
+        "id": 4,
+        "text": "four",
+      },
+      Object {
+        "id": 5,
+        "text": "five",
+      },
+      Object {
+        "id": 6,
+        "text": "six",
+      },
+      Object {
+        "id": 7,
+        "text": "seven",
+      },
+      Object {
+        "id": 8,
+        "text": "eight",
+      },
+      Object {
+        "id": 9,
+        "text": "nine",
+      },
+      Object {
+        "id": 10,
+        "text": "ten",
+      },
+      Object {
+        "id": 11,
+        "text": "eleven",
+      },
+      Object {
+        "id": 12,
+        "text": "twelve",
+      },
+    ]
+  }
+  search={
+    Object {
+      "minimumResults": 20,
+    }
+  }
+>
+  <span
+    className="rs3__container  rs3--below rs3--open"
+    disabled={false}
+    onClick={[Function]}
+    onKeyDown={[Function]}
+    role="combobox"
+    style={
+      Object {
+        "width": "245px",
+      }
+    }
+    tabIndex="0"
+  >
+    <select
+      className="rs3__select-node"
+      name="reactSelect_1"
+      readOnly={true}
+      tabIndex="-1"
+      value=""
+    />
+    <SelectSelection
+      clearable={false}
+      onClearSelection={[Function]}
+      onKeyDown={[Function]}
+    >
+      <span
+        className="rs3__selection rs3__selection--placeholder"
+      >
+        <span
+          className="rs3__selection-text"
+        />
+        <span
+          className="rs3__selection-arrow"
+          role="presentation"
+        >
+          <i />
+        </span>
+      </span>
+    </SelectSelection>
+    <SelectDropdown
+      highlighted={null}
+      onSearchInputChange={[Function]}
+      onSearchInputKeyDown={[Function]}
+      onSelect={[Function]}
+      options={
+        Array [
+          Object {
+            "id": "3",
+            "text": "three",
+          },
+          Object {
+            "id": "4",
+            "text": "four",
+          },
+          Object {
+            "id": "5",
+            "text": "five",
+          },
+          Object {
+            "id": "6",
+            "text": "six",
+          },
+          Object {
+            "id": "7",
+            "text": "seven",
+          },
+          Object {
+            "id": "8",
+            "text": "eight",
+          },
+          Object {
+            "id": "9",
+            "text": "nine",
+          },
+          Object {
+            "id": "10",
+            "text": "ten",
+          },
+          Object {
+            "id": "11",
+            "text": "eleven",
+          },
+          Object {
+            "id": "12",
+            "text": "twelve",
+          },
+        ]
+      }
+      searchTerm=""
+      showSearch={false}
+    >
+      <span
+        className="rs3__dropdown"
+      >
+        <SelectOptionsList
+          highlighted={null}
+          onSelect={[Function]}
+          options={
+            Array [
+              Object {
+                "id": "3",
+                "text": "three",
+              },
+              Object {
+                "id": "4",
+                "text": "four",
+              },
+              Object {
+                "id": "5",
+                "text": "five",
+              },
+              Object {
+                "id": "6",
+                "text": "six",
+              },
+              Object {
+                "id": "7",
+                "text": "seven",
+              },
+              Object {
+                "id": "8",
+                "text": "eight",
+              },
+              Object {
+                "id": "9",
+                "text": "nine",
+              },
+              Object {
+                "id": "10",
+                "text": "ten",
+              },
+              Object {
+                "id": "11",
+                "text": "eleven",
+              },
+              Object {
+                "id": "12",
+                "text": "twelve",
+              },
+            ]
+          }
+        >
+          <ul
+            className="rs3__options-list"
+          >
+            <li
+              className="rs3__option"
+              data-id="3"
+              onClick={[Function]}
+            >
+              three
+            </li>
+            <li
+              className="rs3__option"
+              data-id="4"
+              onClick={[Function]}
+            >
+              four
+            </li>
+            <li
+              className="rs3__option"
+              data-id="5"
+              onClick={[Function]}
+            >
+              five
+            </li>
+            <li
+              className="rs3__option"
+              data-id="6"
+              onClick={[Function]}
+            >
+              six
+            </li>
+            <li
+              className="rs3__option"
+              data-id="7"
+              onClick={[Function]}
+            >
+              seven
+            </li>
+            <li
+              className="rs3__option"
+              data-id="8"
+              onClick={[Function]}
+            >
+              eight
+            </li>
+            <li
+              className="rs3__option"
+              data-id="9"
+              onClick={[Function]}
+            >
+              nine
+            </li>
+            <li
+              className="rs3__option"
+              data-id="10"
+              onClick={[Function]}
+            >
+              ten
+            </li>
+            <li
+              className="rs3__option"
+              data-id="11"
+              onClick={[Function]}
+            >
+              eleven
+            </li>
+            <li
+              className="rs3__option"
+              data-id="12"
+              onClick={[Function]}
+            >
+              twelve
+            </li>
+          </ul>
+        </SelectOptionsList>
+      </span>
+    </SelectDropdown>
+    <SelectError />
+  </span>
+</Select>
+`;
+
+exports[`Mount <Select/> should render SelectDropdown with SelectSearchInput 1`] = `
+<Select
+  allowClear={false}
+  closeOnClickOutside={true}
+  cssClassNamePrefix="rs3"
+  disabled={false}
+  layout={
+    Object {
+      "dropdownVerticalPosition": "below",
+      "width": "245px",
+    }
+  }
+  name="reactSelect_1"
+  optionRenderer={[Function]}
+  options={
+    Array [
+      Object {
+        "id": 3,
+        "text": "three",
+      },
+      Object {
+        "id": 4,
+        "text": "four",
+      },
+      Object {
+        "id": 5,
+        "text": "five",
+      },
+      Object {
+        "id": 6,
+        "text": "six",
+      },
+      Object {
+        "id": 7,
+        "text": "seven",
+      },
+      Object {
+        "id": 8,
+        "text": "eight",
+      },
+      Object {
+        "id": 9,
+        "text": "nine",
+      },
+      Object {
+        "id": 10,
+        "text": "ten",
+      },
+      Object {
+        "id": 11,
+        "text": "eleven",
+      },
+      Object {
+        "id": 12,
+        "text": "twelve",
+      },
+    ]
+  }
+  search={
+    Object {
+      "minimumResults": 5,
+    }
+  }
+>
+  <span
+    className="rs3__container  rs3--below rs3--open"
+    disabled={false}
+    onClick={[Function]}
+    onKeyDown={[Function]}
+    role="combobox"
+    style={
+      Object {
+        "width": "245px",
+      }
+    }
+    tabIndex="0"
+  >
+    <select
+      className="rs3__select-node"
+      name="reactSelect_1"
+      readOnly={true}
+      tabIndex="-1"
+      value=""
+    />
+    <SelectSelection
+      clearable={false}
+      formatter={[Function]}
+      onClearSelection={[Function]}
+      onKeyDown={[Function]}
+    >
+      <span
+        className="rs3__selection rs3__selection--placeholder"
+      >
+        <span
+          className="rs3__selection-text"
+        />
+        <span
+          className="rs3__selection-arrow"
+          role="presentation"
+        >
+          <i />
+        </span>
+      </span>
+    </SelectSelection>
+    <SelectDropdown
+      formatter={[Function]}
+      highlighted={null}
+      onSearchInputChange={[Function]}
+      onSearchInputKeyDown={[Function]}
+      onSelect={[Function]}
+      options={
+        Array [
+          Object {
+            "id": "3",
+            "text": "three",
+          },
+          Object {
+            "id": "4",
+            "text": "four",
+          },
+          Object {
+            "id": "5",
+            "text": "five",
+          },
+          Object {
+            "id": "6",
+            "text": "six",
+          },
+          Object {
+            "id": "7",
+            "text": "seven",
+          },
+          Object {
+            "id": "8",
+            "text": "eight",
+          },
+          Object {
+            "id": "9",
+            "text": "nine",
+          },
+          Object {
+            "id": "10",
+            "text": "ten",
+          },
+          Object {
+            "id": "11",
+            "text": "eleven",
+          },
+          Object {
+            "id": "12",
+            "text": "twelve",
+          },
+        ]
+      }
+      searchTerm=""
+      showSearch={true}
+    >
+      <span
+        className="rs3__dropdown"
+      >
+        <SelectSearchInput
+          onChange={[Function]}
+          onKeyDown={[Function]}
+          value=""
+        >
+          <span
+            className="rs3__search"
+          >
+            <input
+              autoCapitalize="off"
+              autoComplete="off"
+              autoCorrect="off"
+              autoFocus={true}
+              className="rs3__search-field"
+              onChange={[Function]}
+              onClick={[Function]}
+              onKeyDown={[Function]}
+              spellCheck="false"
+              value=""
+            />
+          </span>
+        </SelectSearchInput>
+        <SelectOptionsList
+          formatter={[Function]}
+          highlighted={null}
+          onSelect={[Function]}
+          options={
+            Array [
+              Object {
+                "id": "3",
+                "text": "three",
+              },
+              Object {
+                "id": "4",
+                "text": "four",
+              },
+              Object {
+                "id": "5",
+                "text": "five",
+              },
+              Object {
+                "id": "6",
+                "text": "six",
+              },
+              Object {
+                "id": "7",
+                "text": "seven",
+              },
+              Object {
+                "id": "8",
+                "text": "eight",
+              },
+              Object {
+                "id": "9",
+                "text": "nine",
+              },
+              Object {
+                "id": "10",
+                "text": "ten",
+              },
+              Object {
+                "id": "11",
+                "text": "eleven",
+              },
+              Object {
+                "id": "12",
+                "text": "twelve",
+              },
+            ]
+          }
+        >
+          <ul
+            className="rs3__options-list"
+          >
+            <li
+              className="rs3__option"
+              data-id="3"
+              onClick={[Function]}
+            >
+              <span>
+                three
+              </span>
+            </li>
+            <li
+              className="rs3__option"
+              data-id="4"
+              onClick={[Function]}
+            >
+              <span>
+                four
+              </span>
+            </li>
+            <li
+              className="rs3__option"
+              data-id="5"
+              onClick={[Function]}
+            >
+              <span>
+                five
+              </span>
+            </li>
+            <li
+              className="rs3__option"
+              data-id="6"
+              onClick={[Function]}
+            >
+              <span>
+                six
+              </span>
+            </li>
+            <li
+              className="rs3__option"
+              data-id="7"
+              onClick={[Function]}
+            >
+              <span>
+                seven
+              </span>
+            </li>
+            <li
+              className="rs3__option"
+              data-id="8"
+              onClick={[Function]}
+            >
+              <span>
+                eight
+              </span>
+            </li>
+            <li
+              className="rs3__option"
+              data-id="9"
+              onClick={[Function]}
+            >
+              <span>
+                nine
+              </span>
+            </li>
+            <li
+              className="rs3__option"
+              data-id="10"
+              onClick={[Function]}
+            >
+              <span>
+                ten
+              </span>
+            </li>
+            <li
+              className="rs3__option"
+              data-id="11"
+              onClick={[Function]}
+            >
+              <span>
+                eleven
+              </span>
+            </li>
+            <li
+              className="rs3__option"
+              data-id="12"
+              onClick={[Function]}
+            >
+              <span>
+                twelve
+              </span>
+            </li>
+          </ul>
+        </SelectOptionsList>
+      </span>
+    </SelectDropdown>
+    <SelectError />
+  </span>
+</Select>
+`;
+
+exports[`Mount <Select/> should render a disabled unclickable Select with choosen option 1`] = `
+<Select
+  allowClear={false}
+  closeOnClickOutside={true}
+  cssClassNamePrefix="rs3"
+  disabled={true}
+  layout={
+    Object {
+      "dropdownVerticalPosition": "below",
+      "width": "245px",
+    }
+  }
+  name="reactSelect_1"
+  options={
+    Array [
+      Object {
+        "id": 3,
+        "text": "three",
+      },
+      Object {
+        "id": 4,
+        "text": "four",
+      },
+      Object {
+        "id": 5,
+        "text": "five",
+      },
+      Object {
+        "id": 6,
+        "text": "six",
+      },
+      Object {
+        "id": 7,
+        "text": "seven",
+      },
+      Object {
+        "id": 8,
+        "text": "eight",
+      },
+      Object {
+        "id": 9,
+        "text": "nine",
+      },
+      Object {
+        "id": 10,
+        "text": "ten",
+      },
+      Object {
+        "id": 11,
+        "text": "eleven",
+      },
+      Object {
+        "id": 12,
+        "text": "twelve",
+      },
+    ]
+  }
+  search={
+    Object {
+      "minimumResults": 20,
+    }
+  }
+  value={3}
+>
+  <span
+    className="rs3__container  rs3--below rs3--disabled rs3--selected"
+    disabled={true}
+    onClick={[Function]}
+    onKeyDown={[Function]}
+    role="combobox"
+    style={
+      Object {
+        "width": "245px",
+      }
+    }
+    tabIndex="0"
+  >
+    <select
+      className="rs3__select-node"
+      name="reactSelect_1"
+      readOnly={true}
+      tabIndex="-1"
+      value="3"
+    >
+      <option
+        value="3"
+      />
+    </select>
+    <SelectSelection
+      clearable={false}
+      onClearSelection={[Function]}
+      onKeyDown={[Function]}
+      selection={
+        Object {
+          "id": "3",
+          "text": "three",
+        }
+      }
+    >
+      <span
+        className="rs3__selection"
+      >
+        <span
+          className="rs3__selection-text"
+        >
+          three
+        </span>
+        <span
+          className="rs3__selection-arrow"
+          role="presentation"
+        >
+          <i />
+        </span>
+      </span>
+    </SelectSelection>
+    <SelectError />
+  </span>
+</Select>
+`;
+
+exports[`Render <Select/> should render a Select with default props 1`] = `
+<span
+  class="rs3__container  rs3--below"
+  role="combobox"
+  style="width:245px;"
+  tabindex="0"
+>
+  <select
+    class="rs3__select-node"
+    name="reactSelect_1"
+    readonly=""
+    tabindex="-1"
+  />
+  <span
+    class="rs3__selection rs3__selection--placeholder"
+  >
+    <span
+      class="rs3__selection-text"
+    />
+    <span
+      class="rs3__selection-arrow"
+      role="presentation"
+    >
+      <i />
+    </span>
+  </span>
+</span>
+`;

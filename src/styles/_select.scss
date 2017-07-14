@@ -1,202 +1,184 @@
-// TODO simplify
-// TODO more mixins for elements
+@include rs__loader-animation-keyframes;
 
-.#{$selector}__container {
-    display: inline-block;
-    position: relative;
-    background: $select__bg;
+.#{$selector-prefix} {
+  &__select-node {
+    @include hidden;
+  }
+
+  &__container {
+    background: $rs__bg;
     cursor: default;
-    user-select: none;
+    display: inline-block;
     outline: none;
+    position: relative;
+    user-select: none;
 
     &:focus {
-        @include select--focused;
+      @include rs--focused;
     }
 
     * {
-        box-sizing: border-box;
-        outline: none;
+      box-sizing: border-box;
+      outline: none;
     }
-}
+  }
 
-.#{$selector}__select-node {
-    border: 0 !important;
-    clip: rect(0 0 0 0) !important;
-    height: 1px !important;
-    margin: -1px !important;
-    overflow: hidden !important;
-    padding: 0 !important;
-    position: absolute !important;
-    width: 1px !important;
-}
-
-.#{$selector}--open {
-    &.#{$selector}--below {
-        .#{$selector}__error {
-            // hide error block if dropdown opened below select__container
-            display: none;
-        }
-        .#{$selector}__selection {
-            border-radius: $select__border-radius $select__border-radius 0 0;
-            border-bottom: 0;
-        }
-        .#{$selector}__dropdown {
-            top: 100%;
-            border-radius: 0 0 $select__border-radius $select__border-radius;
-        }
-    }
-    &.#{$selector}--above {
-        .#{$selector}__selection {
-            border-radius: 0 0 $select__border-radius $select__border-radius;
-            border-top: 0;
-        }
-        .#{$selector}__dropdown {
-            bottom: 100%;
-            border-radius: $select__border-radius $select__border-radius 0 0;
-        }
-    }
-}
-
-.#{$selector}--disabled {
-    @include select--disabled;
-}
-
-.#{$selector}--error {
-    .#{$selector}__selection {
-        @include select--error;
-    }
-}
-
-.#{$selector}__error {
-    font-size: 12px;
-    color: #f00;
-}
-
-.#{$selector}--pending {
-    cursor: progress;
-}
-
-.#{$selector}__selection {
-    white-space: nowrap;
+  &__selection {
+    @include rs__box;
+    display: block;
+    height: $rs__height;
+    line-height: $rs__height;
     overflow: hidden;
-    display: block;
-    height: $select__height;
-    padding: 0 ($select__padding-horizontal + 10) 0 $select__padding-horizontal;
-    line-height: $select__height;
-    @include select--box;
+    padding: 0 ($rs__padding-horizontal + 10) 0 $rs__padding-horizontal;
+    white-space: nowrap;
 
-    &.#{$selector}__selection--clearable {
-        padding-right: ($select__padding-horizontal + 25);
+    &.#{$selector-prefix}__selection--clearable {
+      padding-right: ($rs__padding-horizontal + 25);
     }
-}
+  }
 
-.#{$selector}__selection--placeholder {
-    .#{$selector}__selection-text {
-        color: $select__color-placeholder;
+  &__option--selected {
+    @include rs--option-selected;
+  }
+
+  &__selection--placeholder {
+    .#{$selector-prefix}__selection-text {
+      color: $rs__color-placeholder;
     }
-}
+  }
 
-.#{$selector}__selection-arrow {
-   @include select--arrow();
-}
+  &__error {
+    color: $rs__danger-color;
+    font-size: 12px;
+  }
 
-.#{$selector}__clear-selection {
-    display: block;
-    position: absolute;
-    right: $select__padding-horizontal + 10;
-    top: ($select__height / 2) - 2;
-    line-height: 0;
-    width: 10px;
-    height: 10px;
+  &__selection-arrow {
+    @include rs__arrow-wrapper;
+  }
+
+  &__clear-selection {
     border-radius: 50%;
+    display: block;
+    height: 10px;
+    line-height: 0;
+    position: absolute;
+    right: $rs__padding-horizontal + 10;
+    top: ($rs__height / 2) - 2;
+    width: 10px;
 
     &:focus {
-        color: $brand-primary;
+      color: $brand-primary;
     }
-}
+  }
 
-.#{$selector}__dropdown {
+  &__dropdown {
+    @include rs__box;
+    background-color: $rs__bg-dropdown;
     display: block;
     position: absolute;
-    z-index: 5;
     width: 100%;
-    background-color: $select__bg;
-    @include select--box;
-}
+    z-index: $rs__dropdown-z-index;
+  }
 
-.#{$selector}__options-list {
+  &__options-list {
     display: block;
     list-style: none;
     margin: 0;
-    padding: 0;
-    max-height: 170px;
+    max-height: $rs__options-list-max-height;
     overflow: auto;
+    padding: 0;
 
     li {
-        line-height: $select__height;
-        white-space: nowrap;
-        overflow: hidden;
-        padding: 0 $select__padding-horizontal;
+      line-height: $rs__height;
+      overflow: hidden;
+      padding: 0 $rs__padding-horizontal;
+      white-space: nowrap;
     }
-}
+  }
 
-.#{$selector}__option--highlighted {
-    background-color: $select__color-highlighted;
-}
+  &__option--highlighted {
+    background-color: $rs__bg-highlighted;
+  }
 
-.#{$selector}__option--selected {
-    @include select--selected;
-}
-
-.#{$selector}__search {
+  &__status {
+    color: $rs__color-placeholder;
     display: block;
-    padding: 0 $select__padding-horizontal;
-}
+    font-size: .8em;
+    padding: ($rs__padding-base * .3) $rs__padding-horizontal;
+  }
 
-.#{$selector}__search-field {
+  &__search {
     display: block;
-    -webkit-appearance: none;
+    padding: 0 $rs__padding-horizontal;
+  }
+
+  &__search-field {
     appearance: none;
-    height: 31px;
-    width: 100%;
     border: 0;
-    border-bottom: 1px solid $select__border-color;
+    border-bottom: 1px solid $rs__border-color;
+    display: block;
+    height: 31px;
     margin: 0 auto 5px;
     outline: none;
-}
+    width: 100%;
+  }
 
-.#{$selector}__status {
-    display: block;
-    padding: $padding-base*0.3 $select__padding-horizontal;
-    color: $select__color-placeholder;
-}
+  &__loader {
+    @include rs__loader;
+  }
 
-@keyframes loader {
-    0% {
-        opacity: 1;
+  // Modifiers
+  &--open {
+    &.#{$selector-prefix}--below {
+      .#{$selector-prefix}__error {
+        // hide error block if dropdown opened below select__container
+        // to prevent dropdown from being detached
+        display: none;
+      }
+
+      .#{$selector-prefix}__selection {
+        border-bottom: 0;
+        @if $rs-border-radius-enable {
+          border-radius: $rs__border-radius $rs__border-radius 0 0;
+        }
+      }
+
+      .#{$selector-prefix}__dropdown {
+        top: 100%;
+        @if $rs-border-radius-enable {
+          border-radius: 0 0 $rs__border-radius $rs__border-radius;
+        }
+      }
     }
-    50% {
-        opacity: 0.15;
-    }
-    100% {
-        opacity: 1;
-    }
-}
 
-.#{$selector}__status {
-    font-size: .8em;
-}
+    &.#{$selector-prefix}--above {
+      .#{$selector-prefix}__selection {
+        border-top: 0;
+        @if $rs-border-radius-enable {
+          border-radius: 0 0 $rs__border-radius $rs__border-radius;
+        }
+      }
 
-.#{$selector}__loader {
-    display: inline-block;
-    position: relative;
-    font-size: 50px;
-    color: $gray-dark;
-    animation: loader 2s linear infinite;
-    line-height: 0;
-
-    &:before {
-        content: '·';
-        line-height: 0;
+      .#{$selector-prefix}__dropdown {
+        bottom: 100%;
+        @if $rs-border-radius-enable {
+          border-radius: $rs__border-radius $rs__border-radius 0 0;
+        }
+      }
     }
+  }
+
+  &--disabled {
+    @include rs--disabled;
+  }
+
+  &--error {
+    .#{$selector-prefix}__selection {
+      @include rs--error;
+    }
+  }
+
+  &--pending {
+    cursor: progress;
+  }
 }

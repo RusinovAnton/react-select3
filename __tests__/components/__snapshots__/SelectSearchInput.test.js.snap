@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SelectSearchInput Should render 1`] = `
+<span
+  className="rs3__search"
+>
+  <input
+    autoCapitalize="off"
+    autoComplete="off"
+    autoCorrect="off"
+    autoFocus={true}
+    className="rs3__search-field"
+    isPending={true}
+    onClick={[Function]}
+    onKeyDown={[Function]}
+    spellCheck="false"
+  />
+</span>
+`;
