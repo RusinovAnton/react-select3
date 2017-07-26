@@ -1,5 +1,5 @@
 # REACT-SELECT3
-
+[![npm](https://img.shields.io/npm/dm/localeval.svg)](https://www.npmjs.com/package/react-select3)
 [![Build Status](https://travis-ci.org/RusinovAnton/react-select3.svg?branch=master)](https://travis-ci.org/RusinovAnton/react-select3)  
 
 This is `<select>` written with ReactJS.
