@@ -243,12 +243,12 @@ export class Select extends Component {
 
     // Add listener for click outside if enabled
     if (closeOnClickOutside) document.addEventListener('click', this.handleClickOutside, true);
-    this.selectContainer.addEventListener('blur', this.handleContainerBlur, true)
+    this.selectContainer.addEventListener('focusout', this.handleContainerBlur, true)
   };
 
   componentWillUnmount() {
     document.removeEventListener('click', this.handleClickOutside, true);
-    this.selectContainer.removeEventListener('blur', this.handleContainerBlur, true);
+    this.selectContainer.removeEventListener('focusout', this.handleContainerBlur, true);
   }
 
   /**
