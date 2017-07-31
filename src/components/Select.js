@@ -297,8 +297,8 @@ export class Select extends Component {
   };
 
   focusContainer = () => {
-    const x = window.scrollX;
-    const y = window.scrollY;
+    const x = window.pageXOffset;
+    const y = window.pageYOffset;
 
     window.scrollTo(x, y);
     if (this.selectContainer) {
