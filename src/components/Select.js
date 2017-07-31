@@ -1,14 +1,12 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-
 import classNames from 'classnames'
+import find from 'lodash/find'
 import isEqual from 'lodash/isEqual'
 import isFunction from 'lodash/isFunction'
 import isNil from 'lodash/isNil'
 import uniqueId from 'lodash/uniqueId'
-
 import makeString from '../utils/makeString'
-
 import SelectDropdown from './SelectDropdown'
 import SelectError from './SelectError'
 import SelectSelection from './SelectSelection'
@@ -358,7 +356,7 @@ export class Select extends Component {
     const { options } = this.state;
 
     if (options && options.length) {
-      return options.find(({ id }) => id === value); // eslint-disable-line eqeqeq
+      return find(options, ({ id }) => id === value);
     }
 
     return null
@@ -498,7 +496,7 @@ export class Select extends Component {
   /**
    * Select current highlighted option
    */
-  // @fixme: selects invalid option when options list filtered by searchTerm
+    // @fixme: selects invalid option when options list filtered by searchTerm
   selectHighlighted = () => {
     const { options, highlighted, dropdownOpened } = this.state;
 
@@ -511,7 +509,7 @@ export class Select extends Component {
       })
     } else {
       // Select highlighted item
-      this.onSelect(options.find(({ id }) => id === highlighted.id))
+      this.onSelect(find(options, ({ id }) => id === highlighted.id))
     }
   };
 
