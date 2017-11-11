@@ -23,7 +23,10 @@ const SelectDropdown = (
     }
     {
       options.length ?
-        <SelectOptionsList {...{ formatter, highlighted, onSelect, options, selected }}/>
+        <SelectOptionsList {...{
+          formatter, highlighted, onSelect, options, selected,
+        }}
+        />
         : <span className={`${cssClassNamePrefix}__status`}>{ status || emptyOptionsLabel || 'No options' }</span>
     }
   </span>

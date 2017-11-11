@@ -4,8 +4,10 @@ import filterKeyDown from '../utils/filterKeyDown'
 import { stopPropagation } from '../utils/events'
 
 
-const SelectSearchInput = ({ onClick, onKeyDown, ...props }, // eslint-disable-line no-unused-vars
-  { cssClassNamePrefix }) => (
+const SelectSearchInput = (
+  { onClick, onKeyDown, ...props }, // eslint-disable-line no-unused-vars
+  { cssClassNamePrefix },
+) => (
   <span className={`${cssClassNamePrefix}__search`}>
     <input
       className={`${cssClassNamePrefix}__search-field`}
