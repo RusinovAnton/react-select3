@@ -1,13 +1,16 @@
 // Make Enzyme functions available in all test files without importing
 import React from 'react'
-import { shallow, render, mount } from 'enzyme';
-import sinon from 'sinon'
+import Enzyme from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+import sinon from 'sinon';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 global.React = React;
 
-global.mount = mount;
-global.render = render;
-global.shallow = shallow;
+global.mount = Enzyme.mount;
+global.render = Enzyme.render;
+global.shallow = Enzyme.shallow;
 global.sinon = sinon;
 global.cssName = '.rs3';
 
