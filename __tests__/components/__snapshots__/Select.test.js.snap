@@ -276,6 +276,7 @@ exports[`Mount <Select/> should open dropdown on when state.dropdownOpened = tru
             <li
               className="rs3__option"
               data-id="3"
+              key="3"
               onClick={[Function]}
             >
               three
@@ -283,6 +284,7 @@ exports[`Mount <Select/> should open dropdown on when state.dropdownOpened = tru
             <li
               className="rs3__option"
               data-id="4"
+              key="4"
               onClick={[Function]}
             >
               four
@@ -290,6 +292,7 @@ exports[`Mount <Select/> should open dropdown on when state.dropdownOpened = tru
             <li
               className="rs3__option"
               data-id="5"
+              key="5"
               onClick={[Function]}
             >
               five
@@ -297,6 +300,7 @@ exports[`Mount <Select/> should open dropdown on when state.dropdownOpened = tru
             <li
               className="rs3__option"
               data-id="6"
+              key="6"
               onClick={[Function]}
             >
               six
@@ -304,6 +308,7 @@ exports[`Mount <Select/> should open dropdown on when state.dropdownOpened = tru
             <li
               className="rs3__option"
               data-id="7"
+              key="7"
               onClick={[Function]}
             >
               seven
@@ -311,6 +316,7 @@ exports[`Mount <Select/> should open dropdown on when state.dropdownOpened = tru
             <li
               className="rs3__option"
               data-id="8"
+              key="8"
               onClick={[Function]}
             >
               eight
@@ -318,6 +324,7 @@ exports[`Mount <Select/> should open dropdown on when state.dropdownOpened = tru
             <li
               className="rs3__option"
               data-id="9"
+              key="9"
               onClick={[Function]}
             >
               nine
@@ -325,6 +332,7 @@ exports[`Mount <Select/> should open dropdown on when state.dropdownOpened = tru
             <li
               className="rs3__option"
               data-id="10"
+              key="10"
               onClick={[Function]}
             >
               ten
@@ -332,6 +340,7 @@ exports[`Mount <Select/> should open dropdown on when state.dropdownOpened = tru
             <li
               className="rs3__option"
               data-id="11"
+              key="11"
               onClick={[Function]}
             >
               eleven
@@ -339,6 +348,7 @@ exports[`Mount <Select/> should open dropdown on when state.dropdownOpened = tru
             <li
               className="rs3__option"
               data-id="12"
+              key="12"
               onClick={[Function]}
             >
               twelve
@@ -589,6 +599,7 @@ exports[`Mount <Select/> should render SelectDropdown with SelectSearchInput 1`]
             <li
               className="rs3__option"
               data-id="3"
+              key="3"
               onClick={[Function]}
             >
               <span>
@@ -598,6 +609,7 @@ exports[`Mount <Select/> should render SelectDropdown with SelectSearchInput 1`]
             <li
               className="rs3__option"
               data-id="4"
+              key="4"
               onClick={[Function]}
             >
               <span>
@@ -607,6 +619,7 @@ exports[`Mount <Select/> should render SelectDropdown with SelectSearchInput 1`]
             <li
               className="rs3__option"
               data-id="5"
+              key="5"
               onClick={[Function]}
             >
               <span>
@@ -616,6 +629,7 @@ exports[`Mount <Select/> should render SelectDropdown with SelectSearchInput 1`]
             <li
               className="rs3__option"
               data-id="6"
+              key="6"
               onClick={[Function]}
             >
               <span>
@@ -625,6 +639,7 @@ exports[`Mount <Select/> should render SelectDropdown with SelectSearchInput 1`]
             <li
               className="rs3__option"
               data-id="7"
+              key="7"
               onClick={[Function]}
             >
               <span>
@@ -634,6 +649,7 @@ exports[`Mount <Select/> should render SelectDropdown with SelectSearchInput 1`]
             <li
               className="rs3__option"
               data-id="8"
+              key="8"
               onClick={[Function]}
             >
               <span>
@@ -643,6 +659,7 @@ exports[`Mount <Select/> should render SelectDropdown with SelectSearchInput 1`]
             <li
               className="rs3__option"
               data-id="9"
+              key="9"
               onClick={[Function]}
             >
               <span>
@@ -652,6 +669,7 @@ exports[`Mount <Select/> should render SelectDropdown with SelectSearchInput 1`]
             <li
               className="rs3__option"
               data-id="10"
+              key="10"
               onClick={[Function]}
             >
               <span>
@@ -661,6 +679,7 @@ exports[`Mount <Select/> should render SelectDropdown with SelectSearchInput 1`]
             <li
               className="rs3__option"
               data-id="11"
+              key="11"
               onClick={[Function]}
             >
               <span>
@@ -670,6 +689,7 @@ exports[`Mount <Select/> should render SelectDropdown with SelectSearchInput 1`]
             <li
               className="rs3__option"
               data-id="12"
+              key="12"
               onClick={[Function]}
             >
               <span>
@@ -809,7 +829,7 @@ exports[`Render <Select/> should render a Select with default props 1`] = `
 <span
   class="rs3__container  rs3--below"
   role="combobox"
-  style="width:245px;"
+  style="width:245px"
   tabindex="0"
 >
   <select

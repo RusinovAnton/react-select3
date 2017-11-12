@@ -7,6 +7,7 @@ exports[`SelectOptionsList Should render 1`] = `
   <li
     className="rs3__option"
     data-id={3}
+    key="3"
     onClick={[Function]}
   >
     three
@@ -14,6 +15,7 @@ exports[`SelectOptionsList Should render 1`] = `
   <li
     className="rs3__option"
     data-id={4}
+    key="4"
     onClick={[Function]}
   >
     four
@@ -21,6 +23,7 @@ exports[`SelectOptionsList Should render 1`] = `
   <li
     className="rs3__option"
     data-id={5}
+    key="5"
     onClick={[Function]}
   >
     five
@@ -28,6 +31,7 @@ exports[`SelectOptionsList Should render 1`] = `
   <li
     className="rs3__option"
     data-id={6}
+    key="6"
     onClick={[Function]}
   >
     six
@@ -35,6 +39,7 @@ exports[`SelectOptionsList Should render 1`] = `
   <li
     className="rs3__option"
     data-id={7}
+    key="7"
     onClick={[Function]}
   >
     seven
@@ -42,6 +47,7 @@ exports[`SelectOptionsList Should render 1`] = `
   <li
     className="rs3__option"
     data-id={8}
+    key="8"
     onClick={[Function]}
   >
     eight
@@ -49,6 +55,7 @@ exports[`SelectOptionsList Should render 1`] = `
   <li
     className="rs3__option"
     data-id={9}
+    key="9"
     onClick={[Function]}
   >
     nine
@@ -56,6 +63,7 @@ exports[`SelectOptionsList Should render 1`] = `
   <li
     className="rs3__option"
     data-id={10}
+    key="10"
     onClick={[Function]}
   >
     ten
@@ -63,6 +71,7 @@ exports[`SelectOptionsList Should render 1`] = `
   <li
     className="rs3__option"
     data-id={11}
+    key="11"
     onClick={[Function]}
   >
     eleven
@@ -70,6 +79,7 @@ exports[`SelectOptionsList Should render 1`] = `
   <li
     className="rs3__option"
     data-id={12}
+    key="12"
     onClick={[Function]}
   >
     twelve

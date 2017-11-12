@@ -230,8 +230,8 @@ export class Select extends React.Component {
   }
 
   shouldComponentUpdate = ({
-                             error, disabled, value, children,
-                           }, nextState) => (
+    error, disabled, value, children,
+  }, nextState) => (
     (error !== this.props.error && error !== this.state.error)
     || disabled !== this.props.disabled
     || value !== this.state.value
@@ -504,7 +504,7 @@ export class Select extends React.Component {
   /**
    * Select current highlighted option
    */
-    // @fixme: selects invalid option when options list filtered by searchTerm
+  // @fixme: selects invalid option when options list filtered by searchTerm
   selectHighlighted = () => {
     const { options, highlighted, dropdownOpened } = this.state;
 
@@ -605,48 +605,48 @@ export class Select extends React.Component {
 
     return (
       <span
-        ref={ this.setContainerRef }
-        className={ this.getSelectContainerClassName() }
-        style={ { width } }
-        disabled={ disabled }
+        ref={this.setContainerRef}
+        className={this.getSelectContainerClassName()}
+        style={{ width }}
+        disabled={disabled}
         tabIndex='0'
         role='combobox'
-        onClick={ this.onContainerClick }
-        onKeyDown={ this.onContainerKeyDown }
+        onClick={this.onContainerClick}
+        onKeyDown={this.onContainerKeyDown}
       >
         <select
           tabIndex='-1'
-          name={ name }
-          value={ !isNil(value) ? value : '' }
+          name={name}
+          value={!isNil(value) ? value : ''}
           readOnly
-          className={ `${cssClassNamePrefix}__select-node` }
+          className={`${cssClassNamePrefix}__select-node`}
         >
-          { !isNil(value) && <option value={ value }/> }
+          { !isNil(value) && <option value={value}/> }
         </select>
         <SelectSelection
-          clearable={ this.isClearable() }
-          onClearSelection={ this.onClearSelection }
-          placeholder={ placeholder }
-          formatter={ selectionRenderer || optionRenderer }
-          selection={ selectedOption }
-          onKeyDown={ this.onContainerKeyDown }
+          clearable={this.isClearable()}
+          onClearSelection={this.onClearSelection}
+          placeholder={placeholder}
+          formatter={selectionRenderer || optionRenderer}
+          selection={selectedOption}
+          onKeyDown={this.onContainerKeyDown}
         />
         { dropdownOpened && (
           <SelectDropdown
-            options={ this.getOptionsList() }
-            status={ status }
-            emptyOptionsLabel={ emptyOptionsLabel }
-            showSearch={ this.isShowSearch() }
-            highlighted={ highlighted ? highlighted.id : null }
-            searchTerm={ searchTerm }
-            formatter={ optionRenderer }
-            onSelect={ this.onSelectOption }
-            onSearchInputChange={ this.onSearchTermChange }
-            onSearchInputKeyDown={ this.onContainerKeyDown }
-            selected={ value }
+            options={this.getOptionsList()}
+            status={status}
+            emptyOptionsLabel={emptyOptionsLabel}
+            showSearch={this.isShowSearch()}
+            highlighted={highlighted ? highlighted.id : null}
+            searchTerm={searchTerm}
+            formatter={optionRenderer}
+            onSelect={this.onSelectOption}
+            onSearchInputChange={this.onSearchTermChange}
+            onSearchInputKeyDown={this.onContainerKeyDown}
+            selected={value}
           />)
         }
-        <SelectError error={ error }/>
+        <SelectError error={error}/>
       </span>
     )
   }
