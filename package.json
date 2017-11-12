@@ -28,7 +28,8 @@
       "^.+\\.(css|scss)$": "identity-obj-proxy"
     },
     "setupFiles": [
-      "./.jestrc.js"
+      "./test-setup/shims.js",
+      "./test-setup/.jestrc.js"
     ],
     "snapshotSerializers": [
       "<rootDir>/node_modules/enzyme-to-json/serializer"

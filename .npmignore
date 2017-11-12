@@ -5,7 +5,7 @@ coverage/
 .babelrc
 .editorconfig
 .eslintrc
-.jestrc.js
+test-setup/.jestrc.js
 .sass-lint.yml
 .travis.yml
 rollup.config.js
