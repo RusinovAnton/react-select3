@@ -230,8 +230,8 @@ export class Select extends React.Component {
   }
 
   shouldComponentUpdate = ({
-    error, disabled, value, children,
-  }, nextState) => (
+                             error, disabled, value, children,
+                           }, nextState) => (
     (error !== this.props.error && error !== this.state.error)
     || disabled !== this.props.disabled
     || value !== this.state.value
@@ -247,25 +247,29 @@ export class Select extends React.Component {
 
     // Add listener for click outside if enabled
     if (closeOnClickOutside) document.addEventListener('click', this.handleClickOutside, true);
-    this.selectContainer.addEventListener('focusout', this.handleContainerBlur, true)
+    if (this.selectContainer) {
+      this.selectContainer.addEventListener('focusout', this.handleContainerBlur, true);
+    }
   };
 
   componentWillUnmount() {
     document.removeEventListener('click', this.handleClickOutside, true);
-    this.selectContainer.removeEventListener('focusout', this.handleContainerBlur, true);
+    if (this.selectContainer) {
+      this.selectContainer.removeEventListener('focusout', this.handleContainerBlur, true);
+    }
   }
 
   /**
    * Close SelectDropdown on click outside
    */
   handleClickOutside = (e) => {
-    if (this.state.dropdownOpened && !this.selectContainer.contains(e.target)) {
+    if (this.state.dropdownOpened && this.selectContainer && !this.selectContainer.contains(e.target)) {
       this.closeDropdown(false)
     }
   };
 
   handleContainerBlur = (e) => {
-    if (!this.selectContainer.contains(e.relatedTarget)) {
+    if (this.selectContainer && !this.selectContainer.contains(e.relatedTarget)) {
       this.closeDropdown(false)
     }
   };
@@ -323,7 +327,7 @@ export class Select extends React.Component {
   makeOption = ({ id, text, ...rest }) => {
     // validate option object
     if (!((typeof id === 'string' || typeof id === 'number')
-      && (typeof text === 'string' || typeof text === 'number'))) {
+        && (typeof text === 'string' || typeof text === 'number'))) {
       throw new Error('Options array is not formatted properly, option object must have "id" and "text"'); // eslint-disable-line max-len
     }
 
@@ -500,7 +504,7 @@ export class Select extends React.Component {
   /**
    * Select current highlighted option
    */
-  // @fixme: selects invalid option when options list filtered by searchTerm
+    // @fixme: selects invalid option when options list filtered by searchTerm
   selectHighlighted = () => {
     const { options, highlighted, dropdownOpened } = this.state;
 
@@ -601,48 +605,48 @@ export class Select extends React.Component {
 
     return (
       <span
-        ref={this.setContainerRef}
-        className={this.getSelectContainerClassName()}
-        style={{ width }}
-        disabled={disabled}
+        ref={ this.setContainerRef }
+        className={ this.getSelectContainerClassName() }
+        style={ { width } }
+        disabled={ disabled }
         tabIndex='0'
         role='combobox'
-        onClick={this.onContainerClick}
-        onKeyDown={this.onContainerKeyDown}
+        onClick={ this.onContainerClick }
+        onKeyDown={ this.onContainerKeyDown }
       >
         <select
           tabIndex='-1'
-          name={name}
-          value={!isNil(value) ? value : ''}
+          name={ name }
+          value={ !isNil(value) ? value : '' }
           readOnly
-          className={`${cssClassNamePrefix}__select-node`}
+          className={ `${cssClassNamePrefix}__select-node` }
         >
-          { !isNil(value) && <option value={value}/> }
+          { !isNil(value) && <option value={ value }/> }
         </select>
         <SelectSelection
-          clearable={this.isClearable()}
-          onClearSelection={this.onClearSelection}
-          placeholder={placeholder}
-          formatter={selectionRenderer || optionRenderer}
-          selection={selectedOption}
-          onKeyDown={this.onContainerKeyDown}
+          clearable={ this.isClearable() }
+          onClearSelection={ this.onClearSelection }
+          placeholder={ placeholder }
+          formatter={ selectionRenderer || optionRenderer }
+          selection={ selectedOption }
+          onKeyDown={ this.onContainerKeyDown }
         />
         { dropdownOpened && (
           <SelectDropdown
-            options={this.getOptionsList()}
-            status={status}
-            emptyOptionsLabel={emptyOptionsLabel}
-            showSearch={this.isShowSearch()}
-            highlighted={highlighted ? highlighted.id : null}
-            searchTerm={searchTerm}
-            formatter={optionRenderer}
-            onSelect={this.onSelectOption}
-            onSearchInputChange={this.onSearchTermChange}
-            onSearchInputKeyDown={this.onContainerKeyDown}
-            selected={value}
+            options={ this.getOptionsList() }
+            status={ status }
+            emptyOptionsLabel={ emptyOptionsLabel }
+            showSearch={ this.isShowSearch() }
+            highlighted={ highlighted ? highlighted.id : null }
+            searchTerm={ searchTerm }
+            formatter={ optionRenderer }
+            onSelect={ this.onSelectOption }
+            onSearchInputChange={ this.onSearchTermChange }
+            onSearchInputKeyDown={ this.onContainerKeyDown }
+            selected={ value }
           />)
         }
-        <SelectError error={error}/>
+        <SelectError error={ error }/>
       </span>
     )
   }
