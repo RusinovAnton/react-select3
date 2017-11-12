@@ -1,5 +1,4 @@
 // Make Enzyme functions available in all test files without importing
-import '../dist/react-select3.cjs'
 import React from 'react'
 import Enzyme from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
