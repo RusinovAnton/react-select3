@@ -1,10 +1,10 @@
-import pkg from './package.json'
-import babel from 'rollup-plugin-babel'
-import commonjs from 'rollup-plugin-commonjs'
-import resolve from 'rollup-plugin-node-resolve'
+const pkg = require('./package.json');
+const babel = require('rollup-plugin-babel');
+const commonjs = require('rollup-plugin-commonjs');
+const resolve = require('rollup-plugin-node-resolve');
 
 
-export default [
+module.exports = [
   // browser-friendly UMD build
   {
     entry: './src/index.js',
@@ -32,7 +32,6 @@ export default [
         exclude: 'node_modules/**',
         presets: [
           'react',
-          'react-optimize',
           [
             'latest',
             {
@@ -43,11 +42,7 @@ export default [
           ],
           'stage-0'
         ],
-        plugins: [
-          'external-helpers',
-          'transform-react-constant-elements',
-          'transform-react-inline-elements'
-        ]
+        plugins: ['external-helpers']
       })
     ]
   },
@@ -82,9 +77,8 @@ export default [
       babel({
         babelrc: false,
         exclude: 'node_modules/**',
-        "presets": [
+        presets: [
           "react",
-          "react-optimize",
           [
             "latest",
             {
@@ -95,11 +89,7 @@ export default [
           ],
           "stage-0"
         ],
-        "plugins": [
-          "external-helpers",
-          "transform-react-constant-elements",
-          "transform-react-inline-elements"
-        ]
+        plugins: ['external-helpers']
       })
     ]
   }
