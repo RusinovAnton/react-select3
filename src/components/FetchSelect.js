@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 
 import debounce from 'lodash/debounce'
@@ -30,7 +30,7 @@ function composeFetchPath(endpoint, params = {}, searchTerm, termQuery) {
   return fetchPath
 }
 
-class FetchSelect extends Component {
+class FetchSelect extends React.Component {
   constructor(props) {
     super(props);
 
@@ -123,7 +123,11 @@ class FetchSelect extends Component {
   };
 
   fetch = searchTerm => {
-    const { fetch: { ajaxClient, endpoint, params, responseDataFormatter, termQuery } } = this.props;
+    const {
+      fetch: {
+        ajaxClient, endpoint, params, responseDataFormatter, termQuery,
+      },
+    } = this.props;
 
     if (!ajaxClient && typeof endpoint !== 'string') {
       throw new Error('You must provide endpoint to fetch options.')
@@ -185,7 +189,9 @@ class FetchSelect extends Component {
   };
 
   getStatus = () => {
-    const { options, fetched, error, isPending } = this.state;
+    const {
+      options, fetched, error, isPending,
+    } = this.state;
     const { fetch: { once } } = this.props;
     const {
       isEmpty,
@@ -217,7 +223,9 @@ class FetchSelect extends Component {
   };
 
   render() {
-    const { fetch: { once }, search, onSearchTermChange, ...props } = this.props; // eslint-disable-line no-unused-vars
+    const {
+      fetch: { once }, search, onSearchTermChange, ...props
+    } = this.props; // eslint-disable-line no-unused-vars
     const status = this.getStatus();
 
     return (

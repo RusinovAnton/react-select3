@@ -75,7 +75,7 @@ describe('Mount <Select/>', () => {
     const selection = component.find(cssName + '__selection-text');
     expect(selection.text()).toBe('three');
 
-    component.node.onClearSelection();
+    component.instance().onClearSelection();
     expect(selection.text()).toBe('Select something');
   });
 
@@ -135,7 +135,7 @@ describe('Mount <Select/>', () => {
     component.setState({ dropdownOpened: true });
     const searchField = component.find(cssName + '__search-field');
 
-    searchField.node.value = 't';
+    searchField.instance().value = 't';
     searchField.simulate('change', searchField);
 
     expect(component.find(cssName + '__option').length).toBe(4)

@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import find from 'lodash/find'
@@ -17,7 +17,7 @@ import SelectSelection from './SelectSelection'
 // TODO: optgroups
 // TODO: make slim version
 // TODO: optimize isFunction calls
-export class Select extends Component {
+export class Select extends React.Component {
   constructor(props) { // eslint-disable-line consistent-return
     super(props);
 
@@ -194,7 +194,9 @@ export class Select extends Component {
   });
 
   componentWillReceiveProps(newProps) {
-    const { disabled, error, options, value } = newProps;
+    const {
+      disabled, error, options, value,
+    } = newProps;
     const isValueValid = this.isValidValue(value);
 
     if (isValueValid && typeof newProps.onSelect === 'undefined' && typeof this.props.onSelect === 'undefined') {
@@ -227,7 +229,9 @@ export class Select extends Component {
     })
   }
 
-  shouldComponentUpdate = ({ error, disabled, value, children }, nextState) => (
+  shouldComponentUpdate = ({
+    error, disabled, value, children,
+  }, nextState) => (
     (error !== this.props.error && error !== this.state.error)
     || disabled !== this.props.disabled
     || value !== this.state.value
@@ -243,25 +247,29 @@ export class Select extends Component {
 
     // Add listener for click outside if enabled
     if (closeOnClickOutside) document.addEventListener('click', this.handleClickOutside, true);
-    this.selectContainer.addEventListener('focusout', this.handleContainerBlur, true)
+    if (this.selectContainer) {
+      this.selectContainer.addEventListener('focusout', this.handleContainerBlur, true);
+    }
   };
 
   componentWillUnmount() {
     document.removeEventListener('click', this.handleClickOutside, true);
-    this.selectContainer.removeEventListener('focusout', this.handleContainerBlur, true);
+    if (this.selectContainer) {
+      this.selectContainer.removeEventListener('focusout', this.handleContainerBlur, true);
+    }
   }
 
   /**
    * Close SelectDropdown on click outside
    */
   handleClickOutside = (e) => {
-    if (this.state.dropdownOpened && !this.selectContainer.contains(e.target)) {
+    if (this.state.dropdownOpened && this.selectContainer && !this.selectContainer.contains(e.target)) {
       this.closeDropdown(false)
     }
   };
 
   handleContainerBlur = (e) => {
-    if (!this.selectContainer.contains(e.relatedTarget)) {
+    if (this.selectContainer && !this.selectContainer.contains(e.relatedTarget)) {
       this.closeDropdown(false)
     }
   };
@@ -319,7 +327,7 @@ export class Select extends Component {
   makeOption = ({ id, text, ...rest }) => {
     // validate option object
     if (!((typeof id === 'string' || typeof id === 'number')
-      && (typeof text === 'string' || typeof text === 'number'))) {
+        && (typeof text === 'string' || typeof text === 'number'))) {
       throw new Error('Options array is not formatted properly, option object must have "id" and "text"'); // eslint-disable-line max-len
     }
 
@@ -496,7 +504,7 @@ export class Select extends Component {
   /**
    * Select current highlighted option
    */
-    // @fixme: selects invalid option when options list filtered by searchTerm
+  // @fixme: selects invalid option when options list filtered by searchTerm
   selectHighlighted = () => {
     const { options, highlighted, dropdownOpened } = this.state;
 
@@ -590,7 +598,9 @@ export class Select extends Component {
       search: { status },
       selectionRenderer,
     } = this.props;
-    const { disabled, dropdownOpened, error, highlighted, searchTerm, value } = this.state;
+    const {
+      disabled, dropdownOpened, error, highlighted, searchTerm, value,
+    } = this.state;
     const selectedOption = this.getOptionById(value);
 
     return (

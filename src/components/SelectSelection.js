@@ -6,8 +6,12 @@ import filterKeyDown from '../utils/filterKeyDown'
 import { stopPropagation } from '../utils/events'
 
 
-const SelectSelection = ({ clearable, formatter, selection = null, placeholder = null, onClearSelection, onKeyDown },
-  { cssClassNamePrefix }) => {
+const SelectSelection = (
+  {
+    clearable, formatter, selection = null, placeholder = null, onClearSelection, onKeyDown,
+  },
+  { cssClassNamePrefix },
+) => {
   let selectionText = null;
 
   if (selection) {

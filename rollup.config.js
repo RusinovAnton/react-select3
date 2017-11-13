@@ -1,10 +1,10 @@
-import pkg from './package.json'
-import babel from 'rollup-plugin-babel'
-import commonjs from 'rollup-plugin-commonjs'
-import resolve from 'rollup-plugin-node-resolve'
+const pkg = require('./package.json');
+const babel = require('rollup-plugin-babel');
+const commonjs = require('rollup-plugin-commonjs');
+const resolve = require('rollup-plugin-node-resolve');
 
 
-export default [
+module.exports = [
   // browser-friendly UMD build
   {
     entry: './src/index.js',
@@ -17,39 +17,34 @@ export default [
       resolve(),
       commonjs({
         include: [
-          'node_modules/**'
+          'node_modules/**',
         ],
         exclude: [
-          'node_modules/process-es6/**'
+          'node_modules/process-es6/**',
         ],
         namedExports: {
           'node_modules/react/react.js': ['Children', 'Component', 'PropTypes', 'createElement'],
-          'node_modules/react-dom/index.js': ['render']
-        }
+          'node_modules/react-dom/index.js': ['render'],
+        },
       }),
       babel({
         babelrc: false,
         exclude: 'node_modules/**',
         presets: [
           'react',
-          'react-optimize',
           [
             'latest',
             {
               es2015: {
-                modules: false
-              }
-            }
+                modules: false,
+              },
+            },
           ],
-          'stage-0'
+          'stage-0',
         ],
-        plugins: [
-          'external-helpers',
-          'transform-react-constant-elements',
-          'transform-react-inline-elements'
-        ]
-      })
-    ]
+        plugins: ['external-helpers'],
+      }),
+    ],
   },
 
   // CommonJS (for Node) and ES module (for bundlers) build.
@@ -63,44 +58,39 @@ export default [
     sourceMap: true,
     targets: [
       { dest: pkg.main, format: 'cjs' },
-      { dest: pkg.module, format: 'es' }
+      { dest: pkg.module, format: 'es' },
     ],
     plugins: [
       resolve(),
       commonjs({
         include: [
-          'node_modules/**'
+          'node_modules/**',
         ],
         exclude: [
-          'node_modules/process-es6/**'
+          'node_modules/process-es6/**',
         ],
         namedExports: {
           'node_modules/react/react.js': ['Children', 'Component', 'PropTypes', 'createElement'],
-          'node_modules/react-dom/index.js': ['render']
-        }
+          'node_modules/react-dom/index.js': ['render'],
+        },
       }),
       babel({
         babelrc: false,
         exclude: 'node_modules/**',
-        "presets": [
-          "react",
-          "react-optimize",
+        presets: [
+          'react',
           [
-            "latest",
+            'latest',
             {
-              "es2015": {
-                "modules": false
-              }
-            }
+              'es2015': {
+                'modules': false,
+              },
+            },
           ],
-          "stage-0"
+          'stage-0',
         ],
-        "plugins": [
-          "external-helpers",
-          "transform-react-constant-elements",
-          "transform-react-inline-elements"
-        ]
-      })
-    ]
-  }
+        plugins: ['external-helpers'],
+      }),
+    ],
+  },
 ];

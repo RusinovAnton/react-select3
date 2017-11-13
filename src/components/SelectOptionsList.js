@@ -7,7 +7,9 @@ import isNil from 'lodash/isNil'
 import { stopPropagation } from '../utils/events'
 
 
-const SelectOptionsList = ({ highlighted, selected, formatter, options = [], onSelect }, { cssClassNamePrefix }) => {
+const SelectOptionsList = ({
+  highlighted, selected, formatter, options = [], onSelect,
+}, { cssClassNamePrefix }) => {
   const optionsList = options.map((option) => {
     const { id, isHidden } = option;
 

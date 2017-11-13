@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SelectError Should return null if error prop weren't passed render 1`] = `null`;
+exports[`SelectError Should return empty string if error prop weren't passed render 1`] = `""`;
 
 exports[`SelectError Should show error message when provided 1`] = `
 <span
