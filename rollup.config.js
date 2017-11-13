@@ -17,15 +17,15 @@ module.exports = [
       resolve(),
       commonjs({
         include: [
-          'node_modules/**'
+          'node_modules/**',
         ],
         exclude: [
-          'node_modules/process-es6/**'
+          'node_modules/process-es6/**',
         ],
         namedExports: {
           'node_modules/react/react.js': ['Children', 'Component', 'PropTypes', 'createElement'],
-          'node_modules/react-dom/index.js': ['render']
-        }
+          'node_modules/react-dom/index.js': ['render'],
+        },
       }),
       babel({
         babelrc: false,
@@ -36,15 +36,15 @@ module.exports = [
             'latest',
             {
               es2015: {
-                modules: false
-              }
-            }
+                modules: false,
+              },
+            },
           ],
-          'stage-0'
+          'stage-0',
         ],
-        plugins: ['external-helpers']
-      })
-    ]
+        plugins: ['external-helpers'],
+      }),
+    ],
   },
 
   // CommonJS (for Node) and ES module (for bundlers) build.
@@ -58,39 +58,39 @@ module.exports = [
     sourceMap: true,
     targets: [
       { dest: pkg.main, format: 'cjs' },
-      { dest: pkg.module, format: 'es' }
+      { dest: pkg.module, format: 'es' },
     ],
     plugins: [
       resolve(),
       commonjs({
         include: [
-          'node_modules/**'
+          'node_modules/**',
         ],
         exclude: [
-          'node_modules/process-es6/**'
+          'node_modules/process-es6/**',
         ],
         namedExports: {
           'node_modules/react/react.js': ['Children', 'Component', 'PropTypes', 'createElement'],
-          'node_modules/react-dom/index.js': ['render']
-        }
+          'node_modules/react-dom/index.js': ['render'],
+        },
       }),
       babel({
         babelrc: false,
         exclude: 'node_modules/**',
         presets: [
-          "react",
+          'react',
           [
-            "latest",
+            'latest',
             {
-              "es2015": {
-                "modules": false
-              }
-            }
+              'es2015': {
+                'modules': false,
+              },
+            },
           ],
-          "stage-0"
+          'stage-0',
         ],
-        plugins: ['external-helpers']
-      })
-    ]
-  }
+        plugins: ['external-helpers'],
+      }),
+    ],
+  },
 ];
