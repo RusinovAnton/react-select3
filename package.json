@@ -1,6 +1,6 @@
 {
   "name": "react-select3",
-  "version": "4.0.0-rc.1",
+  "version": "4.0.0",
   "description": "<Select> component made with ReactJS",
   "browser": "dist/react-select3.umd.js",
   "main": "dist/react-select3.cjs.js",
