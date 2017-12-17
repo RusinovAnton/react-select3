@@ -140,9 +140,6 @@ export class Select extends React.Component {
     },
     name: uniqueId('reactSelect_'),
     options: null,
-    search: {
-      minimumResults: 20,
-    },
   };
 
   static initialState = () => ({
@@ -579,9 +576,15 @@ export class Select extends React.Component {
 
   isShowSearch = () => {
     const { options } = this.state;
-    const { search: { show, minimumResults = 20 } } = this.props;
+    const { search: { show, minimumResults } = {} } = this.props;
+    const hasOptions = !!options.length;
+    let optionsMoreOrEqualSetMinimum = true;
 
-    return show || (!!options.length && (minimumResults <= options.length))
+    if (typeof minimumResults === 'number' && options.length <= minimumResults) {
+      optionsMoreOrEqualSetMinimum = false;
+    }
+
+    return show && hasOptions && optionsMoreOrEqualSetMinimum;
   };
 
   setContainerRef = (node) => {
@@ -595,7 +598,7 @@ export class Select extends React.Component {
       name,
       optionRenderer,
       placeholder,
-      search: { status },
+      search: { status } = {},
       selectionRenderer,
     } = this.props;
     const {
