@@ -1,5 +1,5 @@
 // Make Enzyme functions available in all test files without importing
-import React from 'react'
+import React from 'react';
 import Enzyme from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import sinon from 'sinon';
@@ -16,8 +16,8 @@ global.cssName = '.rs3';
 
 global.selectComponentContext = {
   context: {
-    cssClassNamePrefix: global.cssName.slice(1)
-  }
+    cssClassNamePrefix: global.cssName.slice(1),
+  },
 };
 
 global.mock = {
@@ -34,9 +34,9 @@ global.mock = {
     { id: 12, text: 'twelve' },
   ],
   renderer({ text }) {
-    return (<span>{ text }</span>)
+    return <span>{text}</span>;
   },
-  ajaxClient: (endpoint) => Promise.resolve(mock.options)
+  ajaxClient: endpoint => Promise.resolve(mock.options),
 };
 
 // Skip createElement warnings but fail tests on any other warning
