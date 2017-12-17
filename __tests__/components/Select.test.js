@@ -53,13 +53,6 @@ describe("Render <Select/>", () => {
 });
 
 describe("Mount <Select/>", () => {
-  it("should not render search input when there is no options", () => {
-    const component = mount(<Select search={{ minimumResults: 0 }} />);
-
-    component.setState({ dropdownOpened: true });
-    expect(component.find(cssName + "__search-field").length).toBe(0);
-  });
-
   it("should not render a Select clear button without choosen option and should render it on option select", () => {
     const component = mount(
       <Select
@@ -70,10 +63,9 @@ describe("Mount <Select/>", () => {
       />
     );
 
-    expect(component.find(cssName + "__clear-selection").length).toBe(1);
-
+    expect(component.find(cssName + "__clear-selection")).toHaveLength(1);
     component.setProps({ value: null });
-    expect(component.find(cssName + "__clear-selection").length).toBe(0);
+    expect(component.find(cssName + "__clear-selection")).toHaveLength(0);
   });
 
   it("should open dropdown on when state.dropdownOpened = true", () => {
@@ -114,11 +106,11 @@ describe("Mount <Select/>", () => {
     const component = mount(<Select cssClassNamePrefix={"TestSelector"} />);
 
     expect(component).toMatchSnapshot();
-    expect(component.find(".TestSelector__container").length).toBe(1);
-    expect(component.find(".TestSelector__selection").length).toBe(1);
+    expect(component.find(".TestSelector__container")).toHaveLength(1);
+    expect(component.find(".TestSelector__selection")).toHaveLength(1);
 
     component.setState({ dropdownOpened: true });
-    expect(component.find(".TestSelector__dropdown").length).toBe(1);
+    expect(component.find(".TestSelector__dropdown")).toHaveLength(1);
   });
 
   it("should use optionRenderer if passed to render SelectOptionsList", () => {
@@ -131,35 +123,69 @@ describe("Mount <Select/>", () => {
     expect(spy.callCount).toBe(mock.options.length);
   });
 
-  it("should render SelectDropdown with SelectSearchInput", () => {
-    const component = mount(
-      <Select
-        search={{ minimumResults: 5 }}
-        optionRenderer={mock.renderer}
-        options={mock.options}
-      />
-    );
+  describe('Search input', () => {
+    const findSearchInput = wrapper => wrapper.find(cssName + "__search-field");
 
-    component.setState({ dropdownOpened: true });
-    expect(component).toMatchSnapshot();
-  });
+    it("renders when search.show prop is true", () => {
+      const component = mount(
+        <Select
+          search={{ show: true }}
+          optionRenderer={mock.renderer}
+          options={mock.options}
+        />
+      );
 
-  it("should filter options on SelectSearchInput change value", () => {
-    const component = mount(
-      <Select
-        search={{ minLength: 1, minimumResults: 5 }}
-        optionRenderer={mock.renderer}
-        options={mock.options}
-      />
-    );
+      component.setState({ dropdownOpened: true });
+      expect(findSearchInput(component)).toHaveLength(1);
+    });
 
-    component.setState({ dropdownOpened: true });
-    const searchField = component.find(cssName + "__search-field");
+    it('does not render when there is no search.show is falsy', () => {
+      const component = mount(
+        <Select
+          search={{minimumResults: mock.options - 1}}
+          options={mock.options} />
+      );
 
-    searchField.instance().value = "t";
-    searchField.simulate("change", searchField);
+      component.setState({ dropdownOpened: true });
+      expect(findSearchInput(component)).toHaveLength(0);
+    });
 
-    expect(component.find(cssName + "__option").length).toBe(4);
+    it("does not render when there is no options", () => {
+      const component = mount(<Select search={{ show: true }} options={[]}/>);
+
+      component.setState({ dropdownOpened: true });
+      expect(findSearchInput(component)).toHaveLength(0);
+    });
+
+    it("should filter options on SelectSearchInput change value", () => {
+      const component = mount(
+        <Select
+          search={{ show: true, minLength: 1 }}
+          optionRenderer={mock.renderer}
+          options={mock.options}
+        />
+      );
+
+      component.setState({ dropdownOpened: true });
+      const searchField = component.find(cssName + "__search-field");
+
+      searchField.instance().value = "t";
+      searchField.simulate("change", searchField);
+
+      expect(component.find(cssName + "__option")).toHaveLength(4);
+    });
+
+    it('should not show search input when minimumResults value is more than options.length', () => {
+      const component = mount(
+        <Select
+          search={{show: true, minimumResults: mock.options.length + 10}}
+          options={mock.options}
+        />
+      );
+
+      component.setState({ dropdownOpened: true });
+      expect(findSearchInput(component)).toHaveLength(0);
+    })
   });
 });
 
@@ -243,12 +269,12 @@ describe("Select error", () => {
   it("should render error node if error were passed with props", () => {
     component.setProps({ error: "Test error" });
 
-    expect(component.find(cssName + "__error").length).toBe(1);
+    expect(component.find(cssName + "__error")).toHaveLength(1);
   });
 
   it("should update error node - remove when null passed into error prop", () => {
     component.setProps({ error: null });
 
-    expect(component.find(cssName + "__error").length).toBe(0);
+    expect(component.find(cssName + "__error")).toHaveLength(0);
   });
 });
